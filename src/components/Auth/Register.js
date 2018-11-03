@@ -10,6 +10,7 @@ import {
   Message
 } from "semantic-ui-react";
 import "./Register.css";
+import md5 from "md5";
 import firebase from "../../firebaseConfig";
 
 class Registers extends Component {
@@ -21,7 +22,8 @@ class Registers extends Component {
       password: "",
       passwordConfirmation: "",
       loading: false,
-      error: []
+      error: [],
+      user: firebase.database().ref("users")
     };
   }
 
@@ -42,14 +44,34 @@ class Registers extends Component {
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(data => {
+          data.user
+            .updateProfile({
+              displayName: this.state.username,
+              photoURL: `https://www.gravatar.com/avatar/${md5(
+                this.state.email
+              )}?d=identicon`
+            })
+            .then(() => {
+              // TODO: Add push to main page some where her.
+              this.saveUser(data).then(() => {
+                this.setState({ loading: false });
+              });
+            });
           console.log(data);
-          this.setState({ loading: false });
         })
         .catch(error => {
           console.log(error);
           this.setState({ error: [error.message], loading: false });
         });
     }
+  };
+
+  saveUser = data => {
+    this.state.user.child(data.user.uid).set({
+      username: data.user.displayName,
+      picture: data.user.photoURL,
+      createdOn: data.user.metadata.creationTime
+    });
   };
 
   isFormValid = ({
@@ -92,7 +114,7 @@ class Registers extends Component {
     return (
       <Grid verticalAlign="middle" textAlign="center" className="heading">
         <Grid.Column className="register-box">
-          <Header as="h1" icon color="red" textAlign="center">
+          <Header as="h1" icon color="teal" textAlign="center">
             <Icon name="code" />
             Register for Dev Desk
             <Header.Subheader>
@@ -147,7 +169,7 @@ class Registers extends Component {
               <Button
                 fluid
                 type="submit"
-                color="red"
+                color="teal"
                 disabled={loading}
                 className={loading ? "loading" : ""}
               >
