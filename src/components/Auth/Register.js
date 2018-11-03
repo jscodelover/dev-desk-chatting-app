@@ -67,7 +67,7 @@ class Registers extends Component {
   };
 
   saveUser = data => {
-    this.state.user.child(data.user.uid).set({
+    return this.state.user.child(data.user.uid).set({
       username: data.user.displayName,
       picture: data.user.photoURL,
       createdOn: data.user.metadata.creationTime

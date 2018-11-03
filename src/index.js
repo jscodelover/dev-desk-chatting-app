@@ -10,15 +10,6 @@ import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import "semantic-ui-css/semantic.min.css";
 
-// const PrivateRoute = ({ component: Component, ...rest }) => (
-//   <Route {...rest} render={(props) => (
-//     fakeAuth.isAuthenticated === true
-//       ? <Component {...props} />
-//       : <Redirect to='/login' />
-//   )} />
-// )
-// <PrivateRoute path='/protected' component={Protected} />
-
 const store = createStore(reducer, composeWithDevTools());
 
 const Root = (
