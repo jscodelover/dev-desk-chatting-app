@@ -1,6 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { createStore, compose } from "redux";
+import { Provider } from "react-redux";
+import { composeWithDevTools } from "redux-devtools-extension";
 import { BrowserRouter } from "react-router-dom";
+import reducer from "./store/reducer";
 import App from "./components/App";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
@@ -15,10 +19,14 @@ import "semantic-ui-css/semantic.min.css";
 // )
 // <PrivateRoute path='/protected' component={Protected} />
 
+const store = createStore(reducer, composeWithDevTools());
+
 const Root = (
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>
 );
 
 ReactDOM.render(Root, document.getElementById("root"));
