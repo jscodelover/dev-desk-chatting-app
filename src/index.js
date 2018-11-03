@@ -1,12 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import App from "./components/App";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import App from "./components/App";
-import Login from "./components/Auth/Login";
-import Register from "./components/Auth/Register";
-
 import "semantic-ui-css/semantic.min.css";
 
 // const PrivateRoute = ({ component: Component, ...rest }) => (
@@ -20,11 +17,7 @@ import "semantic-ui-css/semantic.min.css";
 
 const Root = (
   <BrowserRouter>
-    <Switch>
-      <Route exact path="/" component={App} />
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
-    </Switch>
+    <App />
   </BrowserRouter>
 );
 
