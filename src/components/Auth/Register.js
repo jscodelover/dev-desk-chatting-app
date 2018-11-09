@@ -9,7 +9,7 @@ import {
   Segment,
   Message
 } from "semantic-ui-react";
-import "./Register.css";
+import "./Auth.css";
 import md5 from "md5";
 import firebase from "../../firebaseConfig";
 
@@ -52,12 +52,8 @@ class Registers extends Component {
               )}?d=identicon`
             })
             .then(() => {
-              // TODO: Add push to main page some where her.
-              this.saveUser(data).then(() => {
-                this.setState({ loading: false });
-              });
+              this.saveUser(data);
             });
-          console.log(data);
         })
         .catch(error => {
           console.log(error);
@@ -67,7 +63,7 @@ class Registers extends Component {
   };
 
   saveUser = data => {
-    return this.state.user.child(data.user.uid).set({
+    this.state.user.child(data.user.uid).set({
       username: data.user.displayName,
       picture: data.user.photoURL,
       createdOn: data.user.metadata.creationTime
@@ -113,10 +109,10 @@ class Registers extends Component {
     } = this.state;
     return (
       <Grid verticalAlign="middle" textAlign="center" className="heading">
-        <Grid.Column className="register-box">
+        <Grid.Column className="auth-box">
           <Header as="h1" icon color="teal" textAlign="center">
             <Icon name="code" />
-            Register for Dev Desk
+            Register for DevDesk
             <Header.Subheader>
               Platform which user can use to chat and store notes.
             </Header.Subheader>

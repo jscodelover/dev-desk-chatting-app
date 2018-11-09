@@ -9,6 +9,7 @@ import {
   Segment,
   Message
 } from "semantic-ui-react";
+import "./Auth.css";
 import firebase from "../../firebaseConfig";
 
 class Login extends Component {
@@ -42,6 +43,7 @@ class Login extends Component {
           // TODO: Add push to main  page somewhere here. and save data to redux
           console.log(data);
           this.setState({ loading: false });
+          this.props.history.push("/");
         })
         .catch(error => {
           console.log(error);
@@ -50,7 +52,7 @@ class Login extends Component {
     }
   };
 
-  isFormValid = ({ email, password, error }) => {
+  isFormValid = ({ email, password }) => {
     let err = [];
     if (!email.length || !password.length) {
       this.setState({ error: err.concat("Form is not fill") });
@@ -68,10 +70,10 @@ class Login extends Component {
     const { email, password, loading, error } = this.state;
     return (
       <Grid verticalAlign="middle" textAlign="center" className="heading">
-        <Grid.Column className="register-box">
+        <Grid.Column className="auth-box">
           <Header as="h1" icon color="teal" textAlign="center">
             <Icon name="code" />
-            Login for Dev Desk
+            Login for DevDesk
             <Header.Subheader>
               Platform which user can use to chat and store notes.
             </Header.Subheader>

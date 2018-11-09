@@ -6,18 +6,14 @@ import Login from "./Auth/Login";
 import Register from "./Auth/Register";
 import Home from "./Home/Home";
 import Spinner from "./Spinner";
-import { actions, setUser, clearUser } from "../store/action";
+import { setUser, clearUser } from "../store/action";
 import "./App.css";
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      rest.isAuthenticated === true ? (
-        <Component {...props} />
-      ) : (
-        <Redirect to="/login" />
-      )
+      rest.isAuthenticated ? <Component {...props} /> : <Redirect to="/login" />
     }
   />
 );
@@ -27,17 +23,21 @@ class App extends Component {
     console.log(this.props);
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.props.history.push("/");
         firebase
           .database()
           .ref(`users/${user.uid}`)
           .once("value")
           .then(snapshot => {
-            this.props.setuser(snapshot.val());
+            if (snapshot.val()) {
+              this.props.history.push("/");
+              this.props.setuser(snapshot.val());
+            } else {
+              this.props.history.push("/login");
+            }
           });
       } else {
-        this.props.history.push("/login");
         this.props.clearuser();
+        this.props.history.push("/login");
       }
     });
   }
