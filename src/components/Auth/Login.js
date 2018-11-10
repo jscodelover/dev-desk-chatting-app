@@ -40,8 +40,7 @@ class Login extends Component {
         .auth()
         .signInWithEmailAndPassword(this.state.email, this.state.password)
         .then(data => {
-          // TODO: Add push to main  page somewhere here. and save data to redux
-          console.log(data);
+          // TODO: Add push to main page somewhere here. and save data to redux
           this.setState({ loading: false });
           this.props.history.push("/");
         })

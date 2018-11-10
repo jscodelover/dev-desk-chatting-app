@@ -20,7 +20,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 
 class App extends Component {
   componentDidMount() {
-    console.log(this.props);
+    console.log("checkAUth");
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         firebase
@@ -29,8 +29,8 @@ class App extends Component {
           .once("value")
           .then(snapshot => {
             if (snapshot.val()) {
-              this.props.history.push("/");
               this.props.setuser(snapshot.val());
+              this.props.history.push("/");
             } else {
               this.props.history.push("/login");
             }
