@@ -25,23 +25,22 @@ class Channel extends React.Component {
   handleCloseModal = () => {
     this.setState({ modal: false });
   };
-  handleCreateChannel = () => {
-    console.log("channel created");
-  };
 
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
 
   handleSubmit = () => {
-    console.log("in submit")
-    if(this.isFormValid()){
+    let { channelName, channelDetail, channelRef } = this.state;
+    if(this.isFormValid(channelName, channelDetail)){
       console.log("send")
+      const key = channelRef.push().key;
+      console.log(key)
     }
   } 
 
-  isFormValid = () => {
-    return this.state.channelName.length && this.state.channelDetail.length;
+  isFormValid = (channelName, channelDetail) => {
+    return channelName.length && channelDetail.length;
   }
 
   render() {
@@ -82,11 +81,11 @@ class Channel extends React.Component {
               </Form.Field>
             </Form>
           </Modal.Content>
-          <Modal.Actions onSubmit={this.handleSubmit}>
+          <Modal.Actions>
             <Button color="red" inverted onClick={this.handleCloseModal}>
               <Icon name="remove" /> No
             </Button>
-            <Button color="green" inverted>
+            <Button color="green" inverted onClick={this.handleSubmit}>
               <Icon name="checkmark" /> Yes
             </Button>
           </Modal.Actions>
