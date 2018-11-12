@@ -9,7 +9,7 @@ class SidePanel extends Component {
   render() {
     return (
       <Menu
-        size="huge"
+        size="large"
         inverted
         fixed="left"
         vertical

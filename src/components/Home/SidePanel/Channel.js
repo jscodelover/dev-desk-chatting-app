@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Menu, Icon, Modal, Button, Form, Input } from "semantic-ui-react";
+import firebase from 'firebase';
 
 class Channel extends React.Component {
   constructor(props) {
@@ -8,8 +9,13 @@ class Channel extends React.Component {
       channel: [],
       modal: false,
       channelName: "",
-      channelDetail: ""
+      channelDetail: "",
+      channelRef: firebase.database().ref('channels')
     };
+  }
+
+  componentDidMount(){
+
   }
 
   handleOpenModal = () => {
@@ -27,6 +33,17 @@ class Channel extends React.Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
+  handleSubmit = () => {
+    console.log("in submit")
+    if(this.isFormValid()){
+      console.log("send")
+    }
+  } 
+
+  isFormValid = () => {
+    return this.state.channelName.length && this.state.channelDetail.length;
+  }
+
   render() {
     const { channel, modal, channelName, channelDetail } = this.state;
     return (
@@ -39,11 +56,12 @@ class Channel extends React.Component {
             ({channel.length}){" "}
             <Icon name="add" onClick={this.handleOpenModal} />
           </Menu.Item>
+
         </Menu.Menu>
-        <Modal open={modal} basic onClose={this.handleCloseModal}>
+        <Modal open={modal} basic onClose={this.handleCloseModal} >
           <Modal.Header>Add a Channel</Modal.Header>
           <Modal.Content>
-            <Form>
+            <Form onSubmit={this.handleSubmit}>
               <Form.Field>
                 <Input
                   fluid
@@ -64,11 +82,11 @@ class Channel extends React.Component {
               </Form.Field>
             </Form>
           </Modal.Content>
-          <Modal.Actions>
+          <Modal.Actions onSubmit={this.handleSubmit}>
             <Button color="red" inverted onClick={this.handleCloseModal}>
               <Icon name="remove" /> No
             </Button>
-            <Button color="green" inverted onClick={this.handleCreateChannel}>
+            <Button color="green" inverted>
               <Icon name="checkmark" /> Yes
             </Button>
           </Modal.Actions>
