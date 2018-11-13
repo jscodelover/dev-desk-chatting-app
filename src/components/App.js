@@ -59,10 +59,10 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ user }) => {
   return {
-    loading: state.loading,
-    isAuthenticated: state.isAuthenticated
+    loading: user.loading,
+    isAuthenticated: user.isAuthenticated
   };
 };
 

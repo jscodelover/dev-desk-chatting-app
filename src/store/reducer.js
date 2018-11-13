@@ -1,12 +1,14 @@
 import { actions } from "./action";
+import { combineReducers } from "redux";
 
-const INITIAL_STATE = {
+const USER_INITIAL_STATE = {
   user: {},
   loading: true,
-  isAuthenticated: false
+  isAuthenticated: false,
+  channel: {}
 };
 
-const reducer = (state = INITIAL_STATE, action) => {
+const user_reducer = (state = USER_INITIAL_STATE, action) => {
   switch (action.type) {
     case actions.SET_USER:
       return {
@@ -27,4 +29,30 @@ const reducer = (state = INITIAL_STATE, action) => {
   }
 };
 
-export default reducer;
+const CHANNEL_INITIAL_STATE = {
+  channel: {}
+};
+
+const channel_reduce = (state = CHANNEL_INITIAL_STATE, action) => {
+  switch (action.type) {
+    case actions.SET_CHANNEL:
+      return {
+        ...state,
+        channel: action.payload,
+        loading: false
+      };
+    case actions.CLEAR_CHANNEL:
+      return {
+        ...state,
+      };
+    default:
+      return state;
+  }
+};
+
+const rootReducer = combineReducers({
+  user: user_reducer,
+  channel: channel_reduce
+})
+
+export default rootReducer;
