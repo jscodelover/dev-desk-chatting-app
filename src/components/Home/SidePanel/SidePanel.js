@@ -7,6 +7,7 @@ import "./SidePanel.css";
 
 class SidePanel extends Component {
   render() {
+    const { user } = this.props;
     return (
       <Menu
         size="large"
@@ -15,8 +16,8 @@ class SidePanel extends Component {
         vertical
         style={{ background: "#4c3c4c" }}
       >
-        <UserPanel user={this.props.user} />
-        <Channel />
+        <UserPanel user={user} />
+        <Channel user={user} />
       </Menu>
     );
   }
