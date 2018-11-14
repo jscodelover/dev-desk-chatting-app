@@ -11,7 +11,7 @@ export default function ColorPanel() {
       visible
       icon="labeled"
     >
-      <Divider />
+      <Divider style={{border: 'none'}}/>
       <Button icon="add" size="small" color="blue" />
     </Sidebar>
   );

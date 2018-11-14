@@ -11,7 +11,7 @@ const Home = () => {
       <ColorPanel />
       <SidePanel />
 
-      <Grid.Column>
+      <Grid.Column style={{marginLeft: '320px'}}>
         <Messages />
       </Grid.Column>
 
