@@ -20,14 +20,25 @@ class Channel extends React.Component {
   }
 
   componentDidMount() {
+    this.addListener();
+  }
+
+  componentWillUnmount(){
+    this.removeListener();
+  }
+  
+  addListener = () => {
     let loadedChannel = [];
     this.state.channelRef.on("child_added", snap => {
       loadedChannel.push(snap.val());
-      this.setState({ channels: loadedChannel }, () => {this.setFirstChannel(snap.val()) });
+      this.setState({ channels: loadedChannel }, () => { this.setFirstChannel() });
     });
   }
+  removeListener = () => {
+    this.state.channelRef.off();
+  }
 
-  setFirstChannel = ({ id }) => {
+  setFirstChannel = () => {
     const { firstChannelActivated, channels } = this.state;
     if(!firstChannelActivated)
     {
@@ -39,7 +50,6 @@ class Channel extends React.Component {
   handleOpenModal = () => {
     this.setState({ modal: true });
   };
-
   handleCloseModal = () => {
     this.setState({ modal: false });
   };
@@ -63,7 +73,6 @@ class Channel extends React.Component {
       })
     }
   };
-
   isFormValid = (channelName, channelDetail) => {
     return channelName.length && channelDetail.length;
   };

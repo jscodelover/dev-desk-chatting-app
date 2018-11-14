@@ -23,9 +23,9 @@ class SidePanel extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ user }) => {
   return {
-    user: state.user
+    user: user.user
   };
 };
 
