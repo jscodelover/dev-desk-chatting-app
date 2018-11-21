@@ -1,0 +1,8 @@
+.messages {
+  min-height: 75vh;
+  overflow-y: scroll;
+}
+
+.messageForm {
+  position: fixed !important;
+}
