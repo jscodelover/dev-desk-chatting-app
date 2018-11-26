@@ -7,6 +7,7 @@ class MessageForm extends React.Component {
       <Segment className="messageForm">
         <Input
           fluid
+          style={{ marginBottom: "0.7rem" }}
           label={
             <Button icon>
               {" "}
@@ -16,7 +17,7 @@ class MessageForm extends React.Component {
           labelPosition="left"
           placeholder="Add Message..."
         />
-        <Button.Group fluid>
+        <Button.Group icon width="2">
           <Button
             color="orange"
             content="Add Reply"

@@ -5,4 +5,9 @@
 
 .messageForm {
   position: fixed !important;
+  bottom: 0.6rem;
+  right: 1rem;
+  left: 0;
+  margin-left: 320px !important;
+  z-index: 200;
 }

@@ -7,7 +7,10 @@ import MetaPanel from "./MetaPanel/MetaPanel";
 
 const Home = () => {
   return (
-    <Grid columns="equal" style={{ background: "#eee", marginTop: "0px" }}>
+    <Grid
+      columns="equal"
+      style={{ background: "#eee", marginTop: "0px", height: "100vh" }}
+    >
       <ColorPanel />
       <SidePanel />
 
