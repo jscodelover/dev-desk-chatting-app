@@ -1,9 +1,13 @@
-.messages{
-    overflow-y: scroll;
+.messages {
+  min-height: 75vh;
+  overflow-y: scroll;
 }
-.messageForm{
-    position: fixed !important;
-    left: auto;
-    bottom: 0;
 
+.messageForm {
+  position: fixed !important;
+  bottom: 0.6rem;
+  right: 1rem;
+  left: 0;
+  margin-left: 325px !important;
+  z-index: 200;
 }

@@ -4,8 +4,7 @@ import { combineReducers } from "redux";
 const USER_INITIAL_STATE = {
   user: {},
   loading: true,
-  isAuthenticated: false,
-  channel: {}
+  isAuthenticated: false, 
 };
 
 const user_reducer = (state = USER_INITIAL_STATE, action) => {
