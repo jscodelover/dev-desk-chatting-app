@@ -17,7 +17,7 @@ class MessageForm extends React.Component {
           labelPosition="left"
           placeholder="Add Message..."
         />
-        <Button.Group icon width="2">
+        <Button.Group icon width="2" fluid>
           <Button
             color="orange"
             content="Add Reply"
