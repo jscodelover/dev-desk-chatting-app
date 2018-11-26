@@ -1,0 +1,9 @@
+.messages{
+    overflow-y: scroll;
+}
+.messageForm{
+    position: fixed !important;
+    left: auto;
+    bottom: 0;
+
+}
