@@ -10,11 +10,10 @@ class SidePanel extends Component {
     const { user } = this.props;
     return (
       <Menu
-        size="large"
         inverted
         fixed="left"
         vertical
-        style={{ background: "#4c3c4c" }}
+        style={{ background: "#4c3c4c", width: "16rem" }}
       >
         <UserPanel user={user} />
         <Channel user={user} />
@@ -25,7 +24,7 @@ class SidePanel extends Component {
 
 const mapStateToProps = ({ user }) => {
   return {
-    user: user.user
+    user: user.currentUser
   };
 };
 

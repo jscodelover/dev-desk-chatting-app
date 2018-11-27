@@ -10,11 +10,16 @@ class Messages extends React.Component {
     super(props);
     this.state = {
       messageRef : firebase.database().ref('messages'),
+      channelID: this.props.channelID,
+      userID: this.props.userID
     }
   }
+
+  componentDidMount(){
+  }
+
   render() {
-    const { messageRef } = this.state;
-    const { channelID, userID } = this.props;
+    const { messageRef, channelID, userID } = this.state;
     return (
       <React.Fragment>
         <MessageHeader />

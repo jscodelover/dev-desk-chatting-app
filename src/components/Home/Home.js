@@ -13,10 +13,15 @@ const Home = ({user, channel}) => {
       style={{ background: "#eee", marginTop: "0px", height: "100vh" }}
     >
       <ColorPanel />
-      <SidePanel />
+      {
+        user.userID && <SidePanel user={user} />
+      }
 
       <Grid.Column style={{ marginLeft: "325px", position: "relative" }}>
-        <Messages userID={user.userID} channelID={channel.id} />
+        {
+          channel.id &&
+           <Messages userID={user.userID} channelID={channel.id} />
+        }   
       </Grid.Column>
 
       <Grid.Column width={4}>
@@ -28,8 +33,8 @@ const Home = ({user, channel}) => {
 
 const mapStateToProps = ({user, channel}) => {
   return {
-    user: user.user, 
-    channel: channel.channel
+    user: user.currentUser, 
+    channel: channel.currentChannel
   }
 }
 
