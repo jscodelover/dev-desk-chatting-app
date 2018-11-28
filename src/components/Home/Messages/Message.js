@@ -3,7 +3,6 @@ import moment from "moment";
 import { Comment } from "semantic-ui-react";
 
 const Message = ({ msg, user }) => {
-  console.log(moment(msg.timestamp)._d);
   return (
     <Comment>
       <Comment.Avatar src={msg.user.picture} />
@@ -12,7 +11,7 @@ const Message = ({ msg, user }) => {
       >
         <Comment.Author as="a">{msg.user.username}</Comment.Author>
         <Comment.Metadata>
-          {moment(msg.timestamp).toISOString(true)}
+          {moment(msg.timestamp).format(" Do-MM-YY, ddd, h:mm:ss a")}
         </Comment.Metadata>
         <Comment.Text>{msg.content}</Comment.Text>
       </Comment.Content>

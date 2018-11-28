@@ -34,7 +34,6 @@ class Messages extends React.Component {
 
   render() {
     const { messageRef, channelID, user, messages } = this.state;
-    console.log(messages);
     return (
       <React.Fragment>
         <MessageHeader />
