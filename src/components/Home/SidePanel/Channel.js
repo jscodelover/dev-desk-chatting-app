@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Menu, Icon, Modal, Button, Form, Input } from "semantic-ui-react";
 import firebase from "firebase";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { setChannel } from "../../../store/action";
 
 class Channel extends React.Component {
@@ -14,7 +14,7 @@ class Channel extends React.Component {
       channelName: "",
       channelDetail: "",
       channelRef: firebase.database().ref("channels"),
-      activeChannelID: '',
+      activeChannelID: "",
       firstChannelActivated: false
     };
   }
@@ -23,30 +23,31 @@ class Channel extends React.Component {
     this.addListener();
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.removeListener();
   }
-  
+
   addListener = () => {
     let loadedChannel = [];
     this.state.channelRef.on("child_added", snap => {
       loadedChannel.push(snap.val());
-      this.setState({ channels: loadedChannel }, () => { this.setFirstChannel() });
+      this.setState({ channels: loadedChannel }, () => {
+        this.setFirstChannel();
+      });
     });
-  }
+  };
   removeListener = () => {
     this.state.channelRef.off();
-  }
+  };
 
   setFirstChannel = () => {
     const { firstChannelActivated, channels } = this.state;
-    if(!firstChannelActivated)
-    {
-      this.setState({firstChannelActivated: true});
-      this.changeChannel(channels[0])
+    if (!firstChannelActivated) {
+      this.setState({ firstChannelActivated: true });
+      this.changeChannel(channels[0]);
     }
-  }
-  
+  };
+
   handleOpenModal = () => {
     this.setState({ modal: true });
   };
@@ -62,42 +63,48 @@ class Channel extends React.Component {
     let { channelName, channelDetail, channelRef, userID } = this.state;
     if (this.isFormValid(channelName, channelDetail)) {
       const key = channelRef.push().key;
-      channelRef.child(key).update({
-        id: key,
-        channelName,
-        channelDetail,
-        createdBy: userID
-      }).then(() => {
-        this.setState({channelName: "", channelDetail: "", activeChannelID: key});
-        this.handleCloseModal();
-      })
+      channelRef
+        .child(key)
+        .update({
+          id: key,
+          channelName,
+          channelDetail,
+          createdBy: userID
+        })
+        .then(() => {
+          this.setState({
+            channelName: "",
+            channelDetail: "",
+            activeChannelID: key
+          });
+          this.handleCloseModal();
+        });
     }
   };
   isFormValid = (channelName, channelDetail) => {
     return channelName.length && channelDetail.length;
   };
 
-  changeChannel = (channel) =>{
-    this.setState({activeChannelID : channel.id});
-    this.props.channelInStore({...channel});
+  changeChannel = channel => {
+    this.setState({ activeChannelID: channel.id });
+    this.props.channelInStore({ ...channel });
+  };
 
-  }
-
-  displayChannels = (state) => (
+  displayChannels = state =>
     state.channels.length > 0 &&
-    state.channels.map(channel =>(
-      <Menu.Item 
-        key= {channel.id} 
-        name= {channel.channelName}
-        onClick={() => {this.changeChannel(channel)}} 
+    state.channels.map(channel => (
+      <Menu.Item
+        key={channel.id}
+        name={channel.channelName}
+        onClick={() => {
+          this.changeChannel(channel);
+        }}
         active={channel.id === state.activeChannelID}
       >
         # {channel.channelName}
       </Menu.Item>
-    ))
-    
-  );
-  
+    ));
+
   render() {
     const { channels, modal, channelName, channelDetail } = this.state;
     return (
@@ -150,10 +157,13 @@ class Channel extends React.Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    channelInStore: (channelInfo) => dispatch(setChannel(channelInfo))
-  }
-}
+    channelInStore: channelInfo => dispatch(setChannel(channelInfo))
+  };
+};
 
-export default connect(null, mapDispatchToProps)(Channel);
+export default connect(
+  null,
+  mapDispatchToProps
+)(Channel);

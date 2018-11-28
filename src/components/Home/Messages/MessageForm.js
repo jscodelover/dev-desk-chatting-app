@@ -1,45 +1,55 @@
 import * as React from "react";
 import { Segment, Button, Input, Icon } from "semantic-ui-react";
-import firebase from '../../../firebaseConfig';
+import firebase from "../../../firebaseConfig";
 
 class MessageForm extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={
-      message: '',
+    this.state = {
+      message: "",
       loading: false,
-      error: [],
-    }
+      error: []
+    };
   }
 
-  getMessage = (event) => {
-    this.setState({[event.target.name]:event.target.value})
-  }
+  getMessage = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
 
   sendMessage = () => {
-    const {messageRef, channelID, userID} = this.props;
-    console.log(this.props)
-    if(this.state.message){
-      this.setState({loading: true});
-      messageRef.child(channelID)
+    const { messageRef, channelID, user } = this.props;
+    if (this.state.message) {
+      this.setState({ loading: true });
+      messageRef
+        .child(channelID)
         .push()
         .set({
           content: this.state.message,
           timestamp: firebase.database.ServerValue.TIMESTAMP,
-          userID: userID
+          user: {
+            username: user.username,
+            picture: user.picture,
+            userID: user.userID
+          }
         })
         .then(() => {
-          console.log("data addded")
-          this.setState({loading: false, message: ''});
+          this.setState({ loading: false, message: "" });
         })
         .catch(() => {
-            this.setState({loading: false, error: this.state.error.concat("message can't be send. Try Again !!")})
-        })
+          this.setState({
+            loading: false,
+            error: this.state.error.concat(
+              "message can't be send. Try Again !!"
+            )
+          });
+        });
+    } else {
+      this.setState({
+        loading: false,
+        error: this.state.error.concat("write the message")
+      });
     }
-    else{
-      this.setState({loading: false, error: this.state.error.concat("write the message")})
-    }    
-  }
+  };
 
   render() {
     const { message, error, loading } = this.state;
@@ -60,9 +70,7 @@ class MessageForm extends React.Component {
           loading={loading}
           labelPosition="left"
           placeholder="Write your message..."
-          className = {
-            error.some(err => err.includes('message')) ? 'error' : ''
-          }
+          className={error.some(err => err.includes("message")) ? "error" : ""}
         />
         <Button.Group icon width="2" fluid>
           <Button

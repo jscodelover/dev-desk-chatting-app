@@ -11,3 +11,8 @@
   margin-left: 300px !important;
   z-index: 200;
 }
+
+.userMessage {
+  border-left: 4px solid #c79218;
+  padding-left: 6px;
+}

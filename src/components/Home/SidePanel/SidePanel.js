@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Menu } from "semantic-ui-react";
-import { connect } from "react-redux";
 import UserPanel from "./UserPanel";
 import Channel from "./Channel";
 import "./SidePanel.css";
@@ -22,13 +21,7 @@ class SidePanel extends Component {
   }
 }
 
-const mapStateToProps = ({ user }) => {
-  return {
-    user: user.currentUser
-  };
-};
-
-export default connect(mapStateToProps)(SidePanel);
+export default SidePanel;
 
 // <Grid className="panelBox">
 //   <Grid.Column>
