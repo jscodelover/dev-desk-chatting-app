@@ -1,4 +1,5 @@
 import * as React from "react";
+import uuidv4 from 'uuid/v4';
 import { Segment, Button, Input, Icon } from "semantic-ui-react";
 import firebase from "../../../firebaseConfig";
 import FileModal from "./FileModal";
@@ -6,11 +7,16 @@ import FileModal from "./FileModal";
 class MessageForm extends React.Component {
   constructor(props) {
     super(props);
+    console.log(props)
     this.state = {
+      storageRef: firebase.storage().ref(),
       message: "",
       loading: false,
       error: [],
-      modal: false
+      modal: false,
+      uploadTask: null,
+      uploadStatus: '',
+      uploadPercentage: 0
     };
   }
 
@@ -19,11 +25,11 @@ class MessageForm extends React.Component {
   };
 
   sendMessage = () => {
-    const { messageRef, channelID, user } = this.props;
+    const { messageRef, channel, user } = this.props;
     if (this.state.message) {
       this.setState({ loading: true });
       messageRef
-        .child(channelID)
+        .child(channel.id)
         .push()
         .set({
           content: this.state.message,
@@ -62,7 +68,27 @@ class MessageForm extends React.Component {
   }
 
   uploadFile = (file) => {
-    console.log(file.type)
+    const metaData = { contentType: file.type };
+    const { storageRef } = this.state;
+    const { channel } = this.props;
+
+    this.setState({ 
+        uploadTask: storageRef.child(`${channel.name}/images/${uuidv4}`).put(file,metaData), 
+        uploadStatus: "uploading"
+      },
+      () => {
+        this.state.uploadTask.on('state_changed', snapshot => {
+          let uploadPercentage = Math.round((snapshot.bytesTransferred/snapshot.totalBytes)*100);
+          this.setState({uploadPercentage});
+        }, error => {
+          this.setState({error: this.state.error.concat(error.message)})
+        }, () => {
+          this.state.uploadTask.snapshot.ref.getDownloadURL().then( (downloadURL) => {
+            console.log('File available at', downloadURL);
+          });
+        });
+      } 
+    );
   }
 
   render() {

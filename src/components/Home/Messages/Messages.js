@@ -11,16 +11,16 @@ class Messages extends React.Component {
     super(props);
     this.state = {
       messageRef: firebase.database().ref("messages"),
-      channelID: this.props.channelID,
+      channel: this.props.channel,
       user: this.props.user,
       messages: []
     };
   }
 
   componentDidMount() {
-    const { messageRef, channelID } = this.state;
+    const { messageRef, channel } = this.state;
     let loadedMessage = [];
-    messageRef.child(channelID).on("child_added", snap => {
+    messageRef.child(channel.id).on("child_added", snap => {
       loadedMessage.push(snap.val());
       this.setState({ messages: loadedMessage });
     });
@@ -33,7 +33,7 @@ class Messages extends React.Component {
     });
 
   render() {
-    const { messageRef, channelID, user, messages } = this.state;
+    const { messageRef, channel, user, messages } = this.state;
     return (
       <React.Fragment>
         <MessageHeader />
@@ -44,7 +44,7 @@ class Messages extends React.Component {
         </Segment>
         <MessageForm
           messageRef={messageRef}
-          channelID={channelID}
+          channel={channel}
           user={user}
         />
       </React.Fragment>
