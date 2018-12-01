@@ -5,6 +5,7 @@ import MessageForm from "./MessageForm";
 import firebase from "../../../firebaseConfig";
 import Message from "./Message";
 import "./Messages.css";
+import ErrorCard from "../ErrorCard";
 
 class Messages extends React.Component {
   constructor(props) {
@@ -63,12 +64,13 @@ class Messages extends React.Component {
 
     return (
       <React.Fragment>
+        <ErrorCard />
         <MessageHeader
           channelName={channel.channelName}
           usersInChannel={usersInChannel}
         />
         <Segment className="messages">
-          <Comment.Group size="small">
+          <Comment.Group size="large">
             {this.displayMessages(messages, user)}
           </Comment.Group>
         </Segment>

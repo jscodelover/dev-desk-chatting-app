@@ -12,7 +12,7 @@ class SidePanel extends Component {
         inverted
         fixed="left"
         vertical
-        style={{ background: "#4c3c4c", width: "17rem", fontSize: '1.3rem' }}
+        style={{ background: "#4c3c4c", width: "17rem", fontSize: "1.3rem" }}
       >
         <UserPanel user={user} />
         <Channel user={user} />
@@ -22,17 +22,3 @@ class SidePanel extends Component {
 }
 
 export default SidePanel;
-
-// <Grid className="panelBox">
-//   <Grid.Column>
-//     <Grid.Row>
-//       <Header as="h1" color="grey" inverted textAlign="center">
-//         <Icon name="code" />
-//         Dev Desk
-//       </Header>
-//     </Grid.Row>
-//     <Grid.Row>
-//       <UserPanel />
-//     </Grid.Row>
-//   </Grid.Column>
-// </Grid>

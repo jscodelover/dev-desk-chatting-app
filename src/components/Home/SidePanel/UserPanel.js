@@ -33,7 +33,7 @@ class UserPanel extends Component {
         <Redirect to="/login" />;
       })
       .catch(function(error) {
-        console.log("error");
+        console.log("Can't LogOut. Try Again!!");
       });
   };
   render() {
@@ -41,7 +41,6 @@ class UserPanel extends Component {
       <Grid>
         <Grid.Column>
           <Grid.Row style={{ padding: "1.2em" }}>
-          
             <Header inverted as="h2">
               <Icon name="code" />
               <Header.Content>DevDesk</Header.Content>
