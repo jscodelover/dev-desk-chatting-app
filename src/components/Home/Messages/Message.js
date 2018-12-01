@@ -3,6 +3,7 @@ import moment from "moment";
 import { Comment } from "semantic-ui-react";
 
 const Message = ({ msg, user }) => {
+  console.log(msg, user);
   return (
     <Comment>
       <Comment.Avatar src={msg.user.picture} />

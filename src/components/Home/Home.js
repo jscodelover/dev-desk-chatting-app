@@ -15,7 +15,7 @@ const Home = ({ user, channel }) => {
       <ColorPanel />
       {user.userID && <SidePanel user={user} />}
 
-      <Grid.Column style={{ marginLeft: "300px", position: "relative" }}>
+      <Grid.Column style={{ marginLeft: "315px", position: "relative" }}>
         {channel.id && <Messages user={user} channel={channel} />}
       </Grid.Column>
 

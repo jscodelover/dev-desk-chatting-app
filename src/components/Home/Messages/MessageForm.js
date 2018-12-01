@@ -1,5 +1,5 @@
 import * as React from "react";
-import uuidv4 from 'uuid/v4';
+import uuidv4 from "uuid/v4";
 import { Segment, Button, Input, Icon } from "semantic-ui-react";
 import firebase from "../../../firebaseConfig";
 import FileModal from "./FileModal";
@@ -7,7 +7,6 @@ import FileModal from "./FileModal";
 class MessageForm extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props)
     this.state = {
       storageRef: firebase.storage().ref(),
       message: "",
@@ -15,7 +14,7 @@ class MessageForm extends React.Component {
       error: [],
       modal: false,
       uploadTask: null,
-      uploadStatus: '',
+      uploadStatus: "",
       uploadPercentage: 0
     };
   }
@@ -26,6 +25,7 @@ class MessageForm extends React.Component {
 
   sendMessage = () => {
     const { messageRef, channel, user } = this.props;
+    console.log(channel);
     if (this.state.message) {
       this.setState({ loading: true });
       messageRef
@@ -60,36 +60,48 @@ class MessageForm extends React.Component {
   };
 
   openModal = () => {
-    this.setState({modal: true})
-  }
+    this.setState({ modal: true });
+  };
 
   closeModal = () => {
-    this.setState({modal: false})
-  }
+    this.setState({ modal: false });
+  };
 
-  uploadFile = (file) => {
+  uploadFile = file => {
     const metaData = { contentType: file.type };
     const { storageRef } = this.state;
     const { channel } = this.props;
 
-    this.setState({ 
-        uploadTask: storageRef.child(`${channel.name}/images/${uuidv4}`).put(file,metaData), 
+    this.setState(
+      {
+        uploadTask: storageRef
+          .child(`${channel.name}/images/${uuidv4}`)
+          .put(file, metaData),
         uploadStatus: "uploading"
       },
       () => {
-        this.state.uploadTask.on('state_changed', snapshot => {
-          let uploadPercentage = Math.round((snapshot.bytesTransferred/snapshot.totalBytes)*100);
-          this.setState({uploadPercentage});
-        }, error => {
-          this.setState({error: this.state.error.concat(error.message)})
-        }, () => {
-          this.state.uploadTask.snapshot.ref.getDownloadURL().then( (downloadURL) => {
-            console.log('File available at', downloadURL);
-          });
-        });
-      } 
+        this.state.uploadTask.on(
+          "state_changed",
+          snapshot => {
+            let uploadPercentage = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            this.setState({ uploadPercentage });
+          },
+          error => {
+            this.setState({ error: this.state.error.concat(error.message) });
+          },
+          () => {
+            this.state.uploadTask.snapshot.ref
+              .getDownloadURL()
+              .then(downloadURL => {
+                console.log("File available at", downloadURL);
+              });
+          }
+        );
+      }
     );
-  }
+  };
 
   render() {
     const { message, error, loading, modal } = this.state;
@@ -132,7 +144,7 @@ class MessageForm extends React.Component {
           modal={modal}
           closeModal={this.closeModal}
           uploadFile={this.uploadFile}
-        />  
+        />
       </Segment>
     );
   }

@@ -12,7 +12,7 @@ class SidePanel extends Component {
         inverted
         fixed="left"
         vertical
-        style={{ background: "#4c3c4c", width: "16rem" }}
+        style={{ background: "#4c3c4c", width: "17rem", fontSize: '1.3rem' }}
       >
         <UserPanel user={user} />
         <Channel user={user} />
