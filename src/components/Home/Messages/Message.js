@@ -1,9 +1,11 @@
 import React from "react";
 import moment from "moment";
-import { Comment } from "semantic-ui-react";
+import { Comment, Image } from "semantic-ui-react";
 
 const Message = ({ msg, user }) => {
-  console.log(msg, user);
+  const isContent = () => {
+    return msg.hasOwnProperty("content");
+  };
   return (
     <Comment>
       <Comment.Avatar src={msg.user.picture} />
@@ -14,7 +16,11 @@ const Message = ({ msg, user }) => {
         <Comment.Metadata>
           {moment(msg.timestamp).format(" Do-MM-YY, ddd, h:mm:ss a")}
         </Comment.Metadata>
-        <Comment.Text>{msg.content}</Comment.Text>
+        {isContent() ? (
+          <Comment.Text>{msg.content}</Comment.Text>
+        ) : (
+          <Image src={msg.image} size="medium" rounded />
+        )}
       </Comment.Content>
     </Comment>
   );

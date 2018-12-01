@@ -1,6 +1,6 @@
 import * as React from "react";
 import uuidv4 from "uuid/v4";
-import { Segment, Button, Input, Icon } from "semantic-ui-react";
+import { Segment, Button, Input, Icon, Progress } from "semantic-ui-react";
 import firebase from "../../../firebaseConfig";
 import FileModal from "./FileModal";
 
@@ -10,6 +10,7 @@ class MessageForm extends React.Component {
     this.state = {
       storageRef: firebase.storage().ref(),
       message: "",
+      file: "",
       loading: false,
       error: [],
       modal: false,
@@ -23,38 +24,48 @@ class MessageForm extends React.Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
+  createMessage = (user, file) => {
+    const messageObj = {
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      user: {
+        username: user.username,
+        picture: user.picture,
+        userID: user.userID
+      }
+    };
+    if (file !== "") {
+      messageObj["image"] = file;
+      this.setState({ uploadStatus: "done" });
+      return messageObj;
+    }
+    messageObj["content"] = this.state.message;
+    return messageObj;
+  };
+
   sendMessage = () => {
     const { messageRef, channel, user } = this.props;
-    console.log(channel);
-    if (this.state.message) {
+    const { message, file, error } = this.state;
+
+    if (message || file) {
+      console.log(this.createMessage(user, file));
       this.setState({ loading: true });
       messageRef
         .child(channel.id)
         .push()
-        .set({
-          content: this.state.message,
-          timestamp: firebase.database.ServerValue.TIMESTAMP,
-          user: {
-            username: user.username,
-            picture: user.picture,
-            userID: user.userID
-          }
-        })
+        .set(this.createMessage(user, file))
         .then(() => {
-          this.setState({ loading: false, message: "" });
+          this.setState({ loading: false, message: "", file: "" });
         })
         .catch(() => {
           this.setState({
             loading: false,
-            error: this.state.error.concat(
-              "message can't be send. Try Again !!"
-            )
+            error: error.concat("message can't be send. Try Again !!")
           });
         });
     } else {
       this.setState({
         loading: false,
-        error: this.state.error.concat("write the message")
+        error: error.concat("write the message")
       });
     }
   };
@@ -71,11 +82,10 @@ class MessageForm extends React.Component {
     const metaData = { contentType: file.type };
     const { storageRef } = this.state;
     const { channel } = this.props;
-
     this.setState(
       {
         uploadTask: storageRef
-          .child(`${channel.name}/images/${uuidv4}`)
+          .child(`${channel.channelName}/images/${uuidv4()}.jpg`)
           .put(file, metaData),
         uploadStatus: "uploading"
       },
@@ -95,7 +105,11 @@ class MessageForm extends React.Component {
             this.state.uploadTask.snapshot.ref
               .getDownloadURL()
               .then(downloadURL => {
-                console.log("File available at", downloadURL);
+                this.setState({ file: downloadURL });
+                this.sendMessage(downloadURL);
+              })
+              .catch(err => {
+                this.setState({ error: this.state.error.push(err) });
               });
           }
         );
@@ -104,15 +118,37 @@ class MessageForm extends React.Component {
   };
 
   render() {
-    const { message, error, loading, modal } = this.state;
+    const {
+      message,
+      error,
+      loading,
+      modal,
+      uploadStatus,
+      uploadPercentage
+    } = this.state;
     return (
       <Segment className="messageForm">
+        {uploadStatus === "uploading" ? (
+          <Progress
+            style={{
+              position: "fixed",
+              top: "12%",
+              left: "305px",
+              right: "1rem"
+            }}
+            percent={uploadPercentage}
+            inverted
+            progress
+            color="green"
+          />
+        ) : (
+          ""
+        )}
         <Input
           fluid
           style={{ marginBottom: "0.7rem" }}
           label={
             <Button icon>
-              {" "}
               <Icon name="add" />
             </Button>
           }
