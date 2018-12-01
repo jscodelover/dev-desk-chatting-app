@@ -24,7 +24,8 @@ class MessageForm extends React.Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  createMessage = (user, file) => {
+  createMessage = user => {
+    const { file, message } = this.state;
     const messageObj = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       user: {
@@ -35,26 +36,25 @@ class MessageForm extends React.Component {
     };
     if (file !== "") {
       messageObj["image"] = file;
-      this.setState({ uploadStatus: "done" });
-      return messageObj;
+    } else {
+      messageObj["content"] = message;
     }
-    messageObj["content"] = this.state.message;
     return messageObj;
   };
 
   sendMessage = () => {
     const { messageRef, channel, user } = this.props;
-    const { message, file, error } = this.state;
+    const { message, error } = this.state;
 
-    if (message || file) {
-      console.log(this.createMessage(user, file));
+    if (message) {
+      console.log(this.createMessage(user));
       this.setState({ loading: true });
       messageRef
         .child(channel.id)
         .push()
-        .set(this.createMessage(user, file))
+        .set(this.createMessage(user))
         .then(() => {
-          this.setState({ loading: false, message: "", file: "" });
+          this.setState({ loading: false, message: "", error: [] });
         })
         .catch(() => {
           this.setState({
@@ -70,6 +70,32 @@ class MessageForm extends React.Component {
     }
   };
 
+  sendFileMessage = pathToUpload => {
+    const { messageRef, user } = this.props;
+    const { error } = this.state;
+
+    messageRef
+      .child(pathToUpload.id)
+      .push()
+      .set(this.createMessage(user))
+      .then(() => {
+        this.setState({
+          file: "",
+          uploadStatus: "done",
+          error: []
+        });
+      })
+      .catch(() => {
+        this.setState({
+          loading: false,
+          uploadStatus: "fail",
+          error: error.concat(
+            " Error in Uploading file in Database. Try Again!! "
+          )
+        });
+      });
+  };
+
   openModal = () => {
     this.setState({ modal: true });
   };
@@ -79,13 +105,14 @@ class MessageForm extends React.Component {
   };
 
   uploadFile = file => {
+    const pathToUpload = this.props.channel;
     const metaData = { contentType: file.type };
     const { storageRef } = this.state;
-    const { channel } = this.props;
+
     this.setState(
       {
         uploadTask: storageRef
-          .child(`${channel.channelName}/images/${uuidv4()}.jpg`)
+          .child(`${pathToUpload.channelName}/images/${uuidv4()}.jpg`)
           .put(file, metaData),
         uploadStatus: "uploading"
       },
@@ -99,17 +126,25 @@ class MessageForm extends React.Component {
             this.setState({ uploadPercentage });
           },
           error => {
-            this.setState({ error: this.state.error.concat(error.message) });
+            this.setState({
+              error: this.state.error.concat(error.message),
+              uploadTask: "",
+              uploadStatus: "fail"
+            });
           },
           () => {
             this.state.uploadTask.snapshot.ref
               .getDownloadURL()
               .then(downloadURL => {
-                this.setState({ file: downloadURL });
-                this.sendMessage(downloadURL);
+                this.setState({ file: downloadURL, uploadTask: "" });
+                this.sendFileMessage(pathToUpload);
               })
               .catch(err => {
-                this.setState({ error: this.state.error.push(err) });
+                this.setState({
+                  error: this.state.error.push(err),
+                  uploadTask: "",
+                  uploadStatus: "fail"
+                });
               });
           }
         );
@@ -164,6 +199,7 @@ class MessageForm extends React.Component {
           <Button
             color="orange"
             content="Add Reply"
+            disabled={loading}
             icon="edit"
             labelPosition="left"
             onClick={this.sendMessage}
@@ -171,6 +207,7 @@ class MessageForm extends React.Component {
           <Button
             color="teal"
             content="Add File"
+            disabled={uploadStatus === "uploading"}
             icon="upload"
             labelPosition="left"
             onClick={this.openModal}

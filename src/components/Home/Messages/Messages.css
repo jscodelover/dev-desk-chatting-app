@@ -1,5 +1,5 @@
 .messages {
-  min-height: 75vh;
+  height: 75vh;
   overflow-y: scroll;
 }
 
