@@ -5,7 +5,6 @@ import MessageForm from "./MessageForm";
 import firebase from "../../../firebaseConfig";
 import Message from "./Message";
 import "./Messages.css";
-import ErrorCard from "../ErrorCard";
 
 class Messages extends React.Component {
   constructor(props) {
@@ -13,11 +12,24 @@ class Messages extends React.Component {
     this.state = {
       messageRef: firebase.database().ref("messages"),
       messages: [],
-      usersInChannel: []
+      usersInChannel: [],
+      searchMsg: [],
+      searchLoading: false
     };
   }
 
   componentDidMount() {
+    this.fetchMessage();
+  }
+
+  //TODO: when we include personal user chat -> Edit userCount.
+  componentDidUpdate(prevProps) {
+    if (prevProps.channel.channelName !== this.props.channel.channelName) {
+      this.fetchMessage();
+    }
+  }
+
+  fetchMessage = () => {
     const { messageRef } = this.state;
     const { channel } = this.props;
     let loadedMessage = [];
@@ -26,31 +38,10 @@ class Messages extends React.Component {
       this.setState({ messages: loadedMessage });
       this.userCount(loadedMessage);
     });
-  }
-
-  //TODO: when we include personal user chat -> Edit userCount.
-  componentDidUpdate(prevProps) {
-    if (prevProps.channel.channelName !== this.props.channel.channelName) {
-      const { messageRef } = this.state;
-      const { channel } = this.props;
-      let loadedMessage = [];
-      messageRef.child(channel.id).on("child_added", snap => {
-        loadedMessage.push(snap.val());
-        this.setState({ messages: loadedMessage });
-        this.userCount(loadedMessage);
-      });
-    }
-  }
-
-  displayMessages = (messages, user) =>
-    messages.length > 0 &&
-    messages.map(msg => {
-      return <Message msg={msg} key={msg.timestamp} user={user} />;
-    });
+  };
 
   userCount = messages => {
     let users = messages.reduce((userArray, msg) => {
-      console.log(msg.user.userID, userArray.includes(msg.user.username));
       if (!userArray.includes(msg.user.username))
         return userArray.concat(msg.user.username);
       return userArray;
@@ -58,20 +49,57 @@ class Messages extends React.Component {
     this.setState({ usersInChannel: users });
   };
 
+  displayMessages = (messages, user) =>
+    messages.length > 0 &&
+    messages.map(msg => {
+      return <Message msg={msg} key={msg.timestamp} user={user} />;
+    });
+
+  //TODO: include search on complete message database --> (using channelIDs for this)
+  searchMessage = searchInput => {
+    const { messages } = this.state;
+    let regxExp = new RegExp(searchInput, "gi");
+    this.setState({ searchLoading: true });
+    let searchMsg = messages.reduce((acc, msg) => {
+      if (
+        (msg.hasOwnProperty("content") && msg["content"].match(regxExp)) ||
+        msg.user.username.match(regxExp)
+      ) {
+        acc.push(msg);
+      }
+      return acc;
+    }, []);
+    this.setState({ searchMsg });
+    setTimeout(() => {
+      this.setState({ searchLoading: false });
+    }, 1000);
+  };
+
   render() {
-    const { messageRef, messages, usersInChannel } = this.state;
+    const {
+      messageRef,
+      messages,
+      usersInChannel,
+      searchMsg,
+      searchLoading
+    } = this.state;
     const { channel, user } = this.props;
 
     return (
       <React.Fragment>
-        <ErrorCard />
         <MessageHeader
           channelName={channel.channelName}
           usersInChannel={usersInChannel}
+          searchMessage={data => {
+            this.searchMessage(data);
+          }}
+          searchLoading={searchLoading}
         />
         <Segment className="messages">
           <Comment.Group size="large">
-            {this.displayMessages(messages, user)}
+            {searchMsg.length > 0
+              ? this.displayMessages(searchMsg, user)
+              : this.displayMessages(messages, user)}
           </Comment.Group>
         </Segment>
         <MessageForm messageRef={messageRef} channel={channel} user={user} />

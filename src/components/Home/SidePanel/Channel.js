@@ -2,7 +2,7 @@ import * as React from "react";
 import { Menu, Icon, Modal, Button, Form, Input } from "semantic-ui-react";
 import firebase from "firebase";
 import { connect } from "react-redux";
-import { setChannel } from "../../../store/action";
+import { setChannel, setChannelID } from "../../../store/action";
 
 class Channel extends React.Component {
   constructor(props) {
@@ -30,6 +30,7 @@ class Channel extends React.Component {
   addListener = () => {
     let loadedChannel = [];
     this.state.channelRef.on("child_added", snap => {
+      this.props.channelID(snap.val().id);
       loadedChannel.push(snap.val());
       this.setState({ channels: loadedChannel }, () => {
         this.setFirstChannel();
@@ -63,6 +64,7 @@ class Channel extends React.Component {
     let { channelName, channelDetail, channelRef, userID } = this.state;
     if (this.isFormValid(channelName, channelDetail)) {
       const key = channelRef.push().key;
+      this.props.channelID(key);
       channelRef
         .child(key)
         .update({
@@ -159,7 +161,8 @@ class Channel extends React.Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    channelInStore: channelInfo => dispatch(setChannel(channelInfo))
+    channelInStore: channelInfo => dispatch(setChannel(channelInfo)),
+    channelID: id => dispatch(setChannelID(id))
   };
 };
 

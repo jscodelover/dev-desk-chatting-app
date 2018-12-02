@@ -4,7 +4,7 @@ import { combineReducers } from "redux";
 const USER_INITIAL_STATE = {
   currentUser: {},
   loading: true,
-  isAuthenticated: false, 
+  isAuthenticated: false
 };
 
 const user_reducer = (state = USER_INITIAL_STATE, action) => {
@@ -29,7 +29,8 @@ const user_reducer = (state = USER_INITIAL_STATE, action) => {
 };
 
 const CHANNEL_INITIAL_STATE = {
-  currentChannel: {}
+  currentChannel: {},
+  channelIDs: []
 };
 
 const channel_reduce = (state = CHANNEL_INITIAL_STATE, action) => {
@@ -37,12 +38,17 @@ const channel_reduce = (state = CHANNEL_INITIAL_STATE, action) => {
     case actions.SET_CHANNEL:
       return {
         ...state,
-        currentChannel: action.payload,
+        currentChannel: action.payload
       };
     case actions.CLEAR_CHANNEL:
       return {
         ...state,
         currentChannel: {}
+      };
+    case actions.ALL_CHANNEL_ID:
+      return {
+        ...state,
+        channelIDs: state.channelIDs.concat(action.payload)
       };
     default:
       return state;
@@ -52,6 +58,6 @@ const channel_reduce = (state = CHANNEL_INITIAL_STATE, action) => {
 const rootReducer = combineReducers({
   user: user_reducer,
   channel: channel_reduce
-})
+});
 
 export default rootReducer;
