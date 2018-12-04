@@ -14,23 +14,42 @@ class DirectMessage extends React.Component{
     }
 
     componentDidMount(){
+        const { userRef, connectionRef, persence } = this.state;
         let loadedUsers = [];
-        this.state.userRef.on("child_added", snap => {
+        userRef.on("child_added", snap => {
             if(this.props.user.userID !== snap.val().userID)
             {
                 loadedUsers.push(snap.val())
                 this.setState({totalUser: loadedUsers});
             }     
         })
+
+        connectionRef.on('value', snap => {
+            persence.child()
+        })
+
+        
     }
+
+    displayUsers = totalUser => 
+        totalUser.length && (
+            totalUser.map(user => {
+                return (
+                    <Menu.Item>
+                        <span></span> {` `} {user.username}
+                    </Menu.Item>
+                )
+            })
+        )
 
     render(){
         const { totalUser } = this.state;
         return(
             <Menu.Menu style={{marginTop: '2rem'}}>
                 <Menu.Item>
-                    <span><Icon name="envelope" /></span>{` `} Direct Messages {` `} {totalUser.length}
+                    <span><Icon name="envelope" /></span>{` `} Direct Messages {` `} ({totalUser.length})
                 </Menu.Item>
+                {this.displayUsers(totalUser)}
             </Menu.Menu>
         );
     }
