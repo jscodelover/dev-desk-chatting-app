@@ -1,5 +1,11 @@
+.messageHeader{
+  min-width: 380px;
+  height: 78.5px;
+}
+
 .messages {
-  height: 75vh;
+  height: calc(100% - (110px + 78.5px + 14px ));
+  min-width: 380px;
   overflow-y: scroll;
 }
 
@@ -10,6 +16,8 @@
   left: 0;
   margin-left: 315px !important;
   z-index: 200;
+  height: 110px;
+  min-width: 380px;
 }
 
 .userMessage {

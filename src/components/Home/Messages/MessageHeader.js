@@ -8,7 +8,7 @@ class MessageHeader extends React.Component {
   render() {
     const { channelName, usersInChannel, searchLoading } = this.props;
     return (
-      <Segment clearing>
+      <Segment clearing className="messageHeader">
         <Header as="h2" floated="left" fluid="true" style={{ marginBottom: 0 }}>
           <span>
             {channelName} <Icon name={"star outline"} color="black" />
