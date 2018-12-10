@@ -11,60 +11,76 @@ class DirectMessage extends React.Component {
       userRef: firebase.database().ref("users"),
       connectionRef: firebase.database().ref(".info/connected"),
       persence: firebase.database().ref("presence"),
-      totalUser: [],
-      totalUserStatus: [],
+      totalUsers: [],
+      totalUsersStatus: [],
       activeChannel: ""
     };
   }
-
   componentDidMount() {
-    const { userRef, connectionRef, persence } = this.state;
+    const { userRef, connectionRef, persence, } = this.state;
     const { user } = this.props;
     let loadedUsers = [];
-    userRef.on("value", snap => {
-      for (let key in snap.val()) {
-        if (user.userID !== snap.val()[key].userID) {
-          loadedUsers.push(snap.val()[key]);
-        }
+    userRef.on("child_added", snap => {
+        if (user.userID !== snap.val().userID) {
+          loadedUsers.push(snap.val());
+          this.setState({ totalUsers: loadedUsers });
       }
-      this.setState({ totalUser: loadedUsers });
     });
 
+    userRef.on("child_changed", snap => {
+      if (user.userID !== snap.val().userID) {
+        let userID = snap.val().userID;
+        let index = this.state.totalUsers.findIndex(user => user.userID === userID);
+        let newtotalUsers = [...this.state.totalUsers];
+        newtotalUsers[index] = snap.val();
+        this.setState({ totalUsers : newtotalUsers });
+    }
+  });
+
     connectionRef.on("value", snap => {
-      let status = persence.push({ [user.userID]: snap.val() });
-      status.onDisconnect().remove();
-      status.set({ [user.userID]: true });
-      firebase
+      if(snap.val()){
+        let status = persence.child(user.userID);
+        status.set(true);
+        status.onDisconnect().remove();
+        firebase
         .database()
         .ref(`users/${user.userID}`)
         .onDisconnect()
         .set({ ...user, lastSeen: firebase.database.ServerValue.TIMESTAMP });
+      }
     });
 
-    persence.on("value", snap => {
-      let persence = [];
-      for (let key in snap.val()) {
-        persence.push(snap.val()[key]);
+    persence.on("child_added", snap => {
+      if(user.userID !== snap.key){
+        this.addStatus(snap.key)
       }
-      this.setState({ totalUserStatus: persence });
+    });
+    persence.on("child_remove", snap => {
+      if(user.userID !== snap.key){
+        this.addStatus(snap.key, false);
+      }
     });
   }
 
-  isOnline = userID => {
-    this.state.totalUserStatus.forEach(status => {
-      return status.hasOwnProperty(userID);
-    });
-  };
+  addStatus = (userID, connected=true) =>{
+    let updateStatus  = this.state.totalUsers.reduce((acc, user) => {
+      if(user.userID === userID){
+        user['status'] = connected ? 'online' : 'offline';
+      }
+      return acc.concat(user);
+    },[]);
+    this.setState({totalUsers: updateStatus});
+  }
 
   //TODO: active channel need to make global so that their only 1 highlighted channel.
-  changeChannel = user => {
-    this.setState({ activeChannel: user.userID });
-    this.props.setChannel({ channelName: user.username, id: user.userID });
-  };
+  // changeChannel = user => {
+  //   this.setState({ activeChannel: user.userID });
+  //   this.props.setChannel({ channelName: user.username, id: user.userID });
+  // };
 
-  displayUsers = totalUser =>
-    totalUser.length &&
-    totalUser.map(user => {
+  displayUsers = totalUsers =>
+    totalUsers.length &&
+    totalUsers.map(user => {
       return (
         <Menu.Item
           key={user.userID}
@@ -76,7 +92,7 @@ class DirectMessage extends React.Component {
           <span>{user.username}</span>
           <Icon
             name="circle"
-            color={this.isOnline(user.userID) ? "green" : "red"}
+            color={user.status === 'online' ? "green" : "red"}
           />
         </Menu.Item>
       );
@@ -84,16 +100,16 @@ class DirectMessage extends React.Component {
 
   render() {
     console.log(this.state);
-    const { totalUser } = this.state;
+    const { totalUsers } = this.state;
     return (
       <Menu.Menu style={{ marginTop: "2rem" }}>
         <Menu.Item>
           <span>
             <Icon name="envelope" />
           </span>
-          {` `} Direct Messages {` `} ({totalUser.length})
+          {` `} Direct Messages {` `} ({totalUsers.length})
         </Menu.Item>
-        {this.displayUsers(totalUser)}
+        { totalUsers.length && this.displayUsers(totalUsers)}
       </Menu.Menu>
     );
   }
