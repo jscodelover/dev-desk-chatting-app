@@ -161,6 +161,7 @@ class MessageForm extends React.Component {
       uploadStatus,
       uploadPercentage
     } = this.state;
+    console.log(this.props.channel)
     return (
       <Segment className="messageForm">
         {uploadStatus === "uploading" ? (

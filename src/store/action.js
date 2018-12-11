@@ -2,7 +2,8 @@ export const actions = {
   SET_USER: "SET_USER",
   CLEAR_USER: "CLEAR_USER",
   SET_CHANNEL: "SET_CHANNEL",
-  ALL_CHANNEL_ID: "ALL_CHANNEL_ID"
+  ALL_CHANNEL_ID: "ALL_CHANNEL_ID",
+  SET_PRIVATE_CHANNEL: 'SET_PRIVATE_CHANNEL'
 };
 
 /* User actions */
@@ -32,4 +33,11 @@ export function setChannelID(payload) {
     type: actions.ALL_CHANNEL_ID,
     payload
   };
+}
+
+export function setPrivateChannel(payload){
+  return{
+    type: actions.SET_PRIVATE_CHANNEL,
+    payload
+  }
 }

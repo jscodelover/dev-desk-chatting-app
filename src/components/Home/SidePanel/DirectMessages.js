@@ -2,7 +2,7 @@ import React from "react";
 import { Menu, Icon } from "semantic-ui-react";
 import { connect } from "react-redux";
 import firebase from "../../../firebaseConfig";
-import { setChannel } from "../../../store/action";
+import { setChannel, setPrivateChannel } from "../../../store/action";
 
 class DirectMessage extends React.Component {
   constructor(props) {
@@ -55,7 +55,7 @@ class DirectMessage extends React.Component {
         this.addStatus(snap.key)
       }
     });
-    persence.on("child_remove", snap => {
+    persence.on("child_removed", snap => {
       if(user.userID !== snap.key){
         this.addStatus(snap.key, false);
       }
@@ -69,14 +69,16 @@ class DirectMessage extends React.Component {
       }
       return acc.concat(user);
     },[]);
+    console.log(updateStatus)
     this.setState({totalUsers: updateStatus});
   }
 
   //TODO: active channel need to make global so that their only 1 highlighted channel.
-  // changeChannel = user => {
-  //   this.setState({ activeChannel: user.userID });
-  //   this.props.setChannel({ channelName: user.username, id: user.userID });
-  // };
+  changeChannel = user => {
+    this.setState({ activeChannel: user.userID });
+    this.props.setChannel({ channelName: user.username, id: `${user.userID}${this.props.user.userID}`, user: user });
+    this.props.setPrivateChannel(true);
+  };
 
   displayUsers = totalUsers =>
     totalUsers.length &&
@@ -99,7 +101,6 @@ class DirectMessage extends React.Component {
     });
 
   render() {
-    console.log(this.state);
     const { totalUsers } = this.state;
     return (
       <Menu.Menu style={{ marginTop: "2rem" }}>
@@ -117,5 +118,5 @@ class DirectMessage extends React.Component {
 
 export default connect(
   null,
-  { setChannel }
+  { setChannel, setPrivateChannel }
 )(DirectMessage);

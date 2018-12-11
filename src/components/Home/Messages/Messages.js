@@ -1,4 +1,5 @@
 import * as React from "react";
+import { connect } from 'react-redux';
 import { Segment, Comment } from "semantic-ui-react";
 import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
@@ -11,6 +12,7 @@ class Messages extends React.Component {
     super(props);
     this.state = {
       messageRef: firebase.database().ref("messages"),
+      presenceRef: firebase.database().ref("presence"),
       messages: [],
       usersInChannel: [],
       searchMsg: [],
@@ -75,25 +77,37 @@ class Messages extends React.Component {
     }, 1000);
   };
 
+  channelStatus = () => {
+    if(this.props.privateChannel){
+      let status = 'offline'
+      this.state.presenceRef.child(this.props.channel.user.userID).on("child_changed", snap => {
+        status = 'online'
+      });
+      return status;
+    }
+   return ;
+  }
+
   render() {
     const {
       messageRef,
       messages,
       usersInChannel,
       searchMsg,
-      searchLoading
+      searchLoading,
     } = this.state;
-    const { channel, user } = this.props;
-
+    const { channel, user, privateChannel } = this.props;
     return (
       <React.Fragment>
         <MessageHeader
           channelName={channel.channelName}
+          status= {this.channelStatus()}
           usersInChannel={usersInChannel}
           searchMessage={data => {
             this.searchMessage(data);
           }}
           searchLoading={searchLoading}
+          privateChannel={privateChannel}
         />
         <Segment className="messages">
           <Comment.Group size="large">
@@ -108,4 +122,13 @@ class Messages extends React.Component {
   }
 }
 
-export default Messages;
+const mapStateToProps = ({user, channel}) => {
+  return{
+    user: user.currentUser,
+    channel: channel.currentChannel,
+    channelIDs: channel.channelIDs,
+    privateChannel: channel.privateChannel
+  }
+}
+
+export default connect(mapStateToProps)(Messages);

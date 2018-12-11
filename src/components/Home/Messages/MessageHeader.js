@@ -6,20 +6,21 @@ class MessageHeader extends React.Component {
     this.props.searchMessage(event.target.value);
   };
   render() {
-    const { channelName, usersInChannel, searchLoading } = this.props;
+    const { channelName, usersInChannel, searchLoading, privateChannel,status } = this.props;
     return (
       <Segment clearing className="messageHeader">
         <Header as="h2" floated="left" fluid="true" style={{ marginBottom: 0 }}>
           <span>
             {channelName}
-            {this.privateChannel ? (
-              ""
+            {privateChannel ? (
+              <Icon name="user" color="black" />
             ) : (
               <Icon name={"star outline"} color="black" />
             )}
           </span>
           <Header.Subheader>
-            {usersInChannel.length > 1
+            {status ? status :
+              usersInChannel.length > 1
               ? `${usersInChannel.length} users`
               : `${usersInChannel.length} user`}
           </Header.Subheader>

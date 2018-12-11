@@ -114,7 +114,7 @@ class Channel extends React.Component {
         <Menu.Menu>
           <Menu.Item>
             <span>
-              <Icon name="exchange" /> Channel
+              <Icon name="discussions" /> Channel
             </span>{" "}
             ({channels.length}){" "}
             <Icon name="add" onClick={this.handleOpenModal} />
