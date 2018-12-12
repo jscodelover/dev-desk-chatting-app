@@ -66,6 +66,10 @@ class DirectMessage extends React.Component {
     let updateStatus  = this.state.totalUsers.reduce((acc, user) => {
       if(user.userID === userID){
         user['status'] = connected ? 'online' : 'offline';
+        firebase
+        .database()
+        .ref(`users/${user.userID}`)
+        .set({ ...user, status: connected ? 'online' : 'offline' });
       }
       return acc.concat(user);
     },[]);

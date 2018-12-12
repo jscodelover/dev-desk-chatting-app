@@ -1,4 +1,5 @@
 import React from "react";
+import moment from 'moment';
 import { Segment, Header, Icon, Input } from "semantic-ui-react";
 
 class MessageHeader extends React.Component {
@@ -6,7 +7,7 @@ class MessageHeader extends React.Component {
     this.props.searchMessage(event.target.value);
   };
   render() {
-    const { channelName, usersInChannel, searchLoading, privateChannel,status } = this.props;
+    const { channelName, usersInChannel, searchLoading, privateChannel, user } = this.props;
     return (
       <Segment clearing className="messageHeader">
         <Header as="h2" floated="left" fluid="true" style={{ marginBottom: 0 }}>
@@ -19,9 +20,13 @@ class MessageHeader extends React.Component {
             )}
           </span>
           <Header.Subheader>
-            {status ? status :
-              usersInChannel.length > 1
-              ? `${usersInChannel.length} users`
+            {privateChannel ? 
+              user.status === 'offline' ? 
+                moment(user.lastSeen).format(" Do-MM-YY, ddd, h:mm:ss a") : 
+                <span> <Icon name="circle" color="green" /> Online</span>  
+            :
+              usersInChannel.length > 1? 
+              `${usersInChannel.length} users`
               : `${usersInChannel.length} user`}
           </Header.Subheader>
         </Header>

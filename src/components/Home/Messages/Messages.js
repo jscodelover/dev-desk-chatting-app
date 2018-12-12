@@ -77,16 +77,16 @@ class Messages extends React.Component {
     }, 1000);
   };
 
-  channelStatus = () => {
-    if(this.props.privateChannel){
-      let status = 'offline'
-      this.state.presenceRef.child(this.props.channel.user.userID).on("child_changed", snap => {
-        status = 'online'
-      });
-      return status;
-    }
-   return ;
-  }
+  // channelStatus = () => {
+  //   if(this.props.privateChannel){
+  //     let status = 'offline'
+  //     this.state.presenceRef.child(this.props.channel.user.userID).on("child_changed", snap => {
+  //       status = 'online'
+  //     });
+  //     return status;
+  //   }
+  //  return ;
+  // }
 
   render() {
     const {
@@ -101,7 +101,7 @@ class Messages extends React.Component {
       <React.Fragment>
         <MessageHeader
           channelName={channel.channelName}
-          status= {this.channelStatus()}
+          user= {channel.user}
           usersInChannel={usersInChannel}
           searchMessage={data => {
             this.searchMessage(data);
