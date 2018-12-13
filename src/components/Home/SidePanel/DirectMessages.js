@@ -9,15 +9,13 @@ class DirectMessage extends React.Component {
     super(props);
     this.state = {
       userRef: firebase.database().ref("users"),
-      connectionRef: firebase.database().ref(".info/connected"),
-      persence: firebase.database().ref("presence"),
       totalUsers: [],
       totalUsersStatus: [],
       activeChannel: ""
     };
   }
   componentDidMount() {
-    const { userRef, connectionRef, persence, } = this.state;
+    const { userRef } = this.state;
     const { user } = this.props;
     let loadedUsers = [];
     userRef.on("child_added", snap => {
@@ -34,47 +32,8 @@ class DirectMessage extends React.Component {
         let newtotalUsers = [...this.state.totalUsers];
         newtotalUsers[index] = snap.val();
         this.setState({ totalUsers : newtotalUsers });
-    }
-  });
-
-    connectionRef.on("value", snap => {
-      if(snap.val()){
-        let status = persence.child(user.userID);
-        status.set(true);
-        status.onDisconnect().remove();
-        firebase
-        .database()
-        .ref(`users/${user.userID}`)
-        .onDisconnect()
-        .set({ ...user, lastSeen: firebase.database.ServerValue.TIMESTAMP });
       }
     });
-
-    persence.on("child_added", snap => {
-      if(user.userID !== snap.key){
-        this.addStatus(snap.key)
-      }
-    });
-    persence.on("child_removed", snap => {
-      if(user.userID !== snap.key){
-        this.addStatus(snap.key, false);
-      }
-    });
-  }
-
-  addStatus = (userID, connected=true) =>{
-    let updateStatus  = this.state.totalUsers.reduce((acc, user) => {
-      if(user.userID === userID){
-        user['status'] = connected ? 'online' : 'offline';
-        firebase
-        .database()
-        .ref(`users/${user.userID}`)
-        .set({ ...user, status: connected ? 'online' : 'offline' });
-      }
-      return acc.concat(user);
-    },[]);
-    console.log(updateStatus)
-    this.setState({totalUsers: updateStatus});
   }
 
   //TODO: active channel need to make global so that their only 1 highlighted channel.

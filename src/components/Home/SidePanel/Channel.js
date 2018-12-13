@@ -2,7 +2,7 @@ import * as React from "react";
 import { Menu, Icon, Modal, Button, Form, Input } from "semantic-ui-react";
 import firebase from "firebase";
 import { connect } from "react-redux";
-import { setChannel, setChannelID } from "../../../store/action";
+import { setChannel, setChannelID, setPrivateChannel } from "../../../store/action";
 
 class Channel extends React.Component {
   constructor(props) {
@@ -90,6 +90,7 @@ class Channel extends React.Component {
   changeChannel = channel => {
     this.setState({ activeChannelID: channel.id });
     this.props.channelInStore({ ...channel });
+    this.props.setPrivateChannel(false)
   };
 
   displayChannels = state =>
@@ -162,7 +163,8 @@ class Channel extends React.Component {
 const mapDispatchToProps = dispatch => {
   return {
     channelInStore: channelInfo => dispatch(setChannel(channelInfo)),
-    channelID: id => dispatch(setChannelID(id))
+    channelID: id => dispatch(setChannelID(id)),
+    setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate))
   };
 };
 

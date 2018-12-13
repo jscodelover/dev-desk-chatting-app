@@ -29,6 +29,10 @@ class UserPanel extends Component {
       .auth()
       .signOut()
       .then(() => {
+        firebase
+        .database()
+        .ref(`users/${this.props.user.userID}`)
+        .set({ ...this.props.user, lastSeen: firebase.database.ServerValue.TIMESTAMP, status: 'offline' });
         /* eslint-disable no-unused-expressions */
         <Redirect to="/login" />;
       })
