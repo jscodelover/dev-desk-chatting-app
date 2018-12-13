@@ -10,7 +10,6 @@ class DirectMessage extends React.Component {
     this.state = {
       userRef: firebase.database().ref("users"),
       totalUsers: [],
-      totalUsersStatus: [],
       activeChannel: ""
     };
   }

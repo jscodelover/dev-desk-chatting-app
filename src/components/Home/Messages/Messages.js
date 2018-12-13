@@ -12,7 +12,6 @@ class Messages extends React.Component {
     super(props);
     this.state = {
       messageRef: firebase.database().ref("messages"),
-      presenceRef: firebase.database().ref("presence"),
       messages: [],
       usersInChannel: [],
       searchMsg: [],
@@ -76,17 +75,6 @@ class Messages extends React.Component {
       this.setState({ searchLoading: false });
     }, 1000);
   };
-
-  // channelStatus = () => {
-  //   if(this.props.privateChannel){
-  //     let status = 'offline'
-  //     this.state.presenceRef.child(this.props.channel.user.userID).on("child_changed", snap => {
-  //       status = 'online'
-  //     });
-  //     return status;
-  //   }
-  //  return ;
-  // }
 
   render() {
     const {
