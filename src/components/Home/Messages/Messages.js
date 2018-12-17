@@ -1,5 +1,5 @@
 import * as React from "react";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { Segment, Comment } from "semantic-ui-react";
 import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
@@ -12,6 +12,7 @@ class Messages extends React.Component {
     super(props);
     this.state = {
       messageRef: firebase.database().ref("messages"),
+      userRef: firebase.database().ref("users"),
       messages: [],
       usersInChannel: [],
       searchMsg: [],
@@ -31,23 +32,39 @@ class Messages extends React.Component {
   }
 
   fetchMessage = () => {
-    const { messageRef } = this.state;
+    const { messageRef, userRef } = this.state;
     const { channel } = this.props;
     let loadedMessage = [];
-    messageRef.child(channel.id).on("child_added", snap => {
-      loadedMessage.push(snap.val());
-      this.setState({ messages: loadedMessage });
-      this.userCount(loadedMessage);
+    messageRef.once("value", snap => {
+      if (snap.hasChild(channel.id)) {
+        messageRef.child(channel.id).on("child_added", snapMsg => {
+          console.log("snap", snapMsg);
+          userRef.child(snapMsg.val().userID).once("value", snapUser => {
+            loadedMessage.push({
+              ...snapMsg.val(),
+              user: { ...snapUser.val() }
+            });
+            this.setState({ messages: loadedMessage });
+            this.userCount(loadedMessage);
+          });
+        });
+      } else {
+        this.setState({ messages: [] });
+      }
     });
   };
 
   userCount = messages => {
-    let users = messages.reduce((userArray, msg) => {
-      if (!userArray.includes(msg.user.username))
-        return userArray.concat(msg.user.username);
-      return userArray;
-    }, []);
-    this.setState({ usersInChannel: users });
+    if (messages.length) {
+      let users = messages.reduce((userArray, msg) => {
+        if (!userArray.includes(msg.user.username))
+          return userArray.concat(msg.user.username);
+        return userArray;
+      }, []);
+      this.setState({ usersInChannel: users });
+    } else {
+      this.setState({ usersInChannel: "" });
+    }
   };
 
   displayMessages = (messages, user) =>
@@ -82,14 +99,14 @@ class Messages extends React.Component {
       messages,
       usersInChannel,
       searchMsg,
-      searchLoading,
+      searchLoading
     } = this.state;
     const { channel, user, privateChannel } = this.props;
     return (
       <React.Fragment>
         <MessageHeader
           channelName={channel.channelName}
-          user= {channel.user}
+          user={channel.user}
           usersInChannel={usersInChannel}
           searchMessage={data => {
             this.searchMessage(data);
@@ -110,13 +127,13 @@ class Messages extends React.Component {
   }
 }
 
-const mapStateToProps = ({user, channel}) => {
-  return{
+const mapStateToProps = ({ user, channel }) => {
+  return {
     user: user.currentUser,
     channel: channel.currentChannel,
     channelIDs: channel.channelIDs,
     privateChannel: channel.privateChannel
-  }
-}
+  };
+};
 
 export default connect(mapStateToProps)(Messages);

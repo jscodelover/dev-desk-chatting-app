@@ -28,11 +28,7 @@ class MessageForm extends React.Component {
     const { file, message } = this.state;
     const messageObj = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
-      user: {
-        username: user.username,
-        picture: user.picture,
-        userID: user.userID
-      }
+      userID: user.userID
     };
     if (file !== "") {
       messageObj["image"] = file;
@@ -161,7 +157,6 @@ class MessageForm extends React.Component {
       uploadStatus,
       uploadPercentage
     } = this.state;
-    console.log(this.props.channel)
     return (
       <Segment className="messageForm">
         {uploadStatus === "uploading" ? (
