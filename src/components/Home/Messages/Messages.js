@@ -38,7 +38,6 @@ class Messages extends React.Component {
     messageRef.once("value", snap => {
       if (snap.hasChild(channel.id)) {
         messageRef.child(channel.id).on("child_added", snapMsg => {
-          console.log("snap", snapMsg);
           userRef.child(snapMsg.val().userID).once("value", snapUser => {
             loadedMessage.push({
               ...snapMsg.val(),
@@ -50,6 +49,7 @@ class Messages extends React.Component {
         });
       } else {
         this.setState({ messages: [] });
+        this.userCount(loadedMessage);
       }
     });
   };
@@ -93,21 +93,31 @@ class Messages extends React.Component {
     }, 1000);
   };
 
+  metaData = () => {
+    const { channelIDs, channel } = this.props;
+    const { usersInChannel, userRef } = this.state;
+    if (channelIDs.includes(channel.id)) {
+      return usersInChannel;
+    } else {
+      let userID = channel["id"].match(new RegExp(/[a-z A-Z 0-9]+,/, "g"));
+      let id = userID[0].match(new RegExp(/[a-z A-Z 0-9]+/, "g"));
+      let user = {};
+      console.log(id[0]);
+      userRef.child(id[0]).once("value", snap => {
+        user = snap.val();
+      });
+      return user;
+    }
+  };
+
   render() {
-    const {
-      messageRef,
-      messages,
-      usersInChannel,
-      searchMsg,
-      searchLoading
-    } = this.state;
+    const { messageRef, messages, searchMsg, searchLoading } = this.state;
     const { channel, user, privateChannel } = this.props;
     return (
       <React.Fragment>
         <MessageHeader
           channelName={channel.channelName}
-          user={channel.user}
-          usersInChannel={usersInChannel}
+          metaData={this.metaData()}
           searchMessage={data => {
             this.searchMessage(data);
           }}

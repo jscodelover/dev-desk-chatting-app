@@ -7,14 +7,7 @@ class MessageHeader extends React.Component {
     this.props.searchMessage(event.target.value);
   };
   render() {
-    const {
-      channelName,
-      usersInChannel,
-      searchLoading,
-      privateChannel,
-      user
-    } = this.props;
-    console.log(usersInChannel);
+    const { channelName, metaData, searchLoading, privateChannel } = this.props;
     return (
       <Segment clearing className="messageHeader">
         <Header as="h2" floated="left" fluid="true" style={{ marginBottom: 0 }}>
@@ -28,18 +21,18 @@ class MessageHeader extends React.Component {
           </span>
           <Header.Subheader>
             {privateChannel ? (
-              user.status === "offline" ? (
-                moment(user.lastSeen).format(" Do-MM-YY, ddd, h:mm:ss a")
+              metaData.status === "offline" ? (
+                moment(metaData.lastSeen).format(" Do-MM-YY, ddd, h:mm:ss a")
               ) : (
                 <span>
                   {" "}
                   <Icon name="circle" color="green" /> Online
                 </span>
               )
-            ) : usersInChannel.length > 1 ? (
-              `${usersInChannel.length} users`
+            ) : metaData.length > 1 ? (
+              `${metaData.length} users`
             ) : (
-              `${usersInChannel.length} user`
+              `${metaData.length} user`
             )}
           </Header.Subheader>
         </Header>

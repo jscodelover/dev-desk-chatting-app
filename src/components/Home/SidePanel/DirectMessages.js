@@ -18,19 +18,21 @@ class DirectMessage extends React.Component {
     const { user } = this.props;
     let loadedUsers = [];
     userRef.on("child_added", snap => {
-        if (user.userID !== snap.val().userID) {
-          loadedUsers.push(snap.val());
-          this.setState({ totalUsers: loadedUsers });
+      if (user.userID !== snap.val().userID) {
+        loadedUsers.push(snap.val());
+        this.setState({ totalUsers: loadedUsers });
       }
     });
 
     userRef.on("child_changed", snap => {
       if (user.userID !== snap.val().userID) {
         let userID = snap.val().userID;
-        let index = this.state.totalUsers.findIndex(user => user.userID === userID);
+        let index = this.state.totalUsers.findIndex(
+          user => user.userID === userID
+        );
         let newtotalUsers = [...this.state.totalUsers];
         newtotalUsers[index] = snap.val();
-        this.setState({ totalUsers : newtotalUsers });
+        this.setState({ totalUsers: newtotalUsers });
       }
     });
   }
@@ -38,7 +40,10 @@ class DirectMessage extends React.Component {
   //TODO: active channel need to make global so that their only 1 highlighted channel.
   changeChannel = user => {
     this.setState({ activeChannel: user.userID });
-    this.props.setChannel({ channelName: user.username, id: `${user.userID}${this.props.user.userID}`, user: user });
+    this.props.setChannel({
+      channelName: user.username,
+      id: `${user.userID},${this.props.user.userID}`
+    });
     this.props.setPrivateChannel(true);
   };
 
@@ -56,7 +61,7 @@ class DirectMessage extends React.Component {
           <span>{user.username}</span>
           <Icon
             name="circle"
-            color={user.status === 'online' ? "green" : "red"}
+            color={user.status === "online" ? "green" : "red"}
           />
         </Menu.Item>
       );
@@ -72,7 +77,7 @@ class DirectMessage extends React.Component {
           </span>
           {` `} Direct Messages {` `} ({totalUsers.length})
         </Menu.Item>
-        { totalUsers.length && this.displayUsers(totalUsers)}
+        {totalUsers.length && this.displayUsers(totalUsers)}
       </Menu.Menu>
     );
   }
