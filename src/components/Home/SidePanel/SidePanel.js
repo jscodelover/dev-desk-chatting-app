@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { Menu } from "semantic-ui-react";
 import UserPanel from "./UserPanel";
 import Channel from "./Channel";
-import DirectMessage from './DirectMessages';
+import DirectMessage from "./DirectMessages";
 import "./SidePanel.css";
 
 class SidePanel extends Component {
   render() {
-    const { user } = this.props;
+    const { user, otherUsers } = this.props;
+    console.log(this.props);
     return (
       <Menu
         inverted
@@ -18,15 +19,16 @@ class SidePanel extends Component {
       >
         <UserPanel user={user} />
         <Channel user={user} />
-        <DirectMessage user={user} />
+        <DirectMessage user={user} otherUsers={otherUsers} />
       </Menu>
     );
   }
 }
 
-const mapStateToProps = ({user}) => {
-  return{
-    user: user.currentUser
-  }
-}
+const mapStateToProps = ({ user }) => {
+  return {
+    user: user.currentUser,
+    otherUsers: user.otherUsers
+  };
+};
 export default connect(mapStateToProps)(SidePanel);

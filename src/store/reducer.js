@@ -4,6 +4,7 @@ import { combineReducers } from "redux";
 const USER_INITIAL_STATE = {
   currentUser: {},
   loading: true,
+  otherUsers: [],
   isAuthenticated: false
 };
 
@@ -22,6 +23,11 @@ const user_reducer = (state = USER_INITIAL_STATE, action) => {
         currentUser: {},
         isAuthenticated: false,
         loading: false
+      };
+    case actions.SET_OTHER_USERS:
+      return {
+        ...state,
+        otherUsers: action.payload
       };
     default:
       return state;
@@ -51,11 +57,11 @@ const channel_reduce = (state = CHANNEL_INITIAL_STATE, action) => {
         ...state,
         channelIDs: state.channelIDs.concat(action.payload)
       };
-    case actions.SET_PRIVATE_CHANNEL: 
-      return{
+    case actions.SET_PRIVATE_CHANNEL:
+      return {
         ...state,
         privateChannel: action.payload
-      }  
+      };
     default:
       return state;
   }
