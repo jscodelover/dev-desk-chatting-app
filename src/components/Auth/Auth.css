@@ -1,0 +1,9 @@
+.heading {
+  height: 100vh;
+  background-color: #f1f1f1;
+  color: #3fbbb0;
+}
+
+.auth-box {
+  max-width: 45rem;
+}
