@@ -1,23 +1,31 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { createStore } from "redux";
-import { Provider } from "react-redux";
-import { composeWithDevTools } from "redux-devtools-extension";
-import { BrowserRouter } from "react-router-dom";
-import reducer from "./store/reducer";
-import App from "./components/App";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import App from "./components/App";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+
 import "semantic-ui-css/semantic.min.css";
 
-const store = createStore(reducer, composeWithDevTools());
+// const PrivateRoute = ({ component: Component, ...rest }) => (
+//   <Route {...rest} render={(props) => (
+//     fakeAuth.isAuthenticated === true
+//       ? <Component {...props} />
+//       : <Redirect to='/login' />
+//   )} />
+// )
+// <PrivateRoute path='/protected' component={Protected} />
 
 const Root = (
-  <Provider store={store}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </Provider>
+  <BrowserRouter>
+    <Switch>
+      <Route exact path="/" component={App} />
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+    </Switch>
+  </BrowserRouter>
 );
 
 ReactDOM.render(Root, document.getElementById("root"));
