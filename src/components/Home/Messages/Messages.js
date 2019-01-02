@@ -94,25 +94,21 @@ class Messages extends React.Component {
   };
 
   metaData = () => {
-    const { channelIDs, channel } = this.props;
-    const { userRef, usersInChannel } = this.state;
+    const { channelIDs, channel, user } = this.props;
+    const { usersInChannel } = this.state;
     if (channelIDs.includes(channel.id)) {
       return usersInChannel;
     } else {
-      let userID = channel["id"].match(new RegExp(/[a-z A-Z 0-9]+,/, "g"));
-      let id = userID[0].match(new RegExp(/[a-z A-Z 0-9]+/, "g"));
-      userRef.child(id[0]).on("value", snap => {
-        const user = { ...snap.val() };
-        console.log(user);
-        return user;
-      });
+      const { userID } = user;
+      const regex = `/${userID}/gi`;
+      return channel["id"].replace(regex, "");
     }
   };
 
   render() {
     const { messageRef, messages, searchMsg, searchLoading } = this.state;
     const { channel, user, privateChannel } = this.props;
-    // console.log(this.metaData());
+    console.log(this.metaData());
     return (
       <React.Fragment>
         <MessageHeader
