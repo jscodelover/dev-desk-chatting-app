@@ -16,7 +16,8 @@ class Messages extends React.Component {
       messages: [],
       usersInChannel: [],
       searchMsg: [],
-      searchLoading: false
+      searchLoading: false,
+      userInHeader: {}
     };
   }
 
@@ -24,7 +25,6 @@ class Messages extends React.Component {
     this.fetchMessage();
   }
 
-  //TODO: when we include personal user chat -> Edit userCount.
   componentDidUpdate(prevProps) {
     if (prevProps.channel.channelName !== this.props.channel.channelName) {
       this.fetchMessage();
@@ -95,29 +95,29 @@ class Messages extends React.Component {
 
   metaData = () => {
     const { channelIDs, channel } = this.props;
-    const { usersInChannel, userRef } = this.state;
+    const { userRef, usersInChannel } = this.state;
     if (channelIDs.includes(channel.id)) {
       return usersInChannel;
     } else {
       let userID = channel["id"].match(new RegExp(/[a-z A-Z 0-9]+,/, "g"));
       let id = userID[0].match(new RegExp(/[a-z A-Z 0-9]+/, "g"));
-      let user = {};
-      console.log(id[0]);
-      userRef.child(id[0]).once("value", snap => {
-        user = snap.val();
+      userRef.child(id[0]).on("value", snap => {
+        const user = { ...snap.val() };
+        console.log(user);
+        return user;
       });
-      return user;
     }
   };
 
   render() {
     const { messageRef, messages, searchMsg, searchLoading } = this.state;
     const { channel, user, privateChannel } = this.props;
+    // console.log(this.metaData());
     return (
       <React.Fragment>
         <MessageHeader
           channelName={channel.channelName}
-          metaData={this.metaData()}
+          metaData={""}
           searchMessage={data => {
             this.searchMessage(data);
           }}

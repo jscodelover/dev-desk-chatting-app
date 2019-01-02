@@ -42,9 +42,15 @@ class DirectMessage extends React.Component {
     this.setState({ activeChannel: user.userID });
     this.props.setChannel({
       channelName: user.username,
-      id: `${user.userID},${this.props.user.userID}`
+      id: this.generateId(user)
     });
     this.props.setPrivateChannel(true);
+  };
+
+  generateId = user => {
+    return user.userID > this.props.user.userID
+      ? `${user.userID}${this.props.user.userID}`
+      : `${this.props.user.userID}${user.userID}`;
   };
 
   displayUsers = totalUsers =>
