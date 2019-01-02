@@ -100,20 +100,19 @@ class Messages extends React.Component {
       return usersInChannel;
     } else {
       const { userID } = user;
-      const regex = `/${userID}/gi`;
-      return channel["id"].replace(regex, "");
+      const regxExp = new RegExp(userID, "gi");
+      return channel["id"].replace(regxExp, "");
     }
   };
 
   render() {
     const { messageRef, messages, searchMsg, searchLoading } = this.state;
     const { channel, user, privateChannel } = this.props;
-    console.log(this.metaData());
     return (
       <React.Fragment>
         <MessageHeader
           channelName={channel.channelName}
-          metaData={""}
+          metaData={this.metaData()}
           searchMessage={data => {
             this.searchMessage(data);
           }}
