@@ -28,7 +28,6 @@ class MessageHeader extends React.Component {
   render() {
     const { channelName, metaData, searchLoading, privateChannel } = this.props;
     const { userInPersonalChat } = this.state;
-    console.log(userInPersonalChat);
     return (
       <Segment clearing className="messageHeader">
         <Header as="h2" floated="left" fluid="true" style={{ marginBottom: 0 }}>

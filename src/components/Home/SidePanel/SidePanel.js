@@ -8,7 +8,7 @@ import "./SidePanel.css";
 
 class SidePanel extends Component {
   render() {
-    const { user, otherUsers } = this.props;
+    const { user } = this.props;
     console.log(this.props);
     return (
       <Menu
@@ -19,7 +19,7 @@ class SidePanel extends Component {
       >
         <UserPanel user={user} />
         <Channel user={user} />
-        <DirectMessage user={user} otherUsers={otherUsers} />
+        <DirectMessage user={user} />
       </Menu>
     );
   }
@@ -27,8 +27,7 @@ class SidePanel extends Component {
 
 const mapStateToProps = ({ user }) => {
   return {
-    user: user.currentUser,
-    otherUsers: user.otherUsers
+    user: user.currentUser
   };
 };
 export default connect(mapStateToProps)(SidePanel);
