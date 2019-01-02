@@ -17,18 +17,26 @@ class Messages extends React.Component {
       usersInChannel: [],
       searchMsg: [],
       searchLoading: false,
+      msgLoading: true,
       userInHeader: {}
     };
   }
 
   componentDidMount() {
     this.fetchMessage();
+    this.isLoading();
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.channel.channelName !== this.props.channel.channelName) {
+      clearTimeout(this.time);
       this.fetchMessage();
+      this.isLoading();
     }
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.time);
   }
 
   fetchMessage = () => {
@@ -106,8 +114,25 @@ class Messages extends React.Component {
     }
   };
 
+  isLoading = () => {
+    const { messages } = this.state;
+    if (messages.length) this.setState({ msgLoading: false });
+    else {
+      this.time = setTimeout(() => {
+        this.setState({ msgLoading: false });
+      }, 1000);
+      this.setState({ msgLoading: true });
+    }
+  };
+
   render() {
-    const { messageRef, messages, searchMsg, searchLoading } = this.state;
+    const {
+      messageRef,
+      messages,
+      searchMsg,
+      searchLoading,
+      msgLoading
+    } = this.state;
     const { channel, user, privateChannel } = this.props;
     return (
       <React.Fragment>
@@ -120,7 +145,7 @@ class Messages extends React.Component {
           searchLoading={searchLoading}
           privateChannel={privateChannel}
         />
-        <Segment className="messages">
+        <Segment className="messages" loading={msgLoading}>
           <Comment.Group size="large">
             {searchMsg.length > 0
               ? this.displayMessages(searchMsg, user)
