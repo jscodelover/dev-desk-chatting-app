@@ -2,17 +2,14 @@ import React from "react";
 import { Menu, Icon } from "semantic-ui-react";
 import { connect } from "react-redux";
 import firebase from "../../../firebaseConfig";
-import {
-  setChannel,
-  setPrivateChannel,
-  setOtherUsers
-} from "../../../store/action";
+import { setChannel, setPrivateChannel } from "../../../store/action";
 
 class DirectMessage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       userRef: firebase.database().ref("users"),
+      totalUsers: [],
       activeChannel: ""
     };
   }
@@ -23,24 +20,24 @@ class DirectMessage extends React.Component {
     userRef.on("child_added", snap => {
       if (user.userID !== snap.val().userID) {
         loadedUsers.push(snap.val());
-        this.props.setOtherUsers(loadedUsers);
+        this.setState({ totalUsers: loadedUsers });
       }
     });
 
     userRef.on("child_changed", snap => {
       if (user.userID !== snap.val().userID) {
         let userID = snap.val().userID;
-        let index = this.props.otherUsers.findIndex(
+        let index = this.state.totalUsers.findIndex(
           user => user.userID === userID
         );
-        let newtotalUsers = [...this.props.otherUsers];
+        let newtotalUsers = [...this.state.totalUsers];
         newtotalUsers[index] = snap.val();
-        this.props.setOtherUsers(newtotalUsers);
+        this.setState({ totalUsers: newtotalUsers });
       }
     });
   }
 
-  //TODO: active channel need to make global so that their only 1 highlighted channel.
+  //TODO: active channel need to make global so that there is only 1 highlighted channel.
   changeChannel = user => {
     this.setState({ activeChannel: user.userID });
     this.props.setChannel({
@@ -71,17 +68,16 @@ class DirectMessage extends React.Component {
     });
 
   render() {
-    const { otherUsers } = this.props;
+    const { totalUsers } = this.state;
     return (
       <Menu.Menu style={{ marginTop: "2rem" }}>
         <Menu.Item>
           <span>
             <Icon name="envelope" />
           </span>
-          {` `} Direct Messages {` `} ({otherUsers.length})
-          {console.log(otherUsers)}
+          {` `} Direct Messages {` `} ({totalUsers.length})
         </Menu.Item>
-        {otherUsers.length && this.displayUsers(otherUsers)}
+        {totalUsers.length && this.displayUsers(totalUsers)}
       </Menu.Menu>
     );
   }
@@ -89,5 +85,5 @@ class DirectMessage extends React.Component {
 
 export default connect(
   null,
-  { setChannel, setPrivateChannel, setOtherUsers }
+  { setChannel, setPrivateChannel }
 )(DirectMessage);

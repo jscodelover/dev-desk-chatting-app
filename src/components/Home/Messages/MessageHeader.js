@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment";
+
 import { Segment, Header, Icon, Input } from "semantic-ui-react";
 
 class MessageHeader extends React.Component {
