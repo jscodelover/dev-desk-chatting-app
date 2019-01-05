@@ -34,7 +34,7 @@ class Channel extends React.Component {
   addListener = () => {
     let loadedChannel = [];
     this.state.channelRef.on("child_added", snap => {
-      // this.props.channelID(snap.val().id);
+      this.props.channelID(snap.val().id);
       loadedChannel.push(snap.val());
       this.setState({ channels: loadedChannel }, () => {
         this.setFirstChannel();
