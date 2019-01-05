@@ -139,6 +139,13 @@ class Channel extends React.Component {
     });
   };
 
+  displayNotification = id => {
+    const { notificationRef, userID } = this.state;
+    notificationRef.child(userID).on("value", snap => {
+      console.log(snap.val()[id]["count"]);
+    });
+  };
+
   displayChannels = state =>
     state.channels.length > 0 &&
     state.channels.map(channel => (
@@ -150,7 +157,10 @@ class Channel extends React.Component {
         }}
         active={channel.id === state.activeChannelID}
       >
-        # {channel.channelName}
+        <span>
+          # {channel.channelName}
+          {this.displayNotification(channel.id)}
+        </span>
       </Menu.Item>
     ));
 
