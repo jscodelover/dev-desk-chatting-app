@@ -100,7 +100,6 @@ class Messages extends React.Component {
   metaData = () => {
     const { channelIDs, channel, user } = this.props;
     const { usersInChannel } = this.state;
-    console.log(usersInChannel);
     if (channelIDs.includes(channel.id)) {
       return usersInChannel;
     } else {

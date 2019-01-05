@@ -18,8 +18,11 @@ class Channel extends React.Component {
       channelName: "",
       channelDetail: "",
       channelRef: firebase.database().ref("channels"),
+      messageRef: firebase.database().ref("messages"),
+      notificationRef: firebase.database().ref("notification"),
       activeChannelID: "",
-      firstChannelActivated: false
+      firstChannelActivated: false,
+      notification: []
     };
   }
 
@@ -38,6 +41,7 @@ class Channel extends React.Component {
       loadedChannel.push(snap.val());
       this.setState({ channels: loadedChannel }, () => {
         this.setFirstChannel();
+        this.checkNotification(snap.val().id);
       });
     });
   };
@@ -95,6 +99,44 @@ class Channel extends React.Component {
     this.setState({ activeChannelID: channel.id });
     this.props.channelInStore({ ...channel });
     this.props.setPrivateChannel(false);
+  };
+
+  checkNotification = channelID => {
+    const { messageRef } = this.state;
+    messageRef.child(channelID).on("value", snap => {
+      this.createNotificationArray(snap.numChildren(), channelID);
+    });
+  };
+
+  createNotificationArray = (children, channelID) => {
+    const { notificationRef, activeChannelID, userID } = this.state;
+    notificationRef.child(userID).once("value", snap => {
+      if (!snap.hasChild(channelID)) {
+        notificationRef
+          .child(userID)
+          .child(channelID)
+          .update({
+            id: channelID,
+            lastTotal: children,
+            count: 0
+          });
+      } else {
+        let notification = snap.val()[channelID];
+        if (
+          notification.id === activeChannelID &&
+          children - notification.lastTotal > 0
+        ) {
+          notificationRef
+            .child(userID)
+            .child(channelID)
+            .set({
+              id: channelID,
+              lastTotal: children,
+              count: children - notification.lastTotal
+            });
+        }
+      }
+    });
   };
 
   displayChannels = state =>
