@@ -24,19 +24,13 @@ class Messages extends React.Component {
 
   componentDidMount() {
     this.fetchMessage();
-    this.isLoading();
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.channel.channelName !== this.props.channel.channelName) {
       clearTimeout(this.time);
       this.fetchMessage();
-      this.isLoading();
     }
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this.time);
   }
 
   fetchMessage = () => {
@@ -44,6 +38,7 @@ class Messages extends React.Component {
     const { channel } = this.props;
     let loadedMessage = [];
     messageRef.once("value", snap => {
+      this.setState({ msgLoading: true });
       if (snap.hasChild(channel.id)) {
         messageRef.child(channel.id).on("child_added", snapMsg => {
           userRef.child(snapMsg.val().userID).once("value", snapUser => {
@@ -59,6 +54,7 @@ class Messages extends React.Component {
         this.setState({ messages: [] });
         this.userCount(loadedMessage);
       }
+      this.setState({ msgLoading: false });
     });
   };
 
@@ -111,17 +107,6 @@ class Messages extends React.Component {
       const { userID } = user;
       const regxExp = new RegExp(userID, "gi");
       return channel["id"].replace(regxExp, "");
-    }
-  };
-
-  isLoading = () => {
-    const { messages } = this.state;
-    if (messages.length) this.setState({ msgLoading: false });
-    else {
-      this.time = setTimeout(() => {
-        this.setState({ msgLoading: false });
-      }, 1000);
-      this.setState({ msgLoading: true });
     }
   };
 
