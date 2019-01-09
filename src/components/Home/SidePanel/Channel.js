@@ -99,6 +99,7 @@ class Channel extends React.Component {
     this.setState({ activeChannelID: channel.id });
     this.props.channelInStore({ ...channel });
     this.props.setPrivateChannel(false);
+    this.clearNotification(channel.id);
   };
 
   checkNotification = channelID => {
@@ -109,6 +110,7 @@ class Channel extends React.Component {
   };
 
   createNotificationArray = (children, channelID) => {
+    console.log(channelID);
     const { notificationRef, activeChannelID, userID } = this.state;
     notificationRef.child(userID).once("value", snap => {
       if (!snap.hasChild(channelID)) {
@@ -139,10 +141,24 @@ class Channel extends React.Component {
     });
   };
 
+  clearNotification = channelID => {
+    const { notificationRef, userID, messageRef } = this.state;
+    messageRef.child(channelID).on("value", snap => {
+      notificationRef
+        .child(userID)
+        .child(channelID)
+        .set({
+          id: channelID,
+          lastTotal: snap.numChildren(),
+          count: 0
+        });
+    });
+  };
+
   displayNotification = id => {
     const { notificationRef, userID } = this.state;
     notificationRef.child(userID).on("value", snap => {
-      console.log(snap.val()[id]["count"]);
+      console.log();
     });
   };
 
