@@ -1,5 +1,13 @@
 import * as React from "react";
-import { Menu, Icon, Modal, Button, Form, Input } from "semantic-ui-react";
+import {
+  Menu,
+  Icon,
+  Modal,
+  Button,
+  Form,
+  Input,
+  Label
+} from "semantic-ui-react";
 import firebase from "firebase";
 import { connect } from "react-redux";
 import {
@@ -44,6 +52,7 @@ class Channel extends React.Component {
         this.checkNotification(snap.val().id);
       });
     });
+    this.displayNotification();
   };
   removeListener = () => {
     this.state.channelRef.off();
@@ -169,14 +178,11 @@ class Channel extends React.Component {
       });
   };
 
-  displayNotification = id => {
+  displayNotification = () => {
     const { notificationRef, userID } = this.state;
-    notificationRef
-      .child(userID)
-      .child(id)
-      .on("value", snap => {
-        console.log(snap.val());
-      });
+    notificationRef.child(userID).on("value", snap => {
+      this.setState({ notification: snap.val() });
+    });
   };
 
   displayChannels = state =>
@@ -190,10 +196,8 @@ class Channel extends React.Component {
         }}
         active={channel.id === state.activeChannelID}
       >
-        <span>
-          # {channel.channelName}
-          {this.displayNotification(channel.id)}
-        </span>
+        <span># {channel.channelName}</span>
+        <Label color="red">{state.notification[channel.id]["count"]}</Label>
       </Menu.Item>
     ));
 
