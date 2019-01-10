@@ -110,7 +110,6 @@ class Channel extends React.Component {
   };
 
   createNotificationArray = (children, channelID) => {
-    console.log(channelID);
     const { notificationRef, activeChannelID, userID } = this.state;
     notificationRef.child(userID).once("value", snap => {
       if (!snap.hasChild(channelID)) {
@@ -120,46 +119,64 @@ class Channel extends React.Component {
           .update({
             id: channelID,
             lastTotal: children,
-            count: 0
+            count: 0,
+            total: children
           });
       } else {
         let notification = snap.val()[channelID];
-        if (
-          notification.id === activeChannelID &&
-          children - notification.lastTotal > 0
-        ) {
+        let newNotification = {
+          id: channelID,
+          total: children
+        };
+
+        console.log(channelID, children, notification.lastTotal);
+        if (notification.id === activeChannelID) {
+          newNotification.count = 0;
+          newNotification.lastTotal = children;
           notificationRef
             .child(userID)
             .child(channelID)
-            .set({
-              id: channelID,
-              lastTotal: children,
-              count: children - notification.lastTotal
-            });
+            .set({ ...newNotification });
+        } else {
+          console.log(channelID, children);
+          newNotification.count = children - notification.lastTotal;
+          newNotification.lastTotal = notification.lastTotal;
+          notificationRef
+            .child(userID)
+            .child(channelID)
+            .set({ ...newNotification });
         }
       }
     });
   };
 
   clearNotification = channelID => {
-    const { notificationRef, userID, messageRef } = this.state;
-    messageRef.child(channelID).on("value", snap => {
-      notificationRef
-        .child(userID)
-        .child(channelID)
-        .set({
-          id: channelID,
-          lastTotal: snap.numChildren(),
-          count: 0
-        });
-    });
+    const { notificationRef, userID } = this.state;
+    notificationRef
+      .child(userID)
+      .child(channelID)
+      .once("value", snap => {
+        let notification = snap.val();
+        notificationRef
+          .child(userID)
+          .child(channelID)
+          .set({
+            id: channelID,
+            lastTotal: notification.total,
+            count: 0,
+            total: notification.total
+          });
+      });
   };
 
   displayNotification = id => {
     const { notificationRef, userID } = this.state;
-    notificationRef.child(userID).on("value", snap => {
-      console.log();
-    });
+    notificationRef
+      .child(userID)
+      .child(id)
+      .on("value", snap => {
+        console.log(snap.val());
+      });
   };
 
   displayChannels = state =>
