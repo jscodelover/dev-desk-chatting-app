@@ -15,6 +15,7 @@ import {
   setChannelID,
   setPrivateChannel
 } from "../../../store/action";
+import DisplayChannel from "./DisplayChannel";
 
 class Channel extends React.Component {
   constructor(props) {
@@ -44,6 +45,7 @@ class Channel extends React.Component {
 
   addListener = () => {
     let loadedChannel = [];
+    this.displayNotification();
     this.state.channelRef.on("child_added", snap => {
       this.props.channelID(snap.val().id);
       loadedChannel.push(snap.val());
@@ -52,7 +54,6 @@ class Channel extends React.Component {
         this.checkNotification(snap.val().id);
       });
     });
-    this.displayNotification();
   };
   removeListener = () => {
     this.state.channelRef.off();
@@ -137,8 +138,6 @@ class Channel extends React.Component {
           id: channelID,
           total: children
         };
-
-        console.log(channelID, children, notification.lastTotal);
         if (notification.id === activeChannelID) {
           newNotification.count = 0;
           newNotification.lastTotal = children;
@@ -147,7 +146,6 @@ class Channel extends React.Component {
             .child(channelID)
             .set({ ...newNotification });
         } else {
-          console.log(channelID, children);
           newNotification.count = children - notification.lastTotal;
           newNotification.lastTotal = notification.lastTotal;
           notificationRef
@@ -185,24 +183,41 @@ class Channel extends React.Component {
     });
   };
 
-  displayChannels = state =>
-    state.channels.length > 0 &&
-    state.channels.map(channel => (
+  displayChannels = ({ channels, activeChannelID, notification }) =>
+    channels.length > 0 &&
+    channels.map(channel => (
       <Menu.Item
         key={channel.id}
         name={channel.channelName}
         onClick={() => {
           this.changeChannel(channel);
         }}
-        active={channel.id === state.activeChannelID}
+        active={channel.id === activeChannelID}
       >
         <span># {channel.channelName}</span>
-        <Label color="red">{state.notification[channel.id]["count"]}</Label>
+        {this.getCount(channel.id, notification) ? (
+          <Label color="red">{this.getCount(channel.id)}</Label>
+        ) : (
+          ""
+        )}
       </Menu.Item>
     ));
 
+  getCount = (id, notification) => {
+    if (notification.length) {
+      let index = notification.findIndex(noti => id === noti.id);
+      if (index > -1) return notification[index]["count"];
+    }
+  };
   render() {
-    const { channels, modal, channelName, channelDetail } = this.state;
+    const {
+      channels,
+      modal,
+      channelName,
+      channelDetail,
+      activeChannelID,
+      notification
+    } = this.state;
     return (
       <React.Fragment>
         <Menu.Menu>
@@ -213,7 +228,14 @@ class Channel extends React.Component {
             ({channels.length}){" "}
             <Icon name="add" onClick={this.handleOpenModal} />
           </Menu.Item>
-          {this.displayChannels(this.state)}
+          <DisplayChannel
+            channels={channels}
+            activeChannelID={activeChannelID}
+            notification={notification}
+            changeChannel={channel => {
+              this.changeChannel(channel);
+            }}
+          />
         </Menu.Menu>
         <Modal open={modal} basic onClose={this.handleCloseModal}>
           <Modal.Header>Add a Channel</Modal.Header>
