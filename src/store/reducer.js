@@ -37,7 +37,8 @@ const user_reducer = (state = USER_INITIAL_STATE, action) => {
 const CHANNEL_INITIAL_STATE = {
   currentChannel: {},
   channelIDs: [],
-  privateChannel: false
+  privateChannel: false,
+  activeChannelID: ""
 };
 
 const channel_reduce = (state = CHANNEL_INITIAL_STATE, action) => {
@@ -51,6 +52,11 @@ const channel_reduce = (state = CHANNEL_INITIAL_STATE, action) => {
       return {
         ...state,
         currentChannel: {}
+      };
+    case actions.ACTIVE_CHANNEL_ID:
+      return {
+        ...state,
+        activeChannelID: action.payload
       };
     case actions.ALL_CHANNEL_ID:
       return {

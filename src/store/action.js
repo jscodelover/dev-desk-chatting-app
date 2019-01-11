@@ -3,7 +3,8 @@ export const actions = {
   CLEAR_USER: "CLEAR_USER",
   SET_CHANNEL: "SET_CHANNEL",
   ALL_CHANNEL_ID: "ALL_CHANNEL_ID",
-  SET_PRIVATE_CHANNEL: "SET_PRIVATE_CHANNEL"
+  SET_PRIVATE_CHANNEL: "SET_PRIVATE_CHANNEL",
+  ACTIVE_CHANNEL_ID: "ACTIVE_CHANNEL_ID"
 };
 
 /* User actions */
@@ -24,6 +25,13 @@ export function clearUser() {
 export function setChannel(payload) {
   return {
     type: actions.SET_CHANNEL,
+    payload
+  };
+}
+
+export function setActiveChannelID(payload) {
+  return {
+    type: actions.ACTIVE_CHANNEL_ID,
     payload
   };
 }

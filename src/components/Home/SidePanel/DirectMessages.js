@@ -2,7 +2,11 @@ import React from "react";
 import { Menu, Icon } from "semantic-ui-react";
 import { connect } from "react-redux";
 import firebase from "../../../firebaseConfig";
-import { setChannel, setPrivateChannel } from "../../../store/action";
+import {
+  setChannel,
+  setPrivateChannel,
+  setActiveChannelID
+} from "../../../store/action";
 
 class DirectMessage extends React.Component {
   constructor(props) {
@@ -39,7 +43,7 @@ class DirectMessage extends React.Component {
 
   //TODO: active channel need to make global so that there is only 1 highlighted channel.
   changeChannel = user => {
-    this.setState({ activeChannel: user.userID });
+    this.props.setActiveChannelID(user.userID);
     this.props.setChannel({
       channelName: user.username,
       id: this.generateId(user)
@@ -59,7 +63,7 @@ class DirectMessage extends React.Component {
       return (
         <Menu.Item
           key={user.userID}
-          active={user.userID === this.state.activeChannel}
+          active={user.userID === this.props.activeChannel}
           onClick={() => {
             this.changeChannel(user);
           }}
@@ -91,7 +95,21 @@ class DirectMessage extends React.Component {
   }
 }
 
+const mapStateToProps = ({ channel }) => {
+  return {
+    activeChannelID: channel.activeChannelID
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setActiveChannelID: id => dispatch(setActiveChannelID(id)),
+    setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate)),
+    setChannel: channelInfo => dispatch(setChannel(channelInfo))
+  };
+};
+
 export default connect(
-  null,
-  { setChannel, setPrivateChannel }
+  mapStateToProps,
+  mapDispatchToProps
 )(DirectMessage);

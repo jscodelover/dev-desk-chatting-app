@@ -1,20 +1,14 @@
 import * as React from "react";
-import {
-  Menu,
-  Icon,
-  Modal,
-  Button,
-  Form,
-  Input,
-  Label
-} from "semantic-ui-react";
+import { Menu, Icon, Modal, Button, Form, Input } from "semantic-ui-react";
 import firebase from "firebase";
 import { connect } from "react-redux";
 import {
   setChannel,
   setChannelID,
-  setPrivateChannel
+  setPrivateChannel,
+  setActiveChannelID
 } from "../../../store/action";
+import * as notify from "../../../utils/notification";
 import DisplayChannel from "./DisplayChannel";
 
 class Channel extends React.Component {
@@ -51,7 +45,11 @@ class Channel extends React.Component {
       loadedChannel.push(snap.val());
       this.setState({ channels: loadedChannel }, () => {
         this.setFirstChannel();
-        this.checkNotification(snap.val().id);
+        notify.checkNotification(
+          snap.val().id,
+          this.props.activeChannelID,
+          this.state.userID
+        );
       });
     });
   };
@@ -94,9 +92,9 @@ class Channel extends React.Component {
         .then(() => {
           this.setState({
             channelName: "",
-            channelDetail: "",
-            activeChannelID: key
+            channelDetail: ""
           });
+          this.props.setActiveChannelID(key);
           this.handleCloseModal();
         });
     }
@@ -106,10 +104,10 @@ class Channel extends React.Component {
   };
 
   changeChannel = channel => {
-    this.setState({ activeChannelID: channel.id });
+    this.props.setActiveChannelID(channel.id);
     this.props.channelInStore({ ...channel });
     this.props.setPrivateChannel(false);
-    this.clearNotification(channel.id);
+    notify.clearNotification(channel.id, this.state.userID);
   };
 
   checkNotification = channelID => {
@@ -120,7 +118,8 @@ class Channel extends React.Component {
   };
 
   createNotificationArray = (children, channelID) => {
-    const { notificationRef, activeChannelID, userID } = this.state;
+    const { notificationRef, userID } = this.state;
+    const { activeChannelID } = this.props;
     notificationRef.child(userID).once("value", snap => {
       if (!snap.hasChild(channelID)) {
         notificationRef
@@ -187,41 +186,15 @@ class Channel extends React.Component {
     });
   };
 
-  displayChannels = ({ channels, activeChannelID, notification }) =>
-    channels.length > 0 &&
-    channels.map(channel => (
-      <Menu.Item
-        key={channel.id}
-        name={channel.channelName}
-        onClick={() => {
-          this.changeChannel(channel);
-        }}
-        active={channel.id === activeChannelID}
-      >
-        <span># {channel.channelName}</span>
-        {this.getCount(channel.id, notification) ? (
-          <Label color="red">{this.getCount(channel.id)}</Label>
-        ) : (
-          ""
-        )}
-      </Menu.Item>
-    ));
-
-  getCount = (id, notification) => {
-    if (notification.length) {
-      let index = notification.findIndex(noti => id === noti.id);
-      if (index > -1) return notification[index]["count"];
-    }
-  };
   render() {
     const {
       channels,
       modal,
       channelName,
       channelDetail,
-      activeChannelID,
       notification
     } = this.state;
+    const { activeChannelID } = this.props;
     return (
       <React.Fragment>
         <Menu.Menu>
@@ -279,15 +252,22 @@ class Channel extends React.Component {
   }
 }
 
+const mapStateToProps = ({ channel }) => {
+  return {
+    activeChannelID: channel.activeChannelID
+  };
+};
+
 const mapDispatchToProps = dispatch => {
   return {
     channelInStore: channelInfo => dispatch(setChannel(channelInfo)),
     channelID: id => dispatch(setChannelID(id)),
-    setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate))
+    setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate)),
+    setActiveChannelID: id => dispatch(setActiveChannelID(id))
   };
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(Channel);
