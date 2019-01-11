@@ -64,11 +64,13 @@ class DirectMessage extends React.Component {
             this.changeChannel(user);
           }}
         >
-          <span>{user.username}</span>
-          <Icon
-            name="circle"
-            color={user.status === "online" ? "green" : "red"}
-          />
+          <span>
+            <Icon
+              name="circle"
+              color={user.status === "online" ? "green" : "red"}
+            />
+            {user.username}
+          </span>
         </Menu.Item>
       );
     });
