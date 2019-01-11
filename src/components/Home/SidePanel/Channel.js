@@ -179,7 +179,11 @@ class Channel extends React.Component {
   displayNotification = () => {
     const { notificationRef, userID } = this.state;
     notificationRef.child(userID).on("value", snap => {
-      this.setState({ notification: snap.val() });
+      let notification = [];
+      for (let info in snap.val()) {
+        notification.push(snap.val()[info]);
+      }
+      this.setState({ notification });
     });
   };
 
