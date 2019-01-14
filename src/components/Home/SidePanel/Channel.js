@@ -8,7 +8,6 @@ import {
   setPrivateChannel,
   setActiveChannelID
 } from "../../../store/action";
-import * as notify from "../../../utils/notification";
 import DisplayChannel from "./DisplayChannel";
 
 class Channel extends React.Component {
@@ -45,10 +44,10 @@ class Channel extends React.Component {
       loadedChannel.push(snap.val());
       this.setState({ channels: loadedChannel }, () => {
         this.setFirstChannel();
-        notify.checkNotification(
+        this.checkNotification(
           snap.val().id,
-          this.props.activeChannelID,
-          this.state.userID
+          this.state.userID,
+          this.props.activeChannelID
         );
       });
     });
@@ -107,7 +106,7 @@ class Channel extends React.Component {
     this.props.setActiveChannelID(channel.id);
     this.props.channelInStore({ ...channel });
     this.props.setPrivateChannel(false);
-    notify.clearNotification(channel.id, this.state.userID);
+    this.clearNotification(channel.id, this.state.userID);
   };
 
   checkNotification = channelID => {
