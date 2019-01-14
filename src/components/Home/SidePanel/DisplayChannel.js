@@ -1,37 +1,84 @@
 import React from "react";
-import { Menu, Label } from "semantic-ui-react";
+import { Menu, Label, Icon } from "semantic-ui-react";
 
 const DisplayChannel = props => {
   function getCount(id, notification) {
-    console.log(notification);
     if (notification.length) {
       let index = notification.findIndex(noti => id === noti.id);
-      console.log(index);
-      if (index > -1) return notification[index]["count"];
+      if (index > -1) {
+        return notification[index]["count"];
+      }
     }
   }
-  console.log("display channel");
-  const { channels, activeChannelID, notification, changeChannel } = props;
+  function generateId(user, userID) {
+    return user.userID > userID
+      ? `${user.userID}${userID}`
+      : `${userID}${user.userID}`;
+  }
+  const {
+    channels,
+    activeChannelID,
+    notification,
+    changeChannel,
+    users,
+    userID
+  } = props;
   return (
     <React.Fragment>
-      {channels.length > 0 &&
-        channels.map(channel => (
-          <Menu.Item
-            key={channel.id}
-            name={channel.channelName}
-            onClick={() => {
-              changeChannel(channel);
-            }}
-            active={channel.id === activeChannelID}
-          >
-            <span># {channel.channelName}</span>
-            {getCount(channel.id, notification) ? (
-              <Label color="red">{getCount(channel.id, notification)}</Label>
-            ) : (
-              ""
-            )}
-          </Menu.Item>
-        ))}
+      {channels ? (
+        <React.Fragment>
+          {channels.length > 0 &&
+            channels.map(channel => (
+              <Menu.Item
+                key={channel.id}
+                name={channel.channelName}
+                onClick={() => {
+                  changeChannel(channel);
+                }}
+                active={channel.id === activeChannelID}
+              >
+                <span># {channel.channelName}</span>
+                {getCount(channel.id, notification) ? (
+                  <Label color="red">
+                    {getCount(channel.id, notification)}
+                  </Label>
+                ) : (
+                  ""
+                )}
+              </Menu.Item>
+            ))}
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          {users.length &&
+            users.map(user => {
+              return (
+                <Menu.Item
+                  key={user.userID}
+                  active={user.userID === activeChannelID}
+                  onClick={() => {
+                    changeChannel(user);
+                  }}
+                >
+                  <span>
+                    <Icon
+                      name="circle"
+                      color={user.status === "online" ? "green" : "red"}
+                    />
+                    {user.username}
+                  </span>
+                  {getCount(generateId(user, userID), notification) ? (
+                    <Label color="red">
+                      {getCount(generateId(user, userID), notification)}
+                    </Label>
+                  ) : (
+                    ""
+                  )}
+                </Menu.Item>
+              );
+            })}
+        </React.Fragment>
+      )}
     </React.Fragment>
   );
 };

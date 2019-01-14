@@ -44,11 +44,7 @@ class Channel extends React.Component {
       loadedChannel.push(snap.val());
       this.setState({ channels: loadedChannel }, () => {
         this.setFirstChannel();
-        this.checkNotification(
-          snap.val().id,
-          this.state.userID,
-          this.props.activeChannelID
-        );
+        this.checkNotification(snap.val().id);
       });
     });
   };
@@ -106,7 +102,7 @@ class Channel extends React.Component {
     this.props.setActiveChannelID(channel.id);
     this.props.channelInStore({ ...channel });
     this.props.setPrivateChannel(false);
-    this.clearNotification(channel.id, this.state.userID);
+    this.clearNotification(channel.id);
   };
 
   checkNotification = channelID => {
