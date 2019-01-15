@@ -10,26 +10,44 @@ import MetaPanel from "./MetaPanel/MetaPanel";
 class Home extends React.Component {
   componentDidMount() {
     firebase
-      .messaging()
-      .requestPermission()
-      .then(() =>
+      .database()
+      .ref("tokens")
+      .orderByChild("uid")
+      .equalTo(firebase.auth().currentUser.uid)
+      .once("value")
+      .then(snapshot => {
+        const key = Object.keys(snapshot.val())[0];
         firebase
-          .messaging()
-          .getToken()
-          .then(token => {
-            firebase
-              .database()
-              .ref("/tokens")
-              .push({
-                token: token,
-                uid: firebase.auth().currentUser.uid
-              });
-          })
-      )
-      .catch(err => {
-        console.log("error getting permission :(");
+          .database()
+          .ref("tokens")
+          .child(key)
+          .remove();
       });
+
+    firebase.messaging().onTokenRefresh(
+      firebase
+        .messaging()
+        .requestPermission()
+        .then(() =>
+          firebase
+            .messaging()
+            .getToken()
+            .then(token => {
+              firebase
+                .database()
+                .ref("tokens")
+                .push({
+                  token: token,
+                  uid: firebase.auth().currentUser.uid
+                });
+            })
+        )
+        .catch(err => {
+          console.log("Error Getting Permission");
+        })
+    );
   }
+
   render() {
     const { user, channel } = this.props;
     return (
