@@ -9,20 +9,21 @@ import MetaPanel from "./MetaPanel/MetaPanel";
 
 class Home extends React.Component {
   componentDidMount() {
-    firebase
-      .database()
-      .ref("tokens")
-      .orderByChild("uid")
-      .equalTo(firebase.auth().currentUser.uid)
-      .once("value")
-      .then(snapshot => {
-        const key = Object.keys(snapshot.val())[0];
-        firebase
-          .database()
-          .ref("tokens")
-          .child(key)
-          .remove();
-      });
+    // firebase
+    //   .database()
+    //   .ref("tokens")
+    //   .child(this.props.user.userID)
+    //   .orderByChild("uid")
+    //   .equalTo(firebase.auth().currentUser.uid)
+    //   .once("value")
+    //   .then(snapshot => {
+    //     const key = Object.keys(snapshot.val())[0];
+    //     firebase
+    //       .database()
+    //       .ref("tokens")
+    //       .child(key)
+    //       .remove();
+    //   });
 
     firebase.messaging().onTokenRefresh(
       firebase
