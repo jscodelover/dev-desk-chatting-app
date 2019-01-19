@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 admin.initializeApp(functions.config().firebase);
 
 exports.sendNotifications = functions.database
-  .ref("messages/{channelID}/{key}/{data }")
+  .ref("messages/{channelID}")
   .onWrite((change, context) => {
     const payload = {
       notification: {
@@ -25,8 +25,18 @@ exports.sendNotifications = functions.database
         const tokens = [];
 
         for (let key in snapshot) {
-          tokens.push(snapshot[key].token);
+          if (context.auth.token.user_id !== snapshot[key].uid)
+            tokens.push(snapshot[key].token);
         }
-        return admin.messaging().sendToDevice(tokens, payload);
+        console.log(tokens);
+        return admin
+          .messaging()
+          .sendToDevice(tokens, payload)
+          .then(function(response) {
+            console.log("Successfully sent message:", response);
+          })
+          .catch(function(error) {
+            console.log("Error sending message:", error);
+          });
       });
   });
