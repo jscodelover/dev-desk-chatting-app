@@ -21,62 +21,67 @@ const DisplayChannel = props => {
     notification,
     changeChannel,
     users,
-    userID
+    userID,
+    starredID
   } = props;
   return (
     <React.Fragment>
       {channels ? (
         <React.Fragment>
           {channels.length > 0 &&
-            channels.map(channel => (
-              <Menu.Item
-                key={channel.id}
-                name={channel.channelName}
-                onClick={() => {
-                  changeChannel(channel);
-                }}
-                active={channel.id === activeChannelID}
-              >
-                <span># {channel.channelName}</span>
-                {getCount(channel.id, notification) ? (
-                  <Label color="red">
-                    {getCount(channel.id, notification)}
-                  </Label>
-                ) : (
-                  ""
-                )}
-              </Menu.Item>
-            ))}
+            channels.map(
+              channel =>
+                !starredID.includes(channel.id) && (
+                  <Menu.Item
+                    key={channel.id}
+                    name={channel.channelName}
+                    onClick={() => {
+                      changeChannel(channel);
+                    }}
+                    active={channel.id === activeChannelID}
+                  >
+                    <span># {channel.channelName}</span>
+                    {getCount(channel.id, notification) ? (
+                      <Label color="red">
+                        {getCount(channel.id, notification)}
+                      </Label>
+                    ) : (
+                      ""
+                    )}
+                  </Menu.Item>
+                )
+            )}
         </React.Fragment>
       ) : (
         <React.Fragment>
           {users.length &&
-            users.map(user => {
-              return (
-                <Menu.Item
-                  key={user.userID}
-                  active={user.userID === activeChannelID}
-                  onClick={() => {
-                    changeChannel(user);
-                  }}
-                >
-                  <span>
-                    <Icon
-                      name="circle"
-                      color={user.status === "online" ? "green" : "red"}
-                    />
-                    {user.username}
-                  </span>
-                  {getCount(generateId(user, userID), notification) ? (
-                    <Label color="red">
-                      {getCount(generateId(user, userID), notification)}
-                    </Label>
-                  ) : (
-                    ""
-                  )}
-                </Menu.Item>
-              );
-            })}
+            users.map(
+              user =>
+                !starredID.includes(user.userID) && (
+                  <Menu.Item
+                    key={user.userID}
+                    active={user.userID === activeChannelID}
+                    onClick={() => {
+                      changeChannel(user);
+                    }}
+                  >
+                    <span>
+                      <Icon
+                        name="circle"
+                        color={user.status === "online" ? "green" : "red"}
+                      />
+                      {user.username}
+                    </span>
+                    {getCount(generateId(user, userID), notification) ? (
+                      <Label color="red">
+                        {getCount(generateId(user, userID), notification)}
+                      </Label>
+                    ) : (
+                      ""
+                    )}
+                  </Menu.Item>
+                )
+            )}
         </React.Fragment>
       )}
     </React.Fragment>

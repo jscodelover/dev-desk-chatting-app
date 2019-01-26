@@ -19,7 +19,7 @@ class SidePanel extends Component {
         style={{ background: "#4c3c4c", width: "17rem", fontSize: "1.3rem" }}
       >
         <UserPanel user={user} />
-        <Starred />
+        {user["starred"].length ? <Starred user={user["starred"]} /> : null}
         <Channel user={user} />
         <DirectMessage user={user} />
       </Menu>

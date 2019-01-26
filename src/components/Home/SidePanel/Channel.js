@@ -189,7 +189,7 @@ class Channel extends React.Component {
       channelDetail,
       notification
     } = this.state;
-    const { activeChannelID } = this.props;
+    const { activeChannelID, user } = this.props;
     return (
       <React.Fragment>
         <Menu.Menu>
@@ -201,6 +201,7 @@ class Channel extends React.Component {
             <Icon name="add" onClick={this.handleOpenModal} />
           </Menu.Item>
           <DisplayChannel
+            starredID={user["starred"] ? user["starred"] : []}
             channels={channels}
             activeChannelID={activeChannelID}
             notification={notification}

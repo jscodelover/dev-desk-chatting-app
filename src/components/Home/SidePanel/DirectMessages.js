@@ -167,6 +167,7 @@ class DirectMessage extends React.Component {
 
   render() {
     const { totalUsers, notification } = this.state;
+    const { activeChannelID, user } = this.props;
     return (
       <Menu.Menu style={{ marginTop: "2rem" }}>
         <Menu.Item>
@@ -177,8 +178,9 @@ class DirectMessage extends React.Component {
         </Menu.Item>
         {totalUsers.length ? (
           <DisplayChannel
+            starredID={user["starred"] ? user["starred"] : []}
             users={totalUsers}
-            activeChannelID={this.props.activeChannelID}
+            activeChannelID={activeChannelID}
             notification={notification}
             userID={this.props.user.userID}
             changeChannel={user => {
