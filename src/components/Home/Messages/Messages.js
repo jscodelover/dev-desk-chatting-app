@@ -98,14 +98,16 @@ class Messages extends React.Component {
   };
 
   metaData = () => {
-    const { channelIDs, channel, user } = this.props;
+    const { channelIDs, channel, user, otherUsers } = this.props;
     const { usersInChannel } = this.state;
     if (channelIDs.includes(channel.id)) {
       return usersInChannel;
     } else {
       const { userID } = user;
       const regxExp = new RegExp(userID, "gi");
-      return channel["id"].replace(regxExp, "");
+      let id = channel["id"].replace(regxExp, "");
+      let index = otherUsers.findIndex(user => user.userID === id);
+      return { ...otherUsers[index] };
     }
   };
 
@@ -147,6 +149,7 @@ class Messages extends React.Component {
 const mapStateToProps = ({ user, channel }) => {
   return {
     user: user.currentUser,
+    otherUsers: user.otherUsers,
     channel: channel.currentChannel,
     activeChannelID: channel.activeChannelID,
     channelIDs: channel.channelIDs,

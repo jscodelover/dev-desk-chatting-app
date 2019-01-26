@@ -7,19 +7,8 @@ class MessageHeader extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userInPersonalChat: {},
       userRef: firebase.database().ref("users")
     };
-  }
-
-  componentDidUpdate(prevState) {
-    const { userRef } = this.state;
-    const { metaData } = this.props;
-    if (typeof metaData === "string" && metaData !== prevState.metaData) {
-      userRef.child(metaData).on("value", snap => {
-        this.setState({ userInPersonalChat: snap.val() });
-      });
-    }
   }
 
   starredChannel = () => {
@@ -48,7 +37,6 @@ class MessageHeader extends React.Component {
       activeChannelID,
       user
     } = this.props;
-    const { userInPersonalChat } = this.state;
     return (
       <Segment clearing className="messageHeader">
         <Header as="h2" floated="left" fluid="true" style={{ marginBottom: 0 }}>
@@ -71,10 +59,8 @@ class MessageHeader extends React.Component {
           </span>
           <Header.Subheader>
             {privateChannel ? (
-              userInPersonalChat.status === "offline" ? (
-                moment(userInPersonalChat.lastSeen).format(
-                  " Do-MM-YY, ddd, h:mm a"
-                )
+              metaData.status === "offline" ? (
+                moment(metaData.lastSeen).format(" Do-MM-YY, ddd, h:mm a")
               ) : (
                 <span>
                   {" "}
