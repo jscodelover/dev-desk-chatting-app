@@ -8,7 +8,8 @@ class MessageHeader extends React.Component {
     super(props);
     this.state = {
       userInPersonalChat: {},
-      userRef: firebase.database().ref("users")
+      userRef: firebase.database().ref("users"),
+      isStarred: false
     };
   }
 
@@ -22,6 +23,20 @@ class MessageHeader extends React.Component {
     }
   }
 
+  checkStarred = () => {
+    this.setState(prevState => ({
+      isStarred: !prevState.isStarred
+    }));
+  };
+
+  starredChannel = () => {
+    const { activeChannelID, user } = this.props;
+    const { userRef } = this.state;
+    let prevStarred = user.starred ? [user.starred] : [];
+    prevStarred.push(activeChannelID);
+    userRef.child(user.userID).set({ ...user, starred: prevStarred.join(",") });
+  };
+
   handleChange = event => {
     this.props.searchMessage(event.target.value);
   };
@@ -33,11 +48,11 @@ class MessageHeader extends React.Component {
         <Header as="h2" floated="left" fluid="true" style={{ marginBottom: 0 }}>
           <span>
             {channelName}
-            {privateChannel ? (
-              <Icon name="user" color="black" />
-            ) : (
-              <Icon name={"star outline"} color="black" />
-            )}
+            <Icon
+              name={"star outline"}
+              color="black"
+              onClick={this.checkStarred}
+            />
           </span>
           <Header.Subheader>
             {privateChannel ? (

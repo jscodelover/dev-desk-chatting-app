@@ -117,7 +117,7 @@ class Messages extends React.Component {
       searchLoading,
       msgLoading
     } = this.state;
-    const { channel, user, privateChannel } = this.props;
+    const { channel, user, privateChannel, activeChannelID } = this.props;
     return (
       <React.Fragment>
         <MessageHeader
@@ -126,6 +126,8 @@ class Messages extends React.Component {
           searchMessage={data => {
             this.searchMessage(data);
           }}
+          user={user}
+          activeChannelID={activeChannelID}
           searchLoading={searchLoading}
           privateChannel={privateChannel}
         />
@@ -146,6 +148,7 @@ const mapStateToProps = ({ user, channel }) => {
   return {
     user: user.currentUser,
     channel: channel.currentChannel,
+    activeChannelID: channel.activeChannelID,
     channelIDs: channel.channelIDs,
     privateChannel: channel.privateChannel
   };
