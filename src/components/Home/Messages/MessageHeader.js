@@ -8,8 +8,7 @@ class MessageHeader extends React.Component {
     super(props);
     this.state = {
       userInPersonalChat: {},
-      userRef: firebase.database().ref("users"),
-      isStarred: false
+      userRef: firebase.database().ref("users")
     };
   }
 
@@ -23,25 +22,32 @@ class MessageHeader extends React.Component {
     }
   }
 
-  checkStarred = () => {
-    this.setState(prevState => ({
-      isStarred: !prevState.isStarred
-    }));
-  };
-
   starredChannel = () => {
     const { activeChannelID, user } = this.props;
     const { userRef } = this.state;
-    let prevStarred = user.starred ? [user.starred] : [];
-    prevStarred.push(activeChannelID);
+    let prevStarred = user.starred ? user["starred"].split(",") : [];
+    let index = prevStarred.findIndex(id => id === activeChannelID);
+    if (index > -1) {
+      prevStarred.splice(index, 1);
+    } else {
+      prevStarred.push(activeChannelID);
+    }
     userRef.child(user.userID).set({ ...user, starred: prevStarred.join(",") });
   };
 
   handleChange = event => {
     this.props.searchMessage(event.target.value);
   };
+
   render() {
-    const { channelName, metaData, searchLoading, privateChannel } = this.props;
+    const {
+      channelName,
+      metaData,
+      searchLoading,
+      privateChannel,
+      activeChannelID,
+      user
+    } = this.props;
     const { userInPersonalChat } = this.state;
     return (
       <Segment clearing className="messageHeader">
@@ -49,9 +55,18 @@ class MessageHeader extends React.Component {
           <span>
             {channelName}
             <Icon
-              name={"star outline"}
-              color="black"
-              onClick={this.checkStarred}
+              style={{ cursor: "pointer" }}
+              name={
+                user["starred"] && user["starred"].includes(activeChannelID)
+                  ? "star"
+                  : "star outline"
+              }
+              color={
+                user["starred"] && user["starred"].includes(activeChannelID)
+                  ? "yellow"
+                  : "black"
+              }
+              onClick={this.starredChannel}
             />
           </span>
           <Header.Subheader>
