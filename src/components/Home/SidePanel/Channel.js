@@ -6,16 +6,17 @@ import {
   setChannel,
   setChannelID,
   setPrivateChannel,
-  setActiveChannelID
+  setActiveChannelID,
+  setOtherChannels
 } from "../../../store/action";
 import DisplayChannel from "./DisplayChannel";
+import Spinner from "../../Spinner";
 
 class Channel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       userID: this.props.user.userID,
-      channels: [],
       modal: false,
       channelName: "",
       channelDetail: "",
@@ -24,7 +25,8 @@ class Channel extends React.Component {
       notificationRef: firebase.database().ref("notification"),
       activeChannelID: "",
       firstChannelActivated: false,
-      notification: []
+      notification: [],
+      loading: false
     };
   }
 
@@ -40,12 +42,13 @@ class Channel extends React.Component {
     let loadedChannel = [];
     this.displayNotification();
     this.state.channelRef.on("child_added", snap => {
+      this.setState({ loading: true });
       this.props.channelID(snap.val().id);
       loadedChannel.push(snap.val());
-      this.setState({ channels: loadedChannel }, () => {
-        this.setFirstChannel();
-        this.checkNotification(snap.val().id);
-      });
+      this.props.setOtherChannels(loadedChannel);
+      this.setFirstChannel();
+      this.checkNotification(snap.val().id);
+      this.setState({ loading: false });
     });
   };
   removeListener = () => {
@@ -53,7 +56,8 @@ class Channel extends React.Component {
   };
 
   setFirstChannel = () => {
-    const { firstChannelActivated, channels } = this.state;
+    const { firstChannelActivated } = this.state;
+    const { channels } = this.props;
     if (!firstChannelActivated) {
       this.setState({ firstChannelActivated: true });
       this.changeChannel(channels[0]);
@@ -183,66 +187,72 @@ class Channel extends React.Component {
 
   render() {
     const {
-      channels,
       modal,
       channelName,
       channelDetail,
-      notification
+      notification,
+      loading
     } = this.state;
-    const { activeChannelID, user } = this.props;
+    const { channels, activeChannelID, user } = this.props;
     return (
       <React.Fragment>
-        <Menu.Menu>
-          <Menu.Item>
-            <span>
-              <Icon name="discussions" /> Channel
-            </span>{" "}
-            ({channels.length}){" "}
-            <Icon name="add" onClick={this.handleOpenModal} />
-          </Menu.Item>
-          <DisplayChannel
-            starredID={user["starred"] ? user["starred"] : []}
-            channels={channels}
-            activeChannelID={activeChannelID}
-            notification={notification}
-            changeChannel={channel => {
-              this.changeChannel(channel);
-            }}
-          />
-        </Menu.Menu>
-        <Modal open={modal} basic onClose={this.handleCloseModal}>
-          <Modal.Header>Add a Channel</Modal.Header>
-          <Modal.Content>
-            <Form onSubmit={this.handleSubmit}>
-              <Form.Field>
-                <Input
-                  fluid
-                  label="Name of Channel"
-                  name="channelName"
-                  onChange={this.handleChange}
-                  value={channelName}
-                />
-              </Form.Field>
-              <Form.Field>
-                <Input
-                  fluid
-                  label="About the Channel"
-                  name="channelDetail"
-                  onChange={this.handleChange}
-                  value={channelDetail}
-                />
-              </Form.Field>
-            </Form>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button color="red" inverted onClick={this.handleCloseModal}>
-              <Icon name="remove" /> No
-            </Button>
-            <Button color="green" inverted onClick={this.handleSubmit}>
-              <Icon name="checkmark" /> Yes
-            </Button>
-          </Modal.Actions>
-        </Modal>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <React.Fragment>
+            <Menu.Menu>
+              <Menu.Item>
+                <span>
+                  <Icon name="discussions" /> Channel
+                </span>{" "}
+                ({channels.length}){" "}
+                <Icon name="add" onClick={this.handleOpenModal} />
+              </Menu.Item>
+              <DisplayChannel
+                starredID={user["starred"] ? user["starred"] : []}
+                channels={channels}
+                activeChannelID={activeChannelID}
+                notification={notification}
+                changeChannel={channel => {
+                  this.changeChannel(channel);
+                }}
+              />
+            </Menu.Menu>
+            <Modal open={modal} basic onClose={this.handleCloseModal}>
+              <Modal.Header>Add a Channel</Modal.Header>
+              <Modal.Content>
+                <Form onSubmit={this.handleSubmit}>
+                  <Form.Field>
+                    <Input
+                      fluid
+                      label="Name of Channel"
+                      name="channelName"
+                      onChange={this.handleChange}
+                      value={channelName}
+                    />
+                  </Form.Field>
+                  <Form.Field>
+                    <Input
+                      fluid
+                      label="About the Channel"
+                      name="channelDetail"
+                      onChange={this.handleChange}
+                      value={channelDetail}
+                    />
+                  </Form.Field>
+                </Form>
+              </Modal.Content>
+              <Modal.Actions>
+                <Button color="red" inverted onClick={this.handleCloseModal}>
+                  <Icon name="remove" /> No
+                </Button>
+                <Button color="green" inverted onClick={this.handleSubmit}>
+                  <Icon name="checkmark" /> Yes
+                </Button>
+              </Modal.Actions>
+            </Modal>
+          </React.Fragment>
+        )}
       </React.Fragment>
     );
   }
@@ -250,7 +260,8 @@ class Channel extends React.Component {
 
 const mapStateToProps = ({ channel }) => {
   return {
-    activeChannelID: channel.activeChannelID
+    activeChannelID: channel.activeChannelID,
+    channels: channel.otherChannels
   };
 };
 
@@ -259,7 +270,8 @@ const mapDispatchToProps = dispatch => {
     channelInStore: channelInfo => dispatch(setChannel(channelInfo)),
     channelID: id => dispatch(setChannelID(id)),
     setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate)),
-    setActiveChannelID: id => dispatch(setActiveChannelID(id))
+    setActiveChannelID: id => dispatch(setActiveChannelID(id)),
+    setOtherChannels: channels => dispatch(setOtherChannels(channels))
   };
 };
 

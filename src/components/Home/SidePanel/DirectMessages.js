@@ -6,8 +6,10 @@ import DisplayChannel from "../SidePanel/DisplayChannel";
 import {
   setChannel,
   setPrivateChannel,
-  setActiveChannelID
+  setActiveChannelID,
+  setOtherUsers
 } from "../../../store/action";
+import Spinner from "../../Spinner";
 
 class DirectMessage extends React.Component {
   constructor(props) {
@@ -16,9 +18,9 @@ class DirectMessage extends React.Component {
       userRef: firebase.database().ref("users"),
       messageRef: firebase.database().ref("messages"),
       notificationRef: firebase.database().ref("notification"),
-      totalUsers: [],
       activeChannel: "",
-      notification: []
+      notification: [],
+      loading: false
     };
   }
   componentDidMount() {
@@ -27,22 +29,24 @@ class DirectMessage extends React.Component {
     let loadedUsers = [];
     this.displayNotification();
     userRef.on("child_added", snap => {
+      this.setState({ loading: true });
       if (user.userID !== snap.val().userID) {
         loadedUsers.push(snap.val());
-        this.setState({ totalUsers: loadedUsers });
+        this.props.setOtherUsers(loadedUsers);
         this.checkNotification(this.generateId(snap.val()));
+        this.setState({ loading: false });
       }
     });
 
     userRef.on("child_changed", snap => {
       if (user.userID !== snap.val().userID) {
         let userID = snap.val().userID;
-        let index = this.state.totalUsers.findIndex(
+        let index = this.props.totalUsers.findIndex(
           user => user.userID === userID
         );
-        let newtotalUsers = [...this.state.totalUsers];
+        let newtotalUsers = [...this.props.totalUsers];
         newtotalUsers[index] = snap.val();
-        this.setState({ totalUsers: newtotalUsers });
+        this.props.setOtherUsers(newtotalUsers);
       }
     });
   }
@@ -143,61 +147,46 @@ class DirectMessage extends React.Component {
     });
   };
 
-  // displayUsers = totalUsers =>
-  //   totalUsers.length &&
-  //   totalUsers.map(user => {
-  //     return (
-  //       <Menu.Item
-  //         key={user.userID}
-  //         active={user.userID === this.props.activeChannel}
-  //         onClick={() => {
-  //           this.changeChannel(user);
-  //         }}
-  //       >
-  //         <span>
-  //           <Icon
-  //             name="circle"
-  //             color={user.status === "online" ? "green" : "red"}
-  //           />
-  //           {user.username}
-  //         </span>
-  //       </Menu.Item>
-  //     );
-  //   });
-
   render() {
-    const { totalUsers, notification } = this.state;
-    const { activeChannelID, user } = this.props;
+    const { notification, loading } = this.state;
+    const { activeChannelID, user, totalUsers } = this.props;
     return (
-      <Menu.Menu style={{ marginTop: "2rem" }}>
-        <Menu.Item>
-          <span>
-            <Icon name="envelope" />
-          </span>
-          {` `} Direct Messages {` `} ({totalUsers.length})
-        </Menu.Item>
-        {totalUsers.length ? (
-          <DisplayChannel
-            starredID={user["starred"] ? user["starred"] : []}
-            users={totalUsers}
-            activeChannelID={activeChannelID}
-            notification={notification}
-            userID={this.props.user.userID}
-            changeChannel={user => {
-              this.changeChannel(user);
-            }}
-          />
+      <React.Fragment>
+        {loading ? (
+          <Spinner />
         ) : (
-          ""
+          <Menu.Menu style={{ marginTop: "2rem" }}>
+            <Menu.Item>
+              <span>
+                <Icon name="envelope" />
+              </span>
+              {` `} Direct Messages {` `} ({totalUsers.length})
+            </Menu.Item>
+            {totalUsers.length ? (
+              <DisplayChannel
+                starredID={user["starred"] ? user["starred"] : []}
+                users={totalUsers}
+                activeChannelID={activeChannelID}
+                notification={notification}
+                userID={this.props.user.userID}
+                changeChannel={user => {
+                  this.changeChannel(user);
+                }}
+              />
+            ) : (
+              ""
+            )}
+          </Menu.Menu>
         )}
-      </Menu.Menu>
+      </React.Fragment>
     );
   }
 }
 
-const mapStateToProps = ({ channel }) => {
+const mapStateToProps = ({ channel, user }) => {
   return {
-    activeChannelID: channel.activeChannelID
+    activeChannelID: channel.activeChannelID,
+    totalUsers: user.otherUsers
   };
 };
 
@@ -205,7 +194,8 @@ const mapDispatchToProps = dispatch => {
   return {
     setActiveChannelID: id => dispatch(setActiveChannelID(id)),
     setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate)),
-    setChannel: channelInfo => dispatch(setChannel(channelInfo))
+    setChannel: channelInfo => dispatch(setChannel(channelInfo)),
+    setOtherUsers: users => dispatch(setOtherUsers(users))
   };
 };
 
