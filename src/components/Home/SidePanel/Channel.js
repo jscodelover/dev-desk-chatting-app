@@ -7,7 +7,8 @@ import {
   setChannelID,
   setPrivateChannel,
   setActiveChannelID,
-  setOtherChannels
+  setOtherChannels,
+  setNotification
 } from "../../../store/action";
 import DisplayChannel from "./DisplayChannel";
 import Spinner from "../../Spinner";
@@ -25,7 +26,6 @@ class Channel extends React.Component {
       notificationRef: firebase.database().ref("notification"),
       activeChannelID: "",
       firstChannelActivated: false,
-      notification: [],
       loading: false
     };
   }
@@ -181,19 +181,13 @@ class Channel extends React.Component {
       for (let info in snap.val()) {
         notification.push(snap.val()[info]);
       }
-      this.setState({ notification });
+      this.props.setNotification(notification);
     });
   };
 
   render() {
-    const {
-      modal,
-      channelName,
-      channelDetail,
-      notification,
-      loading
-    } = this.state;
-    const { channels, activeChannelID, user } = this.props;
+    const { modal, channelName, channelDetail, loading } = this.state;
+    const { channels, activeChannelID, user, notification } = this.props;
     return (
       <React.Fragment>
         {loading ? (
@@ -258,10 +252,11 @@ class Channel extends React.Component {
   }
 }
 
-const mapStateToProps = ({ channel }) => {
+const mapStateToProps = ({ channel, notification }) => {
   return {
     activeChannelID: channel.activeChannelID,
-    channels: channel.otherChannels
+    channels: channel.otherChannels,
+    notification: notification.notification
   };
 };
 
@@ -271,7 +266,8 @@ const mapDispatchToProps = dispatch => {
     channelID: id => dispatch(setChannelID(id)),
     setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate)),
     setActiveChannelID: id => dispatch(setActiveChannelID(id)),
-    setOtherChannels: channels => dispatch(setOtherChannels(channels))
+    setOtherChannels: channels => dispatch(setOtherChannels(channels)),
+    setNotification: notifications => dispatch(setNotification(notifications))
   };
 };
 

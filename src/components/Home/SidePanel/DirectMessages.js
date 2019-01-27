@@ -7,7 +7,8 @@ import {
   setChannel,
   setPrivateChannel,
   setActiveChannelID,
-  setOtherUsers
+  setOtherUsers,
+  setNotification
 } from "../../../store/action";
 import Spinner from "../../Spinner";
 
@@ -19,7 +20,6 @@ class DirectMessage extends React.Component {
       messageRef: firebase.database().ref("messages"),
       notificationRef: firebase.database().ref("notification"),
       activeChannel: "",
-      notification: [],
       loading: false
     };
   }
@@ -142,13 +142,13 @@ class DirectMessage extends React.Component {
       for (let info in snap.val()) {
         notification.push(snap.val()[info]);
       }
-      this.setState({ notification });
+      this.props.setNotification(notification);
     });
   };
 
   render() {
-    const { notification, loading } = this.state;
-    const { activeChannelID, user, totalUsers } = this.props;
+    const { loading } = this.state;
+    const { activeChannelID, user, totalUsers, notification } = this.props;
     return (
       <React.Fragment>
         {loading ? (
@@ -182,10 +182,11 @@ class DirectMessage extends React.Component {
   }
 }
 
-const mapStateToProps = ({ channel, user }) => {
+const mapStateToProps = ({ channel, user, notification }) => {
   return {
     activeChannelID: channel.activeChannelID,
-    totalUsers: user.otherUsers
+    totalUsers: user.otherUsers,
+    notification: notification.notification
   };
 };
 
@@ -194,7 +195,8 @@ const mapDispatchToProps = dispatch => {
     setActiveChannelID: id => dispatch(setActiveChannelID(id)),
     setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate)),
     setChannel: channelInfo => dispatch(setChannel(channelInfo)),
-    setOtherUsers: users => dispatch(setOtherUsers(users))
+    setOtherUsers: users => dispatch(setOtherUsers(users)),
+    setNotification: notifications => dispatch(setNotification(notifications))
   };
 };
 
