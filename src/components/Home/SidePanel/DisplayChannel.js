@@ -22,7 +22,7 @@ const DisplayChannel = props => {
     changeChannel,
     users,
     userID,
-    starredID
+    hideStarredID
   } = props;
   return (
     <React.Fragment>
@@ -31,7 +31,7 @@ const DisplayChannel = props => {
           {channels.length > 0 &&
             channels.map(
               channel =>
-                !starredID.includes(channel.id) && (
+                !hideStarredID.includes(channel.id) && (
                   <Menu.Item
                     key={channel.id}
                     name={channel.channelName}
@@ -57,7 +57,7 @@ const DisplayChannel = props => {
           {users.length &&
             users.map(
               user =>
-                !starredID.includes(user.userID) && (
+                !hideStarredID.includes(user.userID) && (
                   <Menu.Item
                     key={user.userID}
                     active={user.userID === activeChannelID}

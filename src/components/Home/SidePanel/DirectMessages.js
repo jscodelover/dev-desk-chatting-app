@@ -163,7 +163,7 @@ class DirectMessage extends React.Component {
             </Menu.Item>
             {totalUsers.length ? (
               <DisplayChannel
-                starredID={user["starred"] ? user["starred"] : []}
+                hideStarredID={user["starred"] ? user["starred"] : []}
                 users={totalUsers}
                 activeChannelID={activeChannelID}
                 notification={notification}

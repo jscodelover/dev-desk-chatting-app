@@ -204,12 +204,12 @@ class Channel extends React.Component {
               <Menu.Item>
                 <span>
                   <Icon name="discussions" /> Channel
-                </span>{" "}
-                ({channels.length}){" "}
+                </span>
+                ({channels.length})
                 <Icon name="add" onClick={this.handleOpenModal} />
               </Menu.Item>
               <DisplayChannel
-                starredID={user["starred"] ? user["starred"] : []}
+                hideStarredID={user["starred"] ? user["starred"] : []}
                 channels={channels}
                 activeChannelID={activeChannelID}
                 notification={notification}
