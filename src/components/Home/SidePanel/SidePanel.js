@@ -10,7 +10,6 @@ import "./SidePanel.css";
 class SidePanel extends Component {
   render() {
     const { user } = this.props;
-    console.log(this.props);
     return (
       <Menu
         inverted

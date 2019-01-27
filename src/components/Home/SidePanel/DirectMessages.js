@@ -78,7 +78,6 @@ class DirectMessage extends React.Component {
   createNotificationArray = (children, channelID) => {
     const { notificationRef } = this.state;
     const { activeChannelID, user } = this.props;
-    console.log(user.userID);
     notificationRef.child(user.userID).once("value", snap => {
       if (!snap.hasChild(channelID)) {
         notificationRef
