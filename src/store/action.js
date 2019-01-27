@@ -2,11 +2,14 @@ export const actions = {
   SET_USER: "SET_USER",
   SET_OTHER_USERS: "SET_OTHER_USERS",
   CLEAR_USER: "CLEAR_USER",
+
   SET_CHANNEL: "SET_CHANNEL",
   SET_OTHER_CHANNELS: "SET_OTHER_CHANNELS",
   ALL_CHANNEL_ID: "ALL_CHANNEL_ID",
   SET_PRIVATE_CHANNEL: "SET_PRIVATE_CHANNEL",
-  ACTIVE_CHANNEL_ID: "ACTIVE_CHANNEL_ID"
+  ACTIVE_CHANNEL_ID: "ACTIVE_CHANNEL_ID",
+
+  SET_NOTIFICATION: "SET_NOTIFICATION"
 };
 
 /* User actions */
@@ -62,6 +65,15 @@ export function setPrivateChannel(payload) {
 export function setOtherChannels(payload) {
   return {
     type: actions.SET_OTHER_CHANNELS,
+    payload
+  };
+}
+
+/* Notification */
+
+export function setNotification(payload) {
+  return {
+    type: actions.SET_NOTIFICATION,
     payload
   };
 }

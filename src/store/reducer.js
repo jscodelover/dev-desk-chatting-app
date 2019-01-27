@@ -42,7 +42,7 @@ const CHANNEL_INITIAL_STATE = {
   activeChannelID: ""
 };
 
-const channel_reduce = (state = CHANNEL_INITIAL_STATE, action) => {
+const channel_reducer = (state = CHANNEL_INITIAL_STATE, action) => {
   switch (action.type) {
     case actions.SET_CHANNEL:
       return {
@@ -79,9 +79,27 @@ const channel_reduce = (state = CHANNEL_INITIAL_STATE, action) => {
   }
 };
 
+const NOTIFICATION_INITIAL_STATE = {
+  notification: []
+};
+
+const notification_reducer = (state = NOTIFICATION_INITIAL_STATE, action) => {
+  switch (action.type) {
+    case actions.SET_NOTIFICATION: {
+      return {
+        ...state,
+        notification: action.payload
+      };
+    }
+    default:
+      return state;
+  }
+};
+
 const rootReducer = combineReducers({
   user: user_reducer,
-  channel: channel_reduce
+  channel: channel_reducer,
+  notification: notification_reducer
 });
 
 export default rootReducer;
