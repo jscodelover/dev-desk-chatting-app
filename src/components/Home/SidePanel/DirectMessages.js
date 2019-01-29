@@ -12,6 +12,7 @@ import {
 } from "../../../store/action";
 import Spinner from "../../Spinner";
 import * as notify from "../../../util/notification";
+import generateId from "../../../util/directmessage";
 
 class DirectMessage extends React.Component {
   constructor(props) {
@@ -34,7 +35,7 @@ class DirectMessage extends React.Component {
       if (user.userID !== snap.val().userID) {
         loadedUsers.push(snap.val());
         this.props.setOtherUsers(loadedUsers);
-        this.checkNotification(this.generateId(snap.val()));
+        this.checkNotification(generateId(snap.val(), this.props.user.userID));
         this.setState({ loading: false });
       }
     });
@@ -52,20 +53,17 @@ class DirectMessage extends React.Component {
     });
   }
 
-  generateId = user => {
-    return user.userID > this.props.user.userID
-      ? `${user.userID}${this.props.user.userID}`
-      : `${this.props.user.userID}${user.userID}`;
-  };
-
   changeChannel = user => {
     this.props.setActiveChannelID(user.userID);
     this.props.setChannel({
       channelName: user.username,
-      id: this.generateId(user)
+      id: generateId(user, this.props.user.userID)
     });
     this.props.setPrivateChannel(true);
-    notify.clearNotification(this.generateId(user), this.props.user.userID);
+    notify.clearNotification(
+      generateId(user, this.props.user.userID),
+      this.props.user.userID
+    );
   };
 
   checkNotification = channelID => {

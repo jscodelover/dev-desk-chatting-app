@@ -1,5 +1,6 @@
 import React from "react";
 import { Menu, Label, Icon } from "semantic-ui-react";
+import generateId from "../../../util/directmessage";
 
 const DisplayChannel = props => {
   function getCount(id, notification) {
@@ -9,11 +10,6 @@ const DisplayChannel = props => {
         return notification[index]["count"];
       }
     }
-  }
-  function generateId(user, userID) {
-    return user.userID > userID
-      ? `${user.userID}${userID}`
-      : `${userID}${user.userID}`;
   }
   const {
     channels,
