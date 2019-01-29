@@ -11,6 +11,7 @@ import {
   setNotification
 } from "../../../store/action";
 import Spinner from "../../Spinner";
+import * as notify from "../../../util/notification";
 
 class DirectMessage extends React.Component {
   constructor(props) {
@@ -64,74 +65,19 @@ class DirectMessage extends React.Component {
       id: this.generateId(user)
     });
     this.props.setPrivateChannel(true);
-    this.clearNotification(this.generateId(user));
+    notify.clearNotification(this.generateId(user), this.props.user.userID);
   };
 
-  // TODO: Notification function need to be set
   checkNotification = channelID => {
     const { messageRef } = this.state;
     messageRef.child(channelID).on("value", snap => {
-      this.createNotificationArray(snap.numChildren(), channelID);
+      notify.createNotificationArray(
+        snap.numChildren(),
+        channelID,
+        this.props.user.userID,
+        this.props.activeChannelID
+      );
     });
-  };
-
-  createNotificationArray = (children, channelID) => {
-    const { notificationRef } = this.state;
-    const { activeChannelID, user } = this.props;
-    notificationRef.child(user.userID).once("value", snap => {
-      if (!snap.hasChild(channelID)) {
-        notificationRef
-          .child(user.userID)
-          .child(channelID)
-          .update({
-            id: channelID,
-            lastTotal: children,
-            count: 0,
-            total: children
-          });
-      } else {
-        let notification = snap.val()[channelID];
-        let newNotification = {
-          id: channelID,
-          total: children
-        };
-        if (notification["id"].includes(activeChannelID)) {
-          newNotification.count = 0;
-          newNotification.lastTotal = children;
-          notificationRef
-            .child(user.userID)
-            .child(channelID)
-            .set({ ...newNotification });
-        } else {
-          newNotification.count = children - notification.lastTotal;
-          newNotification.lastTotal = notification.lastTotal;
-          notificationRef
-            .child(user.userID)
-            .child(channelID)
-            .set({ ...newNotification });
-        }
-      }
-    });
-  };
-
-  clearNotification = channelID => {
-    const { notificationRef } = this.state;
-    const { userID } = this.props.user;
-    notificationRef
-      .child(userID)
-      .child(channelID)
-      .once("value", snap => {
-        let notification = snap.val();
-        notificationRef
-          .child(userID)
-          .child(channelID)
-          .set({
-            id: channelID,
-            lastTotal: notification.total,
-            count: 0,
-            total: notification.total
-          });
-      });
   };
 
   displayNotification = () => {
