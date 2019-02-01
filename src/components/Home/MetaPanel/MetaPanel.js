@@ -1,8 +1,12 @@
 import React, { Component } from "react";
-import { Accordion, Icon } from "semantic-ui-react";
+import moment from "moment";
+import { Accordion, Icon, Header, Image } from "semantic-ui-react";
 
 export default class MetaPanel extends Component {
-  state = { activeIndex: 0 };
+  constructor(props) {
+    super(props);
+    this.state = { activeIndex: 0 };
+  }
 
   handleClick = (e, titleProps) => {
     const { index } = titleProps;
@@ -12,9 +16,22 @@ export default class MetaPanel extends Component {
     this.setState({ activeIndex: newIndex });
   };
 
+  creator = () => {
+    const { otherUsers, user, channel } = this.props;
+    let isCreator = otherUsers.find(u => u.userID === channel.createdBy);
+    let creator = isCreator
+      ? { name: isCreator.username, image: isCreator.picture }
+      : { name: "You", image: user.picture };
+    return (
+      <Header as="h3">
+        <Image circular src={creator.image} /> {creator.name}
+      </Header>
+    );
+  };
+
   render() {
     const { activeIndex } = this.state;
-
+    const { channel } = this.props;
     return (
       <Accordion styled>
         <Accordion.Title
@@ -23,10 +40,14 @@ export default class MetaPanel extends Component {
           onClick={this.handleClick}
         >
           <Icon name="dropdown" />
-          About Channel
+          About Channel <Icon name="info circle" />
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 0}>
-          <p>sample</p>
+          <p>
+            {channel.channelDetail}
+            <br />
+            Created On : {moment(channel.createdOn).format(" Do MMMM YYYY ")}
+          </p>
         </Accordion.Content>
 
         <Accordion.Title
@@ -35,10 +56,10 @@ export default class MetaPanel extends Component {
           onClick={this.handleClick}
         >
           <Icon name="dropdown" />
-          All Users
+          All Users <Icon name="users" />
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
-          <p>sample</p>
+          <p />
         </Accordion.Content>
 
         <Accordion.Title
@@ -47,10 +68,10 @@ export default class MetaPanel extends Component {
           onClick={this.handleClick}
         >
           <Icon name="dropdown" />
-          Creator
+          Creator <Icon name="write" />
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 2}>
-          <p>sample</p>
+          {this.creator()}
         </Accordion.Content>
       </Accordion>
     );

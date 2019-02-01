@@ -87,7 +87,8 @@ class Channel extends React.Component {
           id: key,
           channelName,
           channelDetail,
-          createdBy: userID
+          createdBy: userID,
+          createdOn: firebase.database.ServerValue.TIMESTAMP
         })
         .then(() => {
           this.setState({

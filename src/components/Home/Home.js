@@ -52,7 +52,7 @@ class Home extends React.Component {
   }
 
   render() {
-    const { user, channel } = this.props;
+    const { user, channel, privateChannel, otherUsers } = this.props;
     return (
       <Grid
         columns="equal"
@@ -65,9 +65,16 @@ class Home extends React.Component {
           {channel.id && <Messages />}
         </Grid.Column>
 
-        <Grid.Column width={4}>
-          <MetaPanel />
-        </Grid.Column>
+        {!privateChannel &&
+          otherUsers.length && (
+            <Grid.Column width={4}>
+              <MetaPanel
+                channel={channel}
+                otherUsers={otherUsers}
+                user={user}
+              />
+            </Grid.Column>
+          )}
       </Grid>
     );
   }
@@ -76,7 +83,9 @@ class Home extends React.Component {
 const mapStateToProps = ({ user, channel }) => {
   return {
     user: user.currentUser,
-    channel: channel.currentChannel
+    otherUsers: user.otherUsers,
+    channel: channel.currentChannel,
+    privateChannel: channel.privateChannel
   };
 };
 
