@@ -61,8 +61,11 @@ class Messages extends React.Component {
   userCount = messages => {
     if (messages.length) {
       let users = messages.reduce((userArray, msg) => {
-        if (!userArray.includes(msg.user.username))
-          return userArray.concat(msg.user.username);
+        if (userArray.findIndex(obj => obj.name === msg.user.username) < 0)
+          return userArray.concat({
+            name: msg.user.username,
+            image: msg.user.picture
+          });
         return userArray;
       }, []);
       this.setState({ usersInChannel: users });
