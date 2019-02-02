@@ -29,6 +29,13 @@ export default class MetaPanel extends Component {
     );
   };
 
+  channelUsers = () => 
+    this.props.usersInChannel.map((user,index) => (
+      <Header as="h5" key={index} style={{margin: '6px 0px'}}>
+        <Image circular src={user.image} /> {user.name}
+      </Header>
+    ))
+
   render() {
     const { activeIndex } = this.state;
     const { channel } = this.props;
@@ -59,7 +66,7 @@ export default class MetaPanel extends Component {
           All Users <Icon name="users" />
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
-          <p />
+          {this.channelUsers()}
         </Accordion.Content>
 
         <Accordion.Title

@@ -52,7 +52,7 @@ class Home extends React.Component {
   }
 
   render() {
-    const { user, channel, privateChannel, otherUsers } = this.props;
+    const { user, channel, privateChannel, otherUsers, usersInChannel } = this.props;
     return (
       <Grid
         columns="equal"
@@ -72,6 +72,7 @@ class Home extends React.Component {
                 channel={channel}
                 otherUsers={otherUsers}
                 user={user}
+                usersInChannel={usersInChannel}
               />
             </Grid.Column>
           )}
@@ -85,7 +86,8 @@ const mapStateToProps = ({ user, channel }) => {
     user: user.currentUser,
     otherUsers: user.otherUsers,
     channel: channel.currentChannel,
-    privateChannel: channel.privateChannel
+    privateChannel: channel.privateChannel,
+    usersInChannel: channel.usersInChannel
   };
 };
 
