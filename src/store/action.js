@@ -8,7 +8,7 @@ export const actions = {
   ALL_CHANNEL_ID: "ALL_CHANNEL_ID",
   SET_PRIVATE_CHANNEL: "SET_PRIVATE_CHANNEL",
   ACTIVE_CHANNEL_ID: "ACTIVE_CHANNEL_ID",
-  USERS_IN_CHANNEL: "USERS_IN_CHANNEL",
+  SET_USERS_IN_CHANNEL: "SET_USERS_IN_CHANNEL",
 
   SET_NOTIFICATION: "SET_NOTIFICATION"
 };
@@ -70,9 +70,9 @@ export function setOtherChannels(payload) {
   };
 }
 
-export function usersInChannel(payload) {
+export function setUsersInChannel(payload) {
   return {
-    type: actions.USERS_IN_CHANNEL,
+    type: actions.SET_USERS_IN_CHANNEL,
     payload
   };
 }

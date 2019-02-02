@@ -6,6 +6,7 @@ import MessageForm from "./MessageForm";
 import firebase from "../../../firebaseConfig";
 import Message from "./Message";
 import "./Messages.css";
+import { setUsersInChannel } from "../../../store/action";
 
 class Messages extends React.Component {
   constructor(props) {
@@ -14,7 +15,7 @@ class Messages extends React.Component {
       messageRef: firebase.database().ref("messages"),
       userRef: firebase.database().ref("users"),
       messages: [],
-      usersInChannel: [],
+      channelUsers: [],
       searchMsg: [],
       searchLoading: false,
       msgLoading: true,
@@ -35,7 +36,7 @@ class Messages extends React.Component {
 
   fetchMessage = () => {
     const { messageRef, userRef } = this.state;
-    const { channel } = this.props;
+    const { channel, channelIDs } = this.props;
     let loadedMessage = [];
     messageRef.once("value", snap => {
       this.setState({ msgLoading: true });
@@ -47,12 +48,14 @@ class Messages extends React.Component {
               user: { ...snapUser.val() }
             });
             this.setState({ messages: loadedMessage });
-            this.userCount(loadedMessage);
+            if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
+            else this.props.setUsersInChannel([]);
           });
         });
       } else {
         this.setState({ messages: [] });
-        this.userCount(loadedMessage);
+        if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
+        else this.props.setUsersInChannel([]);
       }
       this.setState({ msgLoading: false });
     });
@@ -68,9 +71,9 @@ class Messages extends React.Component {
           });
         return userArray;
       }, []);
-      this.setState({ usersInChannel: users });
+      this.props.setUsersInChannel(users);
     } else {
-      this.setState({ usersInChannel: [] });
+      this.props.setUsersInChannel([]);
     }
   };
 
@@ -101,9 +104,16 @@ class Messages extends React.Component {
   };
 
   metaData = () => {
-    const { channelIDs, channel, user, otherUsers } = this.props;
-    const { usersInChannel } = this.state;
+    const {
+      channelIDs,
+      channel,
+      user,
+      otherUsers,
+      usersInChannel
+    } = this.props;
+    console.log(usersInChannel);
     if (channelIDs.includes(channel.id)) {
+      console.log(usersInChannel)
       return usersInChannel;
     } else {
       const { userID } = user;
@@ -125,24 +135,30 @@ class Messages extends React.Component {
     const { channel, user, privateChannel, activeChannelID } = this.props;
     return (
       <React.Fragment>
-        <MessageHeader
-          channelName={channel.channelName}
-          metaData={this.metaData()}
-          searchMessage={data => {
-            this.searchMessage(data);
-          }}
-          user={user}
-          activeChannelID={activeChannelID}
-          searchLoading={searchLoading}
-          privateChannel={privateChannel}
-        />
-        <Segment className="messages" loading={msgLoading}>
-          <Comment.Group size="large">
-            {searchMsg.length > 0
-              ? this.displayMessages(searchMsg, user)
-              : this.displayMessages(messages, user)}
-          </Comment.Group>
-        </Segment>
+        {msgLoading ? (
+          <p>Loading</p>
+        ) : (
+          <React.Fragment>
+            <MessageHeader
+              channelName={channel.channelName}
+              metaData={this.metaData()}
+              searchMessage={data => {
+                this.searchMessage(data);
+              }}
+              user={user}
+              activeChannelID={activeChannelID}
+              searchLoading={searchLoading}
+              privateChannel={privateChannel}
+            />
+            <Segment className="messages" loading={msgLoading}>
+              <Comment.Group size="large">
+                {searchMsg.length > 0
+                  ? this.displayMessages(searchMsg, user)
+                  : this.displayMessages(messages, user)}
+              </Comment.Group>
+            </Segment>
+          </React.Fragment>
+        )}
         <MessageForm messageRef={messageRef} channel={channel} user={user} />
       </React.Fragment>
     );
@@ -156,8 +172,18 @@ const mapStateToProps = ({ user, channel }) => {
     channel: channel.currentChannel,
     activeChannelID: channel.activeChannelID,
     channelIDs: channel.channelIDs,
-    privateChannel: channel.privateChannel
+    privateChannel: channel.privateChannel,
+    usersInChannel: channel.usersInChannel
   };
 };
 
-export default connect(mapStateToProps)(Messages);
+const mapDispatchToProps = dispatch => {
+  return {
+    setUsersInChannel: payload => dispatch(setUsersInChannel(payload))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Messages);

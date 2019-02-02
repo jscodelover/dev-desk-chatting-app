@@ -76,7 +76,7 @@ const channel_reducer = (state = CHANNEL_INITIAL_STATE, action) => {
         otherChannels: action.payload
       };
 
-    case actions.USERS_IN_CHANNEL:
+    case actions.SET_USERS_IN_CHANNEL:
       return {
         ...state,
         usersInChannel: action.payload
