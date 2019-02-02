@@ -35,7 +35,8 @@ class MessageHeader extends React.Component {
       searchLoading,
       privateChannel,
       activeChannelID,
-      user
+      user,
+      showChannelInfo
     } = this.props;
     return (
       <Segment clearing className="messageHeader">
@@ -83,6 +84,7 @@ class MessageHeader extends React.Component {
             loading={searchLoading}
             placeholder="Search..."
           />
+          {!privateChannel && <Icon name="info" color="grey" style={{cursor: 'pointer'}} onClick={showChannelInfo}/>}
         </Header>
       </Segment>
     );

@@ -38,9 +38,10 @@ export default class MetaPanel extends Component {
 
   render() {
     const { activeIndex } = this.state;
-    const { channel } = this.props;
+    const { channel, showChannelInfo } = this.props;
     return (
       <Accordion styled>
+       <Icon name="close" className="metapannel-close" onClick={showChannelInfo}/>
         <Accordion.Title
           active={activeIndex === 0}
           index={0}

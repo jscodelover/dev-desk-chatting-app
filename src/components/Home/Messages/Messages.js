@@ -5,7 +5,7 @@ import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
 import firebase from "../../../firebaseConfig";
 import Message from "./Message";
-import { setUsersInChannel } from "../../../store/action";
+import { setUsersInChannel, setShowChannelInfo } from "../../../store/action";
 
 class Messages extends React.Component {
   constructor(props) {
@@ -129,7 +129,7 @@ class Messages extends React.Component {
       searchLoading,
       msgLoading
     } = this.state;
-    const { channel, user, privateChannel, activeChannelID } = this.props;
+    const { channel, user, privateChannel, activeChannelID, setShowChannelInfo } = this.props;
     return (
       <React.Fragment>
         {msgLoading ? (
@@ -146,6 +146,7 @@ class Messages extends React.Component {
               activeChannelID={activeChannelID}
               searchLoading={searchLoading}
               privateChannel={privateChannel}
+              showChannelInfo={()=> {setShowChannelInfo(true)}}
             />
             <Segment className="messages" loading={msgLoading}>
               <Comment.Group size="large">
@@ -176,7 +177,8 @@ const mapStateToProps = ({ user, channel }) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    setUsersInChannel: payload => dispatch(setUsersInChannel(payload))
+    setUsersInChannel: payload => dispatch(setUsersInChannel(payload)),
+    setShowChannelInfo: payload => dispatch(setShowChannelInfo(payload))
   };
 };
 

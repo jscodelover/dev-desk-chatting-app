@@ -6,6 +6,7 @@ import ColorPanel from "./ColorPanel/ColorPanel";
 import SidePanel from "./SidePanel/SidePanel";
 import Messages from "./Messages/Messages";
 import MetaPanel from "./MetaPanel/MetaPanel";
+import { setShowChannelInfo } from '../../store/action';
 import "./Home.css";
 
 class Home extends React.Component {
@@ -53,7 +54,7 @@ class Home extends React.Component {
   }
 
   render() {
-    const { user, channel, privateChannel, otherUsers, usersInChannel } = this.props;
+    const { user, channel, privateChannel, otherUsers, usersInChannel, showChannelInfo } = this.props;
     return (
       <Grid
         columns="equal"
@@ -66,7 +67,7 @@ class Home extends React.Component {
           {channel.id && <Messages />}
         </Grid.Column>
 
-        {!privateChannel &&
+        {!privateChannel && showChannelInfo &&
           otherUsers.length && (
             <Grid.Column width={4}>
               <MetaPanel
@@ -74,6 +75,7 @@ class Home extends React.Component {
                 otherUsers={otherUsers}
                 user={user}
                 usersInChannel={usersInChannel}
+                showChannelInfo={() => {this.props.setShowChannelInfo(false)}}
               />
             </Grid.Column>
           )}
@@ -88,8 +90,15 @@ const mapStateToProps = ({ user, channel }) => {
     otherUsers: user.otherUsers,
     channel: channel.currentChannel,
     privateChannel: channel.privateChannel,
-    usersInChannel: channel.usersInChannel
+    usersInChannel: channel.usersInChannel,
+    showChannelInfo: channel.showChannelInfo
   };
 };
 
-export default connect(mapStateToProps)(Home);
+const mapDispatchToProps = (dispatch) => {
+  return{
+    setShowChannelInfo: payload => dispatch(setShowChannelInfo(payload))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

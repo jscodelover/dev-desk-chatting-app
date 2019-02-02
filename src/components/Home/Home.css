@@ -24,3 +24,14 @@
   border-left: 4px solid #c79218;
   padding-left: 6px;
 }
+
+.metapannel-close{
+  float: right;
+  font-size: 17px;
+  margin: 4px !important;
+  cursor: pointer;
+}
+
+.metapannel-close:hover{
+  color: red;
+}
