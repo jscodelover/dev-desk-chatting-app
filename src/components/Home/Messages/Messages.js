@@ -5,7 +5,6 @@ import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
 import firebase from "../../../firebaseConfig";
 import Message from "./Message";
-import "./Messages.css";
 import { setUsersInChannel } from "../../../store/action";
 
 class Messages extends React.Component {
@@ -111,9 +110,7 @@ class Messages extends React.Component {
       otherUsers,
       usersInChannel
     } = this.props;
-    console.log(usersInChannel);
     if (channelIDs.includes(channel.id)) {
-      console.log(usersInChannel)
       return usersInChannel;
     } else {
       const { userID } = user;

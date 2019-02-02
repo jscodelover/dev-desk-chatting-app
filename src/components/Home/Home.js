@@ -6,6 +6,7 @@ import ColorPanel from "./ColorPanel/ColorPanel";
 import SidePanel from "./SidePanel/SidePanel";
 import Messages from "./Messages/Messages";
 import MetaPanel from "./MetaPanel/MetaPanel";
+import "./Home.css";
 
 class Home extends React.Component {
   componentDidMount() {
