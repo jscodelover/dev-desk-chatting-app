@@ -9,6 +9,7 @@ export const actions = {
   SET_PRIVATE_CHANNEL: "SET_PRIVATE_CHANNEL",
   ACTIVE_CHANNEL_ID: "ACTIVE_CHANNEL_ID",
   SET_USERS_IN_CHANNEL: "SET_USERS_IN_CHANNEL",
+  SHOW_CHANNEL_INFO: "SHOW_CHANNEL_INFO",
 
   SET_NOTIFICATION: "SET_NOTIFICATION"
 };
@@ -75,6 +76,13 @@ export function setUsersInChannel(payload) {
     type: actions.SET_USERS_IN_CHANNEL,
     payload
   };
+}
+
+export function setShowChannelInfo(payload) {
+  return {
+    type: actions.SHOW_CHANNEL_INFO,
+    payload
+  }
 }
 
 /* Notification */

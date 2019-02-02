@@ -40,7 +40,8 @@ const CHANNEL_INITIAL_STATE = {
   channelIDs: [],
   privateChannel: false,
   activeChannelID: "",
-  usersInChannel: []
+  usersInChannel: [],
+  showChannelInfo: false
 };
 
 const channel_reducer = (state = CHANNEL_INITIAL_STATE, action) => {
@@ -75,12 +76,16 @@ const channel_reducer = (state = CHANNEL_INITIAL_STATE, action) => {
         ...state,
         otherChannels: action.payload
       };
-
     case actions.SET_USERS_IN_CHANNEL:
       return {
         ...state,
         usersInChannel: action.payload
       };
+    case actions.SHOW_CHANNEL_INFO: 
+    return{
+      ...state,
+      showChannelInfo: action.payload
+    }  
     default:
       return state;
   }
