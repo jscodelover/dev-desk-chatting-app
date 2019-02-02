@@ -64,7 +64,7 @@ export default class MetaPanel extends Component {
           onClick={this.handleClick}
         >
           <Icon name="dropdown" />
-          All Users <Icon name="users" />
+          Contributors <Icon name="users" />
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
           {this.channelUsers()}
