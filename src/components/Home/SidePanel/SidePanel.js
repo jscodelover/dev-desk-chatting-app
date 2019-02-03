@@ -5,7 +5,6 @@ import UserPanel from "./UserPanel";
 import Channel from "./Channel";
 import DirectMessage from "./DirectMessages";
 import Starred from "./Starred";
-import "./SidePanel.css";
 
 class SidePanel extends Component {
   render() {
