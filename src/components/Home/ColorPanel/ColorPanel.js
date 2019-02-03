@@ -9,15 +9,16 @@ import {
   Icon,
   Segment
 } from "semantic-ui-react";
-import { ChromePicker } from "react-color";
+import { SliderPicker } from "react-color";
 
 class ColorPanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       modal: false,
-      primary: "rgba(168,79,168,1)",
-      secondary: "rgba(238,238,238,1)"
+      sidebar: "rgba(168,79,168,1)",
+      replyBtn: "rgba(242,113,28,1)",
+      fileBtn: "rgba(69,182,174,1)"
     };
   }
 
@@ -29,16 +30,20 @@ class ColorPanel extends React.Component {
     this.setState({ modal: false });
   };
 
-  primaryColorHandler = ({ r, g, b, a }) => {
-    this.setState({ primary: `rgba(${r},${g},${b},${a})` });
+  sidebarColorHandler = ({ r, g, b, a }) => {
+    this.setState({ sidebar: `rgba(${r},${g},${b},${a})` });
   };
 
-  secondaryColorHandler = ({ r, g, b, a }) => {
-    this.setState({ secondary: `rgba(${r},${g},${b},${a})` });
+  replyBtnColorHandler = ({ r, g, b, a }) => {
+    this.setState({ replyBtn: `rgba(${r},${g},${b},${a})` });
+  };
+
+  fileBtnColorHandler = ({ r, g, b, a }) => {
+    this.setState({ fileBtn: `rgba(${r},${g},${b},${a})` });
   };
 
   render() {
-    const { modal, primary, secondary } = this.state;
+    const { modal, sidebar, replyBtn, fileBtn } = this.state;
     return (
       <Sidebar
         as={Menu}
@@ -53,29 +58,33 @@ class ColorPanel extends React.Component {
         <Modal open={modal} basic size="small">
           <Header as="h2" content="Pick your theme" />
           <Modal.Content>
-            <Header
-              as="h4"
-              content="Primary Color"
-              style={{ color: "white" }}
-            />
-            <Segment inverted style={{ background: primary }}>
-              <ChromePicker
-                color={primary}
+            <Header as="h4" content="SideBar" style={{ color: "white" }} />
+            <Segment inverted style={{ background: sidebar }}>
+              <SliderPicker
+                styles={{ default: { wrap: {} } }}
+                color={sidebar}
                 onChange={({ rgb }) => {
-                  this.primaryColorHandler(rgb);
+                  this.sidebarColorHandler(rgb);
                 }}
               />
             </Segment>
-            <Header
-              as="h4"
-              content="Secondary Color"
-              style={{ color: "white" }}
-            />
-            <Segment inverted style={{ background: secondary }}>
-              <ChromePicker
-                color={secondary}
+            <Header as="h4" content="Reply Button" style={{ color: "white" }} />
+            <Segment inverted style={{ background: replyBtn }}>
+              <SliderPicker
+                styles={{ default: { wrap: {} } }}
+                color={replyBtn}
                 onChange={({ rgb }) => {
-                  this.secondaryColorHandler(rgb);
+                  this.replyBtnColorHandler(rgb);
+                }}
+              />
+            </Segment>
+            <Header as="h4" content="File Button" style={{ color: "white" }} />
+            <Segment inverted style={{ background: fileBtn }}>
+              <SliderPicker
+                styles={{ default: { wrap: {} } }}
+                color={fileBtn}
+                onChange={({ rgb }) => {
+                  this.fileBtnColorHandler(rgb);
                 }}
               />
             </Segment>
