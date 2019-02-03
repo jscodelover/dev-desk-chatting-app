@@ -11,7 +11,7 @@ import {
 } from "semantic-ui-react";
 import "./Auth.css";
 import md5 from "md5";
-import firebase from "../../firebaseConfig";
+import firebase from "../../util/firebaseConfig";
 
 class Registers extends Component {
   constructor(props) {

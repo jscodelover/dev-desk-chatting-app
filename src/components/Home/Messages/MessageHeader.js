@@ -1,6 +1,6 @@
 import React from "react";
 import moment from "moment";
-import firebase from "../../../firebaseConfig";
+import firebase from "../../../util/firebaseConfig";
 import { Segment, Header, Icon, Input } from "semantic-ui-react";
 
 class MessageHeader extends React.Component {
@@ -84,7 +84,14 @@ class MessageHeader extends React.Component {
             loading={searchLoading}
             placeholder="Search..."
           />
-          {!privateChannel && <Icon name="info" color="grey" style={{cursor: 'pointer'}} onClick={showChannelInfo}/>}
+          {!privateChannel && (
+            <Icon
+              name="info"
+              color="grey"
+              style={{ cursor: "pointer" }}
+              onClick={showChannelInfo}
+            />
+          )}
         </Header>
       </Segment>
     );

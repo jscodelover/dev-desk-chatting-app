@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Segment, Comment } from "semantic-ui-react";
 import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
-import firebase from "../../../firebaseConfig";
+import firebase from "../../../util/firebaseConfig";
 import Message from "./Message";
 import { setUsersInChannel, setShowChannelInfo } from "../../../store/action";
 
@@ -129,7 +129,13 @@ class Messages extends React.Component {
       searchLoading,
       msgLoading
     } = this.state;
-    const { channel, user, privateChannel, activeChannelID, setShowChannelInfo } = this.props;
+    const {
+      channel,
+      user,
+      privateChannel,
+      activeChannelID,
+      setShowChannelInfo
+    } = this.props;
     return (
       <React.Fragment>
         {msgLoading ? (
@@ -146,7 +152,9 @@ class Messages extends React.Component {
               activeChannelID={activeChannelID}
               searchLoading={searchLoading}
               privateChannel={privateChannel}
-              showChannelInfo={()=> {setShowChannelInfo(true)}}
+              showChannelInfo={() => {
+                setShowChannelInfo(true);
+              }}
             />
             <Segment className="messages" loading={msgLoading}>
               <Comment.Group size="large">

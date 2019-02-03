@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { Header, Image, Icon, Dropdown, Grid } from "semantic-ui-react";
-import firebase from "../../../firebaseConfig";
+import firebase from "../../../util/firebaseConfig";
 
 class UserPanel extends Component {
   dropdownOptions = () => [
@@ -30,9 +30,13 @@ class UserPanel extends Component {
       .signOut()
       .then(() => {
         firebase
-        .database()
-        .ref(`users/${this.props.user.userID}`)
-        .set({ ...this.props.user, lastSeen: firebase.database.ServerValue.TIMESTAMP, status: 'offline' });
+          .database()
+          .ref(`users/${this.props.user.userID}`)
+          .set({
+            ...this.props.user,
+            lastSeen: firebase.database.ServerValue.TIMESTAMP,
+            status: "offline"
+          });
         /* eslint-disable no-unused-expressions */
         <Redirect to="/login" />;
       })

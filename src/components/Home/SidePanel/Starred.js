@@ -8,7 +8,7 @@ import {
   setActiveChannelID,
   setNotification
 } from "../../../store/action";
-import firebase from "../../../firebaseConfig";
+import firebase from "../../../util/firebaseConfig";
 import * as notify from "../../../util/notification";
 import generateId from "../../../util/directmessage";
 

@@ -1,10 +1,11 @@
-.messageHeader{
+/* Messages */
+.messageHeader {
   min-width: 500px;
   height: 78.5px;
 }
 
 .messages {
-  height: calc(100% - (110px + 78.5px + 14px ));
+  height: calc(100% - (110px + 78.5px + 14px));
   min-width: 500px;
   overflow-y: scroll;
 }
@@ -25,13 +26,65 @@
   padding-left: 6px;
 }
 
-.metapannel-close{
+/* Meta Pannel */
+.metapannel-close {
   float: right;
   font-size: 17px;
   margin: 4px !important;
   cursor: pointer;
 }
 
-.metapannel-close:hover{
+.metapannel-close:hover {
   color: red;
+}
+
+/* Color Pannel */
+.color-box {
+  overflow: hidden;
+  width: 35px;
+  height: 40px;
+  border-radius: 5px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid white;
+}
+.color-sidebar {
+  width: 35px;
+  height: 40px;
+}
+
+.color-replyBtn,
+.color-fileBtn {
+  width: 35px;
+  height: 40px;
+  position: absolute;
+  top: 19px;
+}
+
+.color-fileBtn {
+  left: 18px;
+}
+
+.voilet {
+  background: rgba(168, 79, 168, 1);
+}
+
+.orange {
+  background: rgba(242, 113, 28, 1);
+}
+
+.light-blue {
+  background: rgba(69, 182, 174, 1);
+}
+
+.blue {
+  background: rgba(30, 34, 58, 1);
+}
+
+.yellow {
+  background: rgba(222, 170, 19, 1);
+}
+
+.red {
+  background: rgba(219, 40, 40, 1);
 }

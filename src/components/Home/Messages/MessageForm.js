@@ -1,7 +1,7 @@
 import * as React from "react";
 import uuidv4 from "uuid/v4";
 import { Segment, Button, Input, Icon, Progress } from "semantic-ui-react";
-import firebase from "../../../firebaseConfig";
+import firebase from "../../../util/firebaseConfig";
 import FileModal from "./FileModal";
 
 class MessageForm extends React.Component {

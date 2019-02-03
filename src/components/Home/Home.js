@@ -1,12 +1,12 @@
 import React from "react";
 import { Grid } from "semantic-ui-react";
 import { connect } from "react-redux";
-import firebase from "../../firebaseConfig";
+import firebase from "../../util/firebaseConfig";
 import ColorPanel from "./ColorPanel/ColorPanel";
 import SidePanel from "./SidePanel/SidePanel";
 import Messages from "./Messages/Messages";
 import MetaPanel from "./MetaPanel/MetaPanel";
-import { setShowChannelInfo } from '../../store/action';
+import { setShowChannelInfo } from "../../store/action";
 import "./Home.css";
 
 class Home extends React.Component {
@@ -54,20 +54,28 @@ class Home extends React.Component {
   }
 
   render() {
-    const { user, channel, privateChannel, otherUsers, usersInChannel, showChannelInfo } = this.props;
+    const {
+      user,
+      channel,
+      privateChannel,
+      otherUsers,
+      usersInChannel,
+      showChannelInfo
+    } = this.props;
     return (
       <Grid
         columns="equal"
         style={{ background: "#eee", marginTop: "0px", height: "100vh" }}
       >
-        <ColorPanel />
+        <ColorPanel user={user} />
         {user.userID && <SidePanel />}
 
         <Grid.Column style={{ marginLeft: "315px", position: "relative" }}>
           {channel.id && <Messages />}
         </Grid.Column>
 
-        {!privateChannel && showChannelInfo &&
+        {!privateChannel &&
+          showChannelInfo &&
           otherUsers.length && (
             <Grid.Column width={4}>
               <MetaPanel
@@ -75,7 +83,9 @@ class Home extends React.Component {
                 otherUsers={otherUsers}
                 user={user}
                 usersInChannel={usersInChannel}
-                showChannelInfo={() => {this.props.setShowChannelInfo(false)}}
+                showChannelInfo={() => {
+                  this.props.setShowChannelInfo(false);
+                }}
               />
             </Grid.Column>
           )}
@@ -95,10 +105,13 @@ const mapStateToProps = ({ user, channel }) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return{
+const mapDispatchToProps = dispatch => {
+  return {
     setShowChannelInfo: payload => dispatch(setShowChannelInfo(payload))
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Home);

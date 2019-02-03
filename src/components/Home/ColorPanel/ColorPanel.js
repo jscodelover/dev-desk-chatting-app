@@ -9,16 +9,16 @@ import {
   Icon,
   Segment
 } from "semantic-ui-react";
-import { SliderPicker } from "react-color";
+import { ChromePicker } from "react-color";
+import firebase from "../../../util/firebaseConfig";
 
 class ColorPanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      userRef: firebase.database().ref("users"),
       modal: false,
-      sidebar: "rgba(168,79,168,1)",
-      replyBtn: "rgba(242,113,28,1)",
-      fileBtn: "rgba(69,182,174,1)"
+      sidebar: "rgba(168,79,168,1)"
     };
   }
 
@@ -34,16 +34,26 @@ class ColorPanel extends React.Component {
     this.setState({ sidebar: `rgba(${r},${g},${b},${a})` });
   };
 
-  replyBtnColorHandler = ({ r, g, b, a }) => {
-    this.setState({ replyBtn: `rgba(${r},${g},${b},${a})` });
+  saveColor = () => {
+    const { userRef, sidebar } = this.state;
+    const { user } = this.props;
+    userRef.child(`${user.userID}`).update({ ...user, color: sidebar });
   };
 
-  fileBtnColorHandler = ({ r, g, b, a }) => {
-    this.setState({ fileBtn: `rgba(${r},${g},${b},${a})` });
-  };
+  defaultTheme = (color1, color2, color3) => (
+    <React.Fragment>
+      <Divider style={{ border: "none" }} />
+      <div className="color-box">
+        <div className={`color-sidebar ${color1}`}>
+          <div className={`color-replyBtn ${color2}`} />
+          <div className={`color-fileBtn ${color3}`} />
+        </div>
+      </div>
+    </React.Fragment>
+  );
 
   render() {
-    const { modal, sidebar, replyBtn, fileBtn } = this.state;
+    const { modal, sidebar } = this.state;
     return (
       <Sidebar
         as={Menu}
@@ -55,36 +65,17 @@ class ColorPanel extends React.Component {
       >
         <Divider style={{ border: "none" }} />
         <Button icon="add" size="small" color="blue" onClick={this.openModal} />
+        {this.defaultTheme("voilet", "orange", "light-blue")}
+        {this.defaultTheme("blue", "yellow", "red")}
         <Modal open={modal} basic size="small">
           <Header as="h2" content="Pick your theme" />
           <Modal.Content>
             <Header as="h4" content="SideBar" style={{ color: "white" }} />
             <Segment inverted style={{ background: sidebar }}>
-              <SliderPicker
-                styles={{ default: { wrap: {} } }}
+              <ChromePicker
                 color={sidebar}
                 onChange={({ rgb }) => {
                   this.sidebarColorHandler(rgb);
-                }}
-              />
-            </Segment>
-            <Header as="h4" content="Reply Button" style={{ color: "white" }} />
-            <Segment inverted style={{ background: replyBtn }}>
-              <SliderPicker
-                styles={{ default: { wrap: {} } }}
-                color={replyBtn}
-                onChange={({ rgb }) => {
-                  this.replyBtnColorHandler(rgb);
-                }}
-              />
-            </Segment>
-            <Header as="h4" content="File Button" style={{ color: "white" }} />
-            <Segment inverted style={{ background: fileBtn }}>
-              <SliderPicker
-                styles={{ default: { wrap: {} } }}
-                color={fileBtn}
-                onChange={({ rgb }) => {
-                  this.fileBtnColorHandler(rgb);
                 }}
               />
             </Segment>
@@ -93,7 +84,7 @@ class ColorPanel extends React.Component {
             <Button color="red" inverted onClick={this.closeModal}>
               <Icon name="remove" /> Cancel
             </Button>
-            <Button color="green" inverted>
+            <Button color="green" inverted onClick={this.saveColor}>
               <Icon name="checkmark" /> Save
             </Button>
           </Modal.Actions>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Menu, Icon } from "semantic-ui-react";
 import { connect } from "react-redux";
-import firebase from "../../../firebaseConfig";
+import firebase from "../../../util/firebaseConfig";
 import DisplayChannel from "../SidePanel/DisplayChannel";
 import {
   setChannel,
