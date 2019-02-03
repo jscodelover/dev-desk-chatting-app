@@ -16,8 +16,8 @@ class ColorPanel extends React.Component {
     super(props);
     this.state = {
       modal: false,
-      primary: "#4c3c4c",
-      secondary: "#eeeeee"
+      primary: "rgba(168,79,168,1)",
+      secondary: "rgba(238,238,238,1)"
     };
   }
 
@@ -29,12 +29,12 @@ class ColorPanel extends React.Component {
     this.setState({ modal: false });
   };
 
-  primaryColorHandler = color => {
-    this.setState({ primary: color.hex });
+  primaryColorHandler = ({ r, g, b, a }) => {
+    this.setState({ primary: `rgba(${r},${g},${b},${a})` });
   };
 
-  secondaryColorHandler = color => {
-    this.setState({ secondary: color.hex });
+  secondaryColorHandler = ({ r, g, b, a }) => {
+    this.setState({ secondary: `rgba(${r},${g},${b},${a})` });
   };
 
   render() {
@@ -51,20 +51,32 @@ class ColorPanel extends React.Component {
         <Divider style={{ border: "none" }} />
         <Button icon="add" size="small" color="blue" onClick={this.openModal} />
         <Modal open={modal} basic size="small">
-          <Header content="Pick your theme" />
+          <Header as="h2" content="Pick your theme" />
           <Modal.Content>
+            <Header
+              as="h4"
+              content="Primary Color"
+              style={{ color: "white" }}
+            />
             <Segment inverted style={{ background: primary }}>
-              <Header as="h3" content="Primary Color" />
               <ChromePicker
                 color={primary}
-                onChange={this.primaryColorHandler}
+                onChange={({ rgb }) => {
+                  this.primaryColorHandler(rgb);
+                }}
               />
             </Segment>
+            <Header
+              as="h4"
+              content="Secondary Color"
+              style={{ color: "white" }}
+            />
             <Segment inverted style={{ background: secondary }}>
-              <Header as="h3" content="Secondary Color" />
               <ChromePicker
                 color={secondary}
-                onChange={this.secondaryColorHandler}
+                onChange={({ rgb }) => {
+                  this.secondaryColorHandler(rgb);
+                }}
               />
             </Segment>
           </Modal.Content>
