@@ -44,9 +44,9 @@ class ColorPanel extends React.Component {
     <React.Fragment>
       <Divider style={{ border: "none" }} />
       <div className="color-box">
-        <div className={`color-sidebar ${color1}`}>
-          <div className={`color-replyBtn ${color2}`} />
-          <div className={`color-fileBtn ${color3}`} />
+        <div className={`color-sidebar my${color1}`}>
+          <div className={`color-replyBtn my${color2}`} />
+          <div className={`color-fileBtn my${color3}`} />
         </div>
       </div>
     </React.Fragment>
