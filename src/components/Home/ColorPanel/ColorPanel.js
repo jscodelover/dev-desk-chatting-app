@@ -37,7 +37,12 @@ class ColorPanel extends React.Component {
   saveColor = () => {
     const { userRef, sidebar } = this.state;
     const { user } = this.props;
-    userRef.child(`${user.userID}`).update({ ...user, color: sidebar });
+    userRef
+      .child(`${user.userID}`)
+      .update({ ...user, color: sidebar })
+      .then(() => {
+        this.setState({ modal: false });
+      });
   };
 
   defaultTheme = (color1, color2, color3) => (
