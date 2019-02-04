@@ -38,17 +38,28 @@ class ColorPanel extends React.Component {
     const { userRef, sidebar } = this.state;
     const { user } = this.props;
     userRef
-      .child(`${user.userID}`)
-      .update({ ...user, color: sidebar })
+      .child(`${user.userID}/color`)
+      .update({ sidebar, theme: null })
       .then(() => {
         this.setState({ modal: false });
       });
   };
 
+  saveTheme = (c1, c2, c3) => {
+    const { userRef } = this.state;
+    const { user } = this.props;
+    userRef
+      .child(`${user.userID}/color`)
+      .update({ theme: [c1, c2, c3], sidebar: null });
+  };
+
   defaultTheme = (color1, color2, color3) => (
     <React.Fragment>
       <Divider style={{ border: "none" }} />
-      <div className="color-box">
+      <div
+        className="color-box"
+        onClick={() => this.saveTheme(color1, color2, color3)}
+      >
         <div className={`color-sidebar my${color1}`}>
           <div className={`color-replyBtn my${color2}`} />
           <div className={`color-fileBtn my${color3}`} />
