@@ -157,6 +157,13 @@ class MessageForm extends React.Component {
       uploadStatus,
       uploadPercentage
     } = this.state;
+    const { user } = this.props;
+    const btn1 = user.color.sidebar
+      ? "rgba(0, 0, 0, 0.8)"
+      : user.color.theme[1];
+    const btn2 = user.color.sidebar
+      ? "rgba(0, 0, 0, 0.8)"
+      : user.color.theme[2];
     return (
       <Segment className="messageForm">
         {uploadStatus === "uploading" ? (
@@ -193,6 +200,7 @@ class MessageForm extends React.Component {
         />
         <Button.Group icon width="2" fluid>
           <Button
+            style={{ backgroundColor: btn1 }}
             color="orange"
             content="Add Reply"
             disabled={loading}
@@ -201,6 +209,7 @@ class MessageForm extends React.Component {
             onClick={this.sendMessage}
           />
           <Button
+            style={{ backgroundColor: btn2 }}
             color="teal"
             content="Add File"
             disabled={uploadStatus === "uploading"}

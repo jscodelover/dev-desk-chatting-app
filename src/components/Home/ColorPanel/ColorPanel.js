@@ -9,7 +9,7 @@ import {
   Icon,
   Segment
 } from "semantic-ui-react";
-import { ChromePicker } from "react-color";
+import { SliderPicker } from "react-color";
 import firebase from "../../../util/firebaseConfig";
 
 class ColorPanel extends React.Component {
@@ -18,7 +18,13 @@ class ColorPanel extends React.Component {
     this.state = {
       userRef: firebase.database().ref("users"),
       modal: false,
-      sidebar: "rgba(168,79,168,1)"
+      sidebar: "rgba(76,60,76,1)",
+      voilet: "rgba(76,60,76,1)",
+      orange: "rgba(242, 113, 28, 1)",
+      lightBlue: "rgba(69, 182, 174, 1)",
+      blue: "rgba(30, 34, 58, 1)",
+      yellow: "rgba(171, 129, 9, 1)",
+      red: "rgba(219, 40, 40, 1)"
     };
   }
 
@@ -60,16 +66,25 @@ class ColorPanel extends React.Component {
         className="color-box"
         onClick={() => this.saveTheme(color1, color2, color3)}
       >
-        <div className={`color-sidebar my${color1}`}>
-          <div className={`color-replyBtn my${color2}`} />
-          <div className={`color-fileBtn my${color3}`} />
+        <div className="color-sidebar" style={{ backgroundColor: color1 }}>
+          <div className="color-replyBtn" style={{ backgroundColor: color2 }} />
+          <div className="color-fileBtn" style={{ backgroundColor: color3 }} />
         </div>
       </div>
     </React.Fragment>
   );
 
   render() {
-    const { modal, sidebar } = this.state;
+    const {
+      modal,
+      sidebar,
+      voilet,
+      orange,
+      lightBlue,
+      blue,
+      yellow,
+      red
+    } = this.state;
     return (
       <Sidebar
         as={Menu}
@@ -81,14 +96,15 @@ class ColorPanel extends React.Component {
       >
         <Divider style={{ border: "none" }} />
         <Button icon="add" size="small" color="blue" onClick={this.openModal} />
-        {this.defaultTheme("voilet", "orange", "light-blue")}
-        {this.defaultTheme("blue", "yellow", "red")}
+        {this.defaultTheme(voilet, orange, lightBlue)}
+        {this.defaultTheme(blue, yellow, red)}
         <Modal open={modal} basic size="small">
           <Header as="h2" content="Pick your theme" />
           <Modal.Content>
             <Header as="h4" content="SideBar" style={{ color: "white" }} />
             <Segment inverted style={{ background: sidebar }}>
-              <ChromePicker
+              <SliderPicker
+                styles={{ default: { wrap: {} } }}
                 color={sidebar}
                 onChange={({ rgb }) => {
                   this.sidebarColorHandler(rgb);
