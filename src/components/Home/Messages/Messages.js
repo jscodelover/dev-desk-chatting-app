@@ -34,22 +34,19 @@ class Messages extends React.Component {
   }
 
   fetchMessage = () => {
-    const { messageRef, userRef } = this.state;
+    const { messageRef } = this.state;
     const { channel, channelIDs } = this.props;
     let loadedMessage = [];
     messageRef.once("value", snap => {
       this.setState({ msgLoading: true });
       if (snap.hasChild(channel.id)) {
         messageRef.child(channel.id).on("child_added", snapMsg => {
-          userRef.child(snapMsg.val().userID).once("value", snapUser => {
-            loadedMessage.push({
-              ...snapMsg.val(),
-              user: { ...snapUser.val() }
-            });
-            this.setState({ messages: loadedMessage });
-            if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
-            else this.props.setUsersInChannel([]);
+          loadedMessage.push({
+            ...snapMsg.val()
           });
+          this.setState({ messages: loadedMessage });
+          if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
+          else this.props.setUsersInChannel([]);
         });
       } else {
         this.setState({ messages: [] });
@@ -61,12 +58,15 @@ class Messages extends React.Component {
   };
 
   userCount = messages => {
+    const allUser = [...this.props.otherUsers, this.props.user];
+    console.log(allUser);
     if (messages.length) {
       let users = messages.reduce((userArray, msg) => {
-        if (userArray.findIndex(obj => obj.name === msg.user.username) < 0)
+        let msgUser = allUser.find(u => u.userID === msg.userID);
+        if (userArray.findIndex(obj => obj.name === msgUser.username) < 0)
           return userArray.concat({
-            name: msg.user.username,
-            image: msg.user.picture
+            name: msgUser.username,
+            image: msgUser.picture
           });
         return userArray;
       }, []);
@@ -76,10 +76,17 @@ class Messages extends React.Component {
     }
   };
 
-  displayMessages = (messages, user) =>
+  displayMessages = (messages, user, otherUsers) =>
     messages.length > 0 &&
     messages.map(msg => {
-      return <Message msg={msg} key={msg.timestamp} user={user} />;
+      return (
+        <Message
+          msg={msg}
+          key={msg.timestamp}
+          user={user}
+          allUsers={[...otherUsers, user]}
+        />
+      );
     });
 
   //TODO: include search on complete message database --> (using channelIDs for this)
@@ -134,7 +141,8 @@ class Messages extends React.Component {
       user,
       privateChannel,
       activeChannelID,
-      setShowChannelInfo
+      setShowChannelInfo,
+      otherUsers
     } = this.props;
     return (
       <React.Fragment>
@@ -159,8 +167,8 @@ class Messages extends React.Component {
             <Segment className="messages" loading={msgLoading}>
               <Comment.Group size="large">
                 {searchMsg.length > 0
-                  ? this.displayMessages(searchMsg, user)
-                  : this.displayMessages(messages, user)}
+                  ? this.displayMessages(searchMsg, user, otherUsers)
+                  : this.displayMessages(messages, user, otherUsers)}
               </Comment.Group>
             </Segment>
           </React.Fragment>
