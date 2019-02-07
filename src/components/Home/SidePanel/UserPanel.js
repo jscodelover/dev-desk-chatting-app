@@ -12,6 +12,7 @@ import {
   Input
 } from "semantic-ui-react";
 import firebase from "../../../util/firebaseConfig";
+import Spinner from "../../Spinner";
 
 class UserPanel extends Component {
   constructor(props) {
@@ -22,9 +23,8 @@ class UserPanel extends Component {
       croppedImage: "",
       userRef: firebase.database().ref("users"),
       storageRef: firebase.storage().ref(),
-      uploadTask: "",
-      uploadStatus: "",
-      blob: ""
+      blob: "",
+      loading: false
     };
   }
   dropdownOptions = () => [
@@ -81,78 +81,85 @@ class UserPanel extends Component {
 
   preview = () => {
     if (this.avatar) {
-      const canvas = this.avatar.getImage().toDataURL();
-      let imageURL;
-      fetch(canvas)
-        .then(res => res.blob())
-        .then(blob => {
-          imageURL = window.URL.createObjectURL(blob);
-          this.setState({ croppedImage: imageURL, blob: canvas });
-        });
+      this.avatar.getImageScaledToCanvas().toBlob(blob => {
+        let imageURL = URL.createObjectURL(blob);
+        this.setState({ croppedImage: imageURL, blob });
+      });
     }
   };
 
   save = () => {
     const { storageRef, userRef, blob } = this.state;
     const { user } = this.props;
-    this.setState(
-      {
-        uploadTask: storageRef
-          .child(`${user.userID}/images-${user.userID}.jpg`)
-          .put(blob, { contentType: "image/jpeg" }),
-        uploadStatus: "uploading"
-      },
-      () => {
-        this.state.uploadTask.snapshot.ref
+    storageRef
+      .child(`${user.userID}/images-${user.userID}.jpg`)
+      .put(blob, { contentType: "image/jpeg" })
+      .then(snap => {
+        this.setState({ loading: true });
+        this.modal();
+        snap.ref
           .getDownloadURL()
           .then(downloadURL => {
-            this.setState({ uploadTask: "" });
-            console.log(downloadURL);
+            userRef
+              .child(user.userID)
+              .update({ ...user, picture: downloadURL });
+            this.setState({
+              croppedImage: "",
+              blob: "",
+              image: "",
+              loading: false
+            });
           })
           .catch(err => {
             this.setState({
-              uploadTask: ""
+              croppedImage: "",
+              blob: "",
+              image: "",
+              loading: false
             });
           });
-      }
-    );
+      });
   };
 
   render() {
-    const { modal, image, croppedImage } = this.state;
+    const { modal, image, croppedImage, loading } = this.state;
     return (
       <React.Fragment>
-        <Grid>
-          <Grid.Column>
-            <Grid.Row style={{ padding: "1.2em" }}>
-              <Header inverted as="h2">
-                <Icon name="code" />
-                <Header.Content>DevDesk</Header.Content>
-              </Header>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <Grid>
+            <Grid.Column>
+              <Grid.Row style={{ padding: "1.2em" }}>
+                <Header inverted as="h2">
+                  <Icon name="code" />
+                  <Header.Content>DevDesk</Header.Content>
+                </Header>
 
-              <Header
-                style={{ padding: "0.25em" }}
-                as="h3"
-                inverted
-                textAlign="center"
-              >
-                <Dropdown
-                  trigger={
-                    <span>
-                      <Image
-                        src={this.props.user.picture}
-                        spaced="right"
-                        avatar
-                      />
-                      {this.props.user.username}
-                    </span>
-                  }
-                  options={this.dropdownOptions()}
-                />
-              </Header>
-            </Grid.Row>
-          </Grid.Column>
-        </Grid>
+                <Header
+                  style={{ padding: "0.25em" }}
+                  as="h3"
+                  inverted
+                  textAlign="center"
+                >
+                  <Dropdown
+                    trigger={
+                      <span>
+                        <Image
+                          src={this.props.user.picture}
+                          spaced="right"
+                          avatar
+                        />
+                        {this.props.user.username}
+                      </span>
+                    }
+                    options={this.dropdownOptions()}
+                  />
+                </Header>
+              </Grid.Row>
+            </Grid.Column>
+          </Grid>
+        )}
         <Modal open={modal} basic>
           <Header content="Change Avatar" />
           <Modal.Content>
@@ -193,9 +200,11 @@ class UserPanel extends Component {
             <Button color="green" inverted onClick={this.preview}>
               <Icon name="image" /> Preview
             </Button>
-            <Button color="green" inverted onClick={this.save}>
-              <Icon name="image" /> Save
-            </Button>
+            {croppedImage && (
+              <Button color="green" inverted onClick={this.save}>
+                <Icon name="image" /> Save
+              </Button>
+            )}
           </Modal.Actions>
         </Modal>
       </React.Fragment>
