@@ -59,7 +59,6 @@ class Messages extends React.Component {
 
   userCount = messages => {
     const allUser = [...this.props.otherUsers, this.props.user];
-    console.log(allUser);
     if (messages.length) {
       let users = messages.reduce((userArray, msg) => {
         let msgUser = allUser.find(u => u.userID === msg.userID);

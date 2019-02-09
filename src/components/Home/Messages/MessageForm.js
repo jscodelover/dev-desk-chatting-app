@@ -9,6 +9,7 @@ class MessageForm extends React.Component {
     super(props);
     this.state = {
       storageRef: firebase.storage().ref(),
+      typingRef: firebase.database().ref("typing"),
       message: "",
       file: "",
       loading: false,
@@ -43,7 +44,6 @@ class MessageForm extends React.Component {
     const { message, error } = this.state;
 
     if (message) {
-      console.log(this.createMessage(user));
       this.setState({ loading: true });
       messageRef
         .child(channel.id)
@@ -51,6 +51,7 @@ class MessageForm extends React.Component {
         .set(this.createMessage(user))
         .then(() => {
           this.setState({ loading: false, message: "", error: [] });
+          this.typingRemove();
         })
         .catch(() => {
           this.setState({
@@ -148,6 +149,26 @@ class MessageForm extends React.Component {
     );
   };
 
+  typingAdd = () => {
+    const { typingRef, message } = this.state;
+    const { user, channel } = this.props;
+    if (message) {
+      typingRef
+        .child(channel.id)
+        .child(user.userID)
+        .set(user.username);
+    } else this.typingRemove();
+  };
+
+  typingRemove = () => {
+    const { typingRef } = this.state;
+    const { user, channel } = this.props;
+    typingRef
+      .child(channel.id)
+      .child(user.userID)
+      .remove();
+  };
+
   render() {
     const {
       message,
@@ -190,6 +211,7 @@ class MessageForm extends React.Component {
               <Icon name="add" />
             </Button>
           }
+          onKeyDown={this.typingAdd}
           name="message"
           value={message}
           onChange={this.getMessage}
