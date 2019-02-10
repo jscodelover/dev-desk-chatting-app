@@ -20,13 +20,27 @@ class Messages extends React.Component {
       searchMsg: [],
       searchLoading: false,
       msgLoading: true,
-      userInHeader: {}
+      userInHeader: {},
+      connectionRef: firebase.database().ref(".info/connected")
     };
   }
 
   componentDidMount() {
     this.fetchMessage();
     this.findTypingUsers();
+    this.state.connectionRef.on("value", snap => {
+      if (snap.val() === true) {
+        this.state.typingRef
+          .child(this.props.channel.id)
+          .child(this.props.user.userID)
+          .onDisconnect()
+          .remove(err => {
+            if (err !== null) {
+              console.error(err);
+            }
+          });
+      }
+    });
   }
 
   componentDidUpdate(prevProps) {

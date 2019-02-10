@@ -64,7 +64,7 @@ class Starred extends React.Component {
     this.props.setActiveChannelID(user.userID);
     this.props.setChannel({
       channelName: user.username,
-      id: this.generateId(user)
+      id: generateId(user, this.props.user.userID)
     });
     this.props.setPrivateChannel(true);
     notify.clearNotification(

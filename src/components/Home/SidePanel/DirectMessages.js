@@ -13,6 +13,7 @@ import {
 import Spinner from "../../Spinner";
 import * as notify from "../../../util/notification";
 import generateId from "../../../util/directmessage";
+import * as typeFn from "../../../util/typingfn";
 
 class DirectMessage extends React.Component {
   constructor(props) {
@@ -92,7 +93,13 @@ class DirectMessage extends React.Component {
 
   render() {
     const { loading } = this.state;
-    const { activeChannelID, user, totalUsers, notification } = this.props;
+    const {
+      activeChannelID,
+      user,
+      totalUsers,
+      notification,
+      channel
+    } = this.props;
     return (
       <React.Fragment>
         {loading ? (
@@ -111,8 +118,9 @@ class DirectMessage extends React.Component {
                 users={totalUsers}
                 activeChannelID={activeChannelID}
                 notification={notification}
-                userID={this.props.user.userID}
+                userID={user.userID}
                 changeChannel={user => {
+                  typeFn.typingRemove(channel, this.props.user);
                   this.changeChannel(user);
                 }}
               />
@@ -130,7 +138,8 @@ const mapStateToProps = ({ channel, user, notification }) => {
   return {
     activeChannelID: channel.activeChannelID,
     totalUsers: user.otherUsers,
-    notification: notification.notification
+    notification: notification.notification,
+    channel: channel.currentChannel
   };
 };
 

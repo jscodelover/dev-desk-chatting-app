@@ -13,6 +13,7 @@ import {
 import DisplayChannel from "./DisplayChannel";
 import Spinner from "../../Spinner";
 import * as notify from "../../../util/notification";
+import * as typeFn from "../../../util/typingfn";
 
 class Channel extends React.Component {
   constructor(props) {
@@ -157,6 +158,7 @@ class Channel extends React.Component {
                 activeChannelID={activeChannelID}
                 notification={notification}
                 changeChannel={channel => {
+                  typeFn.typingRemove(this.props.channel, user);
                   this.changeChannel(channel);
                 }}
               />
@@ -205,7 +207,8 @@ const mapStateToProps = ({ channel, notification }) => {
   return {
     activeChannelID: channel.activeChannelID,
     channels: channel.otherChannels,
-    notification: notification.notification
+    notification: notification.notification,
+    channel: channel.currentChannel
   };
 };
 
