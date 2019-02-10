@@ -3,6 +3,7 @@ import uuidv4 from "uuid/v4";
 import { Segment, Button, Input, Icon, Progress } from "semantic-ui-react";
 import firebase from "../../../util/firebaseConfig";
 import FileModal from "./FileModal";
+import Typing from "./Typing";
 
 class MessageForm extends React.Component {
   constructor(props) {
@@ -178,7 +179,7 @@ class MessageForm extends React.Component {
       uploadStatus,
       uploadPercentage
     } = this.state;
-    const { user } = this.props;
+    const { user, typingUsers } = this.props;
     const btn1 = user.color.sidebar
       ? "rgba(0, 0, 0, 0.8)"
       : user.color.theme[1];
@@ -186,7 +187,12 @@ class MessageForm extends React.Component {
       ? "rgba(0, 0, 0, 0.8)"
       : user.color.theme[2];
     return (
-      <Segment className="messageForm">
+      <Segment
+        className={
+          typingUsers.length ? "messageForm typingSpace" : "messageForm"
+        }
+      >
+        {typingUsers.length ? <Typing typingUsers={typingUsers} /> : null}
         {uploadStatus === "uploading" ? (
           <Progress
             style={{

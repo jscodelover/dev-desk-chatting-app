@@ -13,6 +13,8 @@ class Messages extends React.Component {
     this.state = {
       messageRef: firebase.database().ref("messages"),
       userRef: firebase.database().ref("users"),
+      typingRef: firebase.database().ref("typing"),
+      typingUsers: [],
       messages: [],
       channelUsers: [],
       searchMsg: [],
@@ -24,12 +26,14 @@ class Messages extends React.Component {
 
   componentDidMount() {
     this.fetchMessage();
+    this.findTypingUsers();
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.channel.channelName !== this.props.channel.channelName) {
       clearTimeout(this.time);
       this.fetchMessage();
+      this.findTypingUsers();
     }
   }
 
@@ -73,6 +77,18 @@ class Messages extends React.Component {
     } else {
       this.props.setUsersInChannel([]);
     }
+  };
+
+  findTypingUsers = () => {
+    const { typingRef } = this.state;
+    const { channel, user } = this.props;
+    typingRef.child(channel.id).on("value", snap => {
+      let typerArray = [];
+      for (let u in snap.val()) {
+        if (user.userID !== u) typerArray.push(snap.val()[u]);
+      }
+      this.setState({ typingUsers: typerArray });
+    });
   };
 
   displayMessages = (messages, user, otherUsers) =>
@@ -133,7 +149,8 @@ class Messages extends React.Component {
       messages,
       searchMsg,
       searchLoading,
-      msgLoading
+      msgLoading,
+      typingUsers
     } = this.state;
     const {
       channel,
@@ -172,7 +189,12 @@ class Messages extends React.Component {
             </Segment>
           </React.Fragment>
         )}
-        <MessageForm messageRef={messageRef} channel={channel} user={user} />
+        <MessageForm
+          messageRef={messageRef}
+          channel={channel}
+          user={user}
+          typingUsers={typingUsers}
+        />
       </React.Fragment>
     );
   }

@@ -21,9 +21,23 @@
   min-width: 500px;
 }
 
+.typingSpace {
+  padding: 1.6em 1em 0em 1em !important;
+}
+
 .userMessage {
   border-left: 4px solid #c79218;
   padding-left: 6px;
+}
+
+/* Typing */
+
+.typing {
+  position: absolute;
+  top: 0px;
+  font-size: 15px;
+  font-style: italic;
+  color: black;
 }
 
 /* Meta Pannel */
