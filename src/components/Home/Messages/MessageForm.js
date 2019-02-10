@@ -5,6 +5,7 @@ import firebase from "../../../util/firebaseConfig";
 import FileModal from "./FileModal";
 import Typing from "./Typing";
 import * as typeFn from "../../../util/typingfn";
+import * as session from "../../../util/sessionData";
 
 class MessageForm extends React.Component {
   constructor(props) {
@@ -22,9 +23,27 @@ class MessageForm extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.getStoragedData();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.channel.channelName !== this.props.channel.channelName)
+      this.getStoragedData();
+  }
+
+  getStoragedData() {
+    if (session.getSessionData(this.props.channel.id))
+      this.setState({ message: session.getSessionData(this.props.channel.id) });
+    else this.setState({ message: "" });
+  }
+
   getMessage = event => {
     this.setState({ [event.target.name]: event.target.value });
     typeFn.typingAdd(event.target.value, this.props.channel, this.props.user);
+    if (event.target.value)
+      session.addSessionData(this.props.channel.id, event.target.value);
+    else session.removeSessionData(this.props.channel.id);
   };
 
   createMessage = user => {
@@ -54,6 +73,7 @@ class MessageForm extends React.Component {
         .then(() => {
           this.setState({ loading: false, message: "", error: [] });
           typeFn.typingRemove(channel, user);
+          session.removeSessionData(channel.id);
         })
         .catch(() => {
           this.setState({

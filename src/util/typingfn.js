@@ -11,7 +11,6 @@ export function typingAdd(message, channel, user) {
 }
 
 export function typingRemove(channel, user) {
-  console.log(user, channel);
   const typingRef = firebase.database().ref("typing");
   typingRef
     .child(channel.id)

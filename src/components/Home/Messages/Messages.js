@@ -164,7 +164,8 @@ class Messages extends React.Component {
       searchMsg,
       searchLoading,
       msgLoading,
-      typingUsers
+      typingUsers,
+      inputValue
     } = this.state;
     const {
       channel,
@@ -205,6 +206,7 @@ class Messages extends React.Component {
         )}
         <MessageForm
           messageRef={messageRef}
+          inputValue={inputValue}
           channel={channel}
           user={user}
           typingUsers={typingUsers}
