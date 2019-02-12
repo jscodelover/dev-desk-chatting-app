@@ -1,6 +1,6 @@
 import * as React from "react";
 import uuidv4 from "uuid/v4";
-import { Segment, Button, Input, Icon, Progress } from "semantic-ui-react";
+import { Segment, Button, Input, Progress } from "semantic-ui-react";
 import firebase from "../../../util/firebaseConfig";
 import FileModal from "./FileModal";
 import Typing from "./Typing";
@@ -177,10 +177,6 @@ class MessageForm extends React.Component {
 
   addEmoji = emoji => {
     const { message, cursorPos } = this.state;
-    // const val = this.inputRef.props.value;
-    // const position = val.slice(0, this.inputRef.selectionStart).length;
-    // console.log(this.inputRef.selectionStart);
-    //
     const part1 = message.slice(0, cursorPos);
     const part2 = message.slice(cursorPos);
     this.setState({ message: `${part1}${emoji}${part2}` });
@@ -235,7 +231,7 @@ class MessageForm extends React.Component {
               }}
             />
           }
-          ref="input"
+          onClick={this.getMessage}
           name="message"
           value={message}
           onChange={this.getMessage}
