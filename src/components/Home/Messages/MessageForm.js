@@ -182,6 +182,10 @@ class MessageForm extends React.Component {
     this.setState({ message: `${part1}${emoji}${part2}` });
   };
 
+  handleCommand = event => {
+    if (event.ctrlKey && event.key === "Enter") this.sendMessage();
+  };
+
   render() {
     const {
       message,
@@ -232,6 +236,7 @@ class MessageForm extends React.Component {
             />
           }
           onClick={this.getMessage}
+          onKeyDown={this.handleCommand}
           name="message"
           value={message}
           onChange={this.getMessage}
