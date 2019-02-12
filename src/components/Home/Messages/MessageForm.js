@@ -6,6 +6,7 @@ import FileModal from "./FileModal";
 import Typing from "./Typing";
 import * as typeFn from "../../../util/typingfn";
 import * as session from "../../../util/sessionData";
+import Emoji from "./Emoji";
 
 class MessageForm extends React.Component {
   constructor(props) {
@@ -19,7 +20,8 @@ class MessageForm extends React.Component {
       modal: false,
       uploadTask: null,
       uploadStatus: "",
-      uploadPercentage: 0
+      uploadPercentage: 0,
+      cursorPos: 0
     };
   }
 
@@ -44,6 +46,8 @@ class MessageForm extends React.Component {
     if (event.target.value)
       session.addSessionData(this.props.channel.id, event.target.value);
     else session.removeSessionData(this.props.channel.id);
+
+    this.setState({ cursorPos: event.target.selectionStart });
   };
 
   createMessage = user => {
@@ -171,6 +175,17 @@ class MessageForm extends React.Component {
     );
   };
 
+  addEmoji = emoji => {
+    const { message, cursorPos } = this.state;
+    // const val = this.inputRef.props.value;
+    // const position = val.slice(0, this.inputRef.selectionStart).length;
+    // console.log(this.inputRef.selectionStart);
+    //
+    const part1 = message.slice(0, cursorPos);
+    const part2 = message.slice(cursorPos);
+    this.setState({ message: `${part1}${emoji}${part2}` });
+  };
+
   render() {
     const {
       message,
@@ -214,10 +229,13 @@ class MessageForm extends React.Component {
           fluid
           style={{ marginBottom: "0.7rem" }}
           label={
-            <Button icon>
-              <Icon name="add" />
-            </Button>
+            <Emoji
+              onSelect={emoji => {
+                this.addEmoji(emoji);
+              }}
+            />
           }
+          ref="input"
           name="message"
           value={message}
           onChange={this.getMessage}
