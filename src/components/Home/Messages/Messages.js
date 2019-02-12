@@ -26,6 +26,7 @@ class Messages extends React.Component {
   }
 
   componentDidMount() {
+    this.scrollToBottom();
     this.fetchMessage();
     this.findTypingUsers();
     this.state.connectionRef.on("value", snap => {
@@ -44,12 +45,17 @@ class Messages extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    this.scrollToBottom();
     if (prevProps.channel.channelName !== this.props.channel.channelName) {
       clearTimeout(this.time);
       this.fetchMessage();
       this.findTypingUsers();
     }
   }
+
+  scrollToBottom = () => {
+    if (this.scrollRef) this.scrollRef.scrollIntoView({ behavior: "smooth" });
+  };
 
   fetchMessage = () => {
     const { messageRef } = this.state;
@@ -195,12 +201,18 @@ class Messages extends React.Component {
                 setShowChannelInfo(true);
               }}
             />
+            {/* TODO: Edit scrolling */}
             <Segment className="messages" loading={msgLoading}>
               <Comment.Group size="large">
                 {searchMsg.length > 0
                   ? this.displayMessages(searchMsg, user, otherUsers)
                   : this.displayMessages(messages, user, otherUsers)}
               </Comment.Group>
+              <span
+                ref={scroll => {
+                  this.scrollRef = scroll;
+                }}
+              />
             </Segment>
           </React.Fragment>
         )}
