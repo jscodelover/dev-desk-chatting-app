@@ -130,10 +130,7 @@ class Messages extends React.Component {
     let regxExp = new RegExp(searchInput, "gi");
     this.setState({ searchLoading: true });
     let searchMsg = messages.reduce((acc, msg) => {
-      if (
-        (msg.hasOwnProperty("content") && msg["content"].match(regxExp)) ||
-        msg.user.username.match(regxExp)
-      ) {
+      if (msg.hasOwnProperty("content") && msg["content"].match(regxExp)) {
         acc.push(msg);
       }
       return acc;
