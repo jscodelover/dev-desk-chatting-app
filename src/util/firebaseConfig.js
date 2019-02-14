@@ -4,13 +4,15 @@ import "firebase/database";
 import "firebase/storage";
 
 const config = {
-  apiKey: "AIzaSyAJR_w_2imHciuDh66hEOE7UzpQtLEWYZQ",
-  authDomain: "react-slack-for-dev.firebaseapp.com",
-  databaseURL: "https://react-slack-for-dev.firebaseio.com",
-  projectId: "react-slack-for-dev",
-  storageBucket: "react-slack-for-dev.appspot.com",
-  messagingSenderId: "879689864897"
+  apiKey: process.env.REACT_APP_FIRE_apiKey,
+  authDomain: process.env.REACT_APP_FIRE_authDomain,
+  databaseURL: process.env.REACT_APP_FIRE_databaseURL,
+  projectId: process.env.REACT_APP_FIRE_projectId,
+  storageBucket: process.env.REACT_APP_FIRE_storageBucket,
+  messagingSenderId: process.env.REACT_APP_FIRE_messagingSenderId
 };
+
+console.log(process.env);
 
 firebase.initializeApp(config);
 

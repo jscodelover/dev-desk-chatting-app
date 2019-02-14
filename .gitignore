@@ -12,6 +12,9 @@ functions/node_modules
 # production
 /build
 
+#credentials
+.env
+
 # misc
 .DS_Store
 .env.local
