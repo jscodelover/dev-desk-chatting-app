@@ -54,6 +54,10 @@ class DirectMessage extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    this.state.userRef.off();
+  }
+
   changeChannel = user => {
     this.props.setActiveChannelID(user.userID);
     this.props.setChannel({

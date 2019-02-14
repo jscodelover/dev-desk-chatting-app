@@ -57,6 +57,14 @@ class Messages extends React.Component {
     if (this.scrollRef) this.scrollRef.scrollIntoView({ behavior: "smooth" });
   };
 
+  componentWillUnmount() {
+    const { typingRef, connectionRef, messageRef } = this.state;
+    const { channel } = this.props;
+    typingRef.child(channel.id).off();
+    connectionRef.off();
+    messageRef.child(channel.id).off();
+  }
+
   fetchMessage = () => {
     const { messageRef } = this.state;
     const { channel, channelIDs } = this.props;
