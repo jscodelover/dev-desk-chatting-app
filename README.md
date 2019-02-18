@@ -48,3 +48,76 @@ service firebase.storage {
   }
 }
 ```
+
+### Firebase database rules
+
+```
+{
+  "rules": {
+    "users": {
+      ".read": "auth != null",
+      "$userID":{  ".write": "auth != null && auth.uid == $userID"
+      }
+    },
+    "channels":{
+        ".read": "auth != null",
+     "$channelID": {   ".write": "auth.uid != null",
+          ".validate": "newData.hasChildren(['channelDetail','channelName','createdBy','createdOn','id'])",
+            "createdBy":{
+              ".validate" : "newData.val() == auth.uid"
+            },
+            "createdOn": {
+              ".validate": "newData.val() <= now"
+            }   ,
+           "id":{
+             ".validate": "newData.val() == $channelID"
+           },
+             "channelName": {
+          ".validate": "newData.val().length > 0"
+        },
+        "channelDetail": {
+          ".validate": "newData.val().length > 0"
+        }
+      }
+    },  
+    "messages":{
+      "$channelID":{
+          ".read": "auth != null",
+            ".validate": "root.child('channels/'+$channelID).exists()",
+        "$messageID":{
+        ".write": "auth!= null",
+          ".validate": "(newData.hasChildren(['content','timestamp','userID']) && !newData.hasChildren(['image'])) || (newData.hasChildren(['image','timestamp','userID']) && !newData.hasChildren(['content']))",
+            "content": {
+            ".validate": "newData.val().length > 0"
+          },
+          "image": {
+            ".validate": "newData.val().length > 0"
+          },
+            "timestamp": {
+              ".validate": "newData.val() <= now"
+            } 
+            
+        }
+      }
+    },
+      "notification": {
+        "$userID":{
+          ".read": "auth != null && auth.uid == $userID",
+          "$notifyID":{
+        ".write": "auth != null",
+          }
+        }
+      },
+       "presence": {
+          ".read": "auth.uid != null",
+           ".write": "auth.uid != null" 
+         },
+        "typing": {
+          ".read": "auth != null",
+           ".write": "auth != null" 
+        }   
+           
+       } 
+  }
+
+```
