@@ -11,24 +11,7 @@ import "./Home.css";
 
 class Home extends React.Component {
   componentDidMount() {
-    firebase
-      .database()
-      .ref("tokens")
-      .child(this.props.user.userID)
-      .orderByChild("uid")
-      .equalTo(firebase.auth().currentUser.uid)
-      .once("value")
-      .then(snapshot => {
-        if (snapshot.val()) {
-          const key = Object.keys(snapshot.val())[0];
-          firebase
-            .database()
-            .ref("tokens")
-            .child(key)
-            .remove();
-        }
-      });
-
+    this.removeToken();
     firebase.messaging().onTokenRefresh(
       firebase
         .messaging()
@@ -53,6 +36,28 @@ class Home extends React.Component {
     );
   }
 
+  removeToken = () => {
+    firebase
+      .database()
+      .ref("tokens")
+      .orderByChild("uid")
+      .equalTo(firebase.auth().currentUser.uid)
+      .once("value")
+      .then(snapshot => {
+        console.log(snapshot.val());
+        if (snapshot.val()) {
+          const key = Object.keys(snapshot.val());
+          console.log("key", key);
+          if (key.length > 1)
+            firebase
+              .database()
+              .ref("tokens")
+              .child(key[0])
+              .remove();
+        }
+      });
+  };
+
   render() {
     const {
       user,
@@ -74,21 +79,19 @@ class Home extends React.Component {
           {channel.id && <Messages />}
         </Grid.Column>
 
-        {!privateChannel &&
-          showChannelInfo &&
-          otherUsers.length && (
-            <Grid.Column width={4}>
-              <MetaPanel
-                channel={channel}
-                otherUsers={otherUsers}
-                user={user}
-                usersInChannel={usersInChannel}
-                showChannelInfo={() => {
-                  this.props.setShowChannelInfo(false);
-                }}
-              />
-            </Grid.Column>
-          )}
+        {!privateChannel && showChannelInfo && otherUsers.length && (
+          <Grid.Column width={4}>
+            <MetaPanel
+              channel={channel}
+              otherUsers={otherUsers}
+              user={user}
+              usersInChannel={usersInChannel}
+              showChannelInfo={() => {
+                this.props.setShowChannelInfo(false);
+              }}
+            />
+          </Grid.Column>
+        )}
       </Grid>
     );
   }
