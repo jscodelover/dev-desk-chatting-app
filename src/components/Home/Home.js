@@ -73,7 +73,9 @@ class Home extends React.Component {
         <ColorPanel user={user} />
         {user.userID && <SidePanel />}
 
-        <Grid.Column style={{ marginLeft: "315px", position: "relative" }}>
+        <Grid.Column
+          style={{ marginLeft: "312px", position: "relative", paddingRight: 0 }}
+        >
           {channel.id && <Messages />}
         </Grid.Column>
 

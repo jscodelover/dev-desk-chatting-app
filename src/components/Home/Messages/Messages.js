@@ -206,7 +206,6 @@ class Messages extends React.Component {
                 setShowChannelInfo(true);
               }}
             />
-            {/* TODO: Edit scrolling */}
             <Segment className="messages" loading={msgLoading}>
               <Comment.Group size="large">
                 {searchMsg.length > 0

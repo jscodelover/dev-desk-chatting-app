@@ -2,20 +2,23 @@
 .messageHeader {
   min-width: 500px;
   height: 78.5px;
+  margin-top: -15px !important;
 }
 
 .messages {
-  height: calc(100% - (110px + 78.5px + 14px));
+  height: calc(100% - (110px + 48px));
   min-width: 500px;
   overflow-y: scroll;
+
+  margin-top: -15px !important;
 }
 
 .messageForm {
   position: fixed !important;
   bottom: 0rem;
-  right: 1rem;
+  right: 0rem;
   left: 0;
-  margin-left: 315px !important;
+  margin-left: 299px !important;
   z-index: 200;
   height: 110px;
   min-width: 500px;
