@@ -80,31 +80,33 @@ service firebase.storage {
         }
       }
     },  
-    "messages":{
+    "messages": {
+      ".read": "auth != null",
       "$channelID":{
-          ".read": "auth != null",
-            ".validate": "root.child('channels/'+$channelID).exists()",
-        "$messageID":{
-        ".write": "auth!= null",
-          ".validate": "(newData.hasChildren(['content','timestamp','userID']) && !newData.hasChildren(['image'])) || (newData.hasChildren(['image','timestamp','userID']) && !newData.hasChildren(['content']))",
-            "content": {
+        "$messageId": {
+          ".write": "auth != null",
+           ".validate": "(newData.hasChildren(['content','timestamp','userID']) && !newData.hasChildren(['image'])) || (newData.hasChildren(['image','timestamp','userID']) && !newData.hasChildren(['content']))",
+          "content": {	
             ".validate": "newData.val().length > 0"
           },
           "image": {
             ".validate": "newData.val().length > 0"
           },
             "timestamp": {
-              ".validate": "newData.val() <= now"
-            } 
-            
+              ".validate": "newData.val() == now"
+            }
         }
-      }
+      } 
     },
       "notification": {
         "$userID":{
           ".read": "auth != null && auth.uid == $userID",
           "$notifyID":{
         ".write": "auth != null",
+          ".validate": "newData.hasChildren(['count', 'lastTotal','id'])",
+            "id":{
+              ".validate": "newData.val() == $notifyID"
+            }
           }
         }
       },
