@@ -213,7 +213,7 @@ class Messages extends React.Component {
                   ? this.displayMessages(searchMsg, user, otherUsers)
                   : this.displayMessages(messages, user, otherUsers)}
               </Comment.Group>
-              <span
+              <div
                 ref={scroll => {
                   this.scrollRef = scroll;
                 }}
