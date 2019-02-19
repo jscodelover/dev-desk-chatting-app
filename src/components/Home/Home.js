@@ -44,10 +44,8 @@ class Home extends React.Component {
       .equalTo(firebase.auth().currentUser.uid)
       .once("value")
       .then(snapshot => {
-        console.log(snapshot.val());
         if (snapshot.val()) {
           const key = Object.keys(snapshot.val());
-          console.log("key", key);
           if (key.length > 1)
             firebase
               .database()

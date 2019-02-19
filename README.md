@@ -79,14 +79,14 @@ service firebase.storage {
           ".validate": "newData.val().length > 0"
         }
       }
-    },  
+    },
     "messages": {
       ".read": "auth != null",
       "$channelID":{
         "$messageId": {
           ".write": "auth != null",
            ".validate": "(newData.hasChildren(['content','timestamp','userID']) && !newData.hasChildren(['image'])) || (newData.hasChildren(['image','timestamp','userID']) && !newData.hasChildren(['content']))",
-          "content": {	
+          "content": {
             ".validate": "newData.val().length > 0"
           },
           "image": {
@@ -96,7 +96,7 @@ service firebase.storage {
               ".validate": "newData.val() == now"
             }
         }
-      } 
+      }
     },
       "notification": {
         "$userID":{
@@ -112,14 +112,19 @@ service firebase.storage {
       },
        "presence": {
           ".read": "auth.uid != null",
-           ".write": "auth.uid != null" 
+           ".write": "auth.uid != null"
          },
         "typing": {
           ".read": "auth != null",
-           ".write": "auth != null" 
-        }   
-           
-       } 
+           ".write": "auth != null"
+        },
+    "tokens":{
+      ".read": "auth.uid != null",
+      ".write": "auth.uid != null",
+      ".indexOn": "uid"
+    }
+
+       }
   }
 
 ```
