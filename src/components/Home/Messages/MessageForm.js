@@ -207,6 +207,7 @@ class MessageForm extends React.Component {
         className={
           typingUsers.length ? "messageForm typingSpace" : "messageForm"
         }
+        fluid
       >
         {typingUsers.length ? <Typing typingUsers={typingUsers} /> : null}
         {uploadStatus === "uploading" ? (

@@ -22,7 +22,6 @@
   margin-left: 60px !important;
   z-index: 200;
   height: 110px;
-  min-width: 500px;
 }
 
 .typingSpace {
@@ -84,6 +83,14 @@
 }
 
 /* Side Pannel */
-.profile-dropdown {
-  margin-left: -42px !important;
+.profile-dropdown-box {
+  justify-content: flex-start;
+  display: flex !important;
+  align-items: center;
+}
+
+.profile-dropdown-box .dropdown-name {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
 }
