@@ -99,6 +99,19 @@ class Home extends React.Component {
         {user.userID && <SidePanel />}
 
         <ColorPanel user={user} />
+        {!privateChannel && showChannelInfo && otherUsers.length && (
+          <div className="metapannel-box">
+            <MetaPanel
+              channel={channel}
+              otherUsers={otherUsers}
+              user={user}
+              usersInChannel={usersInChannel}
+              showChannelInfo={() => {
+                this.props.setShowChannelInfo(false);
+              }}
+            />
+          </div>
+        )}
       </Grid>
     );
   }
