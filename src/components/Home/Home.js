@@ -70,7 +70,7 @@ class Home extends React.Component {
         columns="equal"
         style={{ background: "#eee", marginTop: "0px", height: "100vh" }}
       >
-        <ColorPanel user={user} />
+        {/* <ColorPanel user={user} />
         {user.userID && <SidePanel />}
 
         <Grid.Column
@@ -91,7 +91,14 @@ class Home extends React.Component {
               }}
             />
           </Grid.Column>
-        )}
+        )} */}
+        <Grid.Column style={{ marginLeft: "58px", marginRight: "238px" }}>
+          {channel.id && <Messages />}
+        </Grid.Column>
+
+        {user.userID && <SidePanel />}
+
+        <ColorPanel user={user} />
       </Grid>
     );
   }

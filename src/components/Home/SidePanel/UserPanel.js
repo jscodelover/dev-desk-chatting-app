@@ -143,15 +143,16 @@ class UserPanel extends Component {
                   textAlign="center"
                 >
                   <Dropdown
+                    className="profile-dropdown "
                     trigger={
-                      <span>
+                      <div>
                         <Image
                           src={this.props.user.picture}
                           spaced="right"
                           avatar
                         />
-                        {this.props.user.username}
-                      </span>
+                        <span>{this.props.user.username}</span>
+                      </div>
                     }
                     options={this.dropdownOptions()}
                   />

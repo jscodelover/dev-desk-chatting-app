@@ -15,7 +15,7 @@ class SidePanel extends Component {
       fontSize: "1.3rem"
     };
     return (
-      <Menu inverted fixed="left" vertical style={{ ...style }}>
+      <Menu inverted fixed="right" vertical style={{ ...style }}>
         <UserPanel user={user} />
         {user["starred"] ? <Starred /> : null}
         <Channel user={user} />

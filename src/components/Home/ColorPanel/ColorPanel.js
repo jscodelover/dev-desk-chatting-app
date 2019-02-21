@@ -93,6 +93,10 @@ class ColorPanel extends React.Component {
         vertical
         visible
         icon="labeled"
+        style={{
+          position: "fixed",
+          right: 0
+        }}
       >
         <Divider style={{ border: "none" }} />
         <Button icon="add" size="small" color="blue" onClick={this.openModal} />
