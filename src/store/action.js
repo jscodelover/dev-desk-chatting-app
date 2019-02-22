@@ -13,7 +13,8 @@ export const actions = {
 
   SET_NOTIFICATION: "SET_NOTIFICATION"
 
-  SET_MESSAGES: "SET_MESSAGES"
+  SET_MESSAGES: "SET_MESSAGES",
+  CLEAR_MESSAGES: "CLEAR_MESSAGES"
 };
 
 /* User actions */
@@ -102,5 +103,11 @@ export function setMessages(payload){
   return {
     type: actions.SET_MESSAGES,
     payload
+  }
+}
+
+export function clearMessages(){
+  return {
+    type: actions.CLEAR_MESSAGES,
   }
 }
