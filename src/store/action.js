@@ -12,6 +12,8 @@ export const actions = {
   SHOW_CHANNEL_INFO: "SHOW_CHANNEL_INFO",
 
   SET_NOTIFICATION: "SET_NOTIFICATION"
+
+  SET_MESSAGES: "SET_MESSAGES"
 };
 
 /* User actions */
@@ -92,4 +94,13 @@ export function setNotification(payload) {
     type: actions.SET_NOTIFICATION,
     payload
   };
+}
+
+
+/*Messages */
+export function setMessages(payload){
+  return {
+    type: actions.SET_MESSAGES,
+    payload
+  }
 }

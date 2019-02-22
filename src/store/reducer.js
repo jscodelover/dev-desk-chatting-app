@@ -108,10 +108,32 @@ const notification_reducer = (state = NOTIFICATION_INITIAL_STATE, action) => {
   }
 };
 
+const MESSAGES_INITIAL_STATE = {
+  messages: []
+};
+
+const messages_reducer = (state=MESSAGES_INITIAL_STATE, action) => {
+  switch (action.type) {
+    case actions.SET_MESSAGES: {
+      return {
+        ...state,
+        messages: action.payload
+      }
+    }
+    case actions.CLEAR_MESSAGES: {
+      return {
+        ...state,
+        messages: []
+      }
+    }
+  }
+}
+
 const rootReducer = combineReducers({
   user: user_reducer,
   channel: channel_reducer,
-  notification: notification_reducer
+  notification: notification_reducer,
+  messages: messages_reducer
 });
 
 export default rootReducer;
