@@ -8,7 +8,8 @@ import {
   setPrivateChannel,
   setActiveChannelID,
   setOtherChannels,
-  setNotification
+  setNotification,
+  clearMessages
 } from "../../../store/action";
 import DisplayChannel from "./DisplayChannel";
 import Spinner from "../../Spinner";
@@ -110,6 +111,7 @@ class Channel extends React.Component {
     this.props.channelInStore({ ...channel });
     this.props.setPrivateChannel(false);
     notify.clearNotification(channel.id, this.state.userID);
+    this.props.clearMessages();
   };
 
   checkNotification = channelID => {
@@ -219,7 +221,8 @@ const mapDispatchToProps = dispatch => {
     setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate)),
     setActiveChannelID: id => dispatch(setActiveChannelID(id)),
     setOtherChannels: channels => dispatch(setOtherChannels(channels)),
-    setNotification: notifications => dispatch(setNotification(notifications))
+    setNotification: notifications => dispatch(setNotification(notifications)),
+    clearMessages: () => dispatch(clearMessages())
   };
 };
 

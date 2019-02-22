@@ -6,7 +6,8 @@ import {
   setChannel,
   setPrivateChannel,
   setActiveChannelID,
-  setNotification
+  setNotification,
+  clearMessages
 } from "../../../store/action";
 import firebase from "../../../util/firebaseConfig";
 import * as notify from "../../../util/notification";
@@ -58,6 +59,7 @@ class Starred extends React.Component {
     this.props.setChannel({ ...channel });
     this.props.setPrivateChannel(false);
     notify.clearNotification(channel.id, this.props.user.userID);
+    this.props.clearMessages();
   };
 
   changeUser = user => {
@@ -71,6 +73,7 @@ class Starred extends React.Component {
       generateId(user, this.props.user.userID),
       this.props.user.userID
     );
+    this.props.clearMessages();
   };
 
   checkNotificationChannel = channelID => {
@@ -166,7 +169,8 @@ const mapDispatchToProps = dispatch => {
     setActiveChannelID: id => dispatch(setActiveChannelID(id)),
     setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate)),
     setChannel: channelInfo => dispatch(setChannel(channelInfo)),
-    setNotification: notifications => dispatch(setNotification(notifications))
+    setNotification: notifications => dispatch(setNotification(notifications)),
+    clearMessages: () => dispatch(clearMessages())
   };
 };
 

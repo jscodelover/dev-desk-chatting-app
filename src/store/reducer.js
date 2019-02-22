@@ -81,11 +81,11 @@ const channel_reducer = (state = CHANNEL_INITIAL_STATE, action) => {
         ...state,
         usersInChannel: action.payload
       };
-    case actions.SHOW_CHANNEL_INFO: 
-    return{
-      ...state,
-      showChannelInfo: action.payload
-    }  
+    case actions.SHOW_CHANNEL_INFO:
+      return {
+        ...state,
+        showChannelInfo: action.payload
+      };
     default:
       return state;
   }
@@ -112,22 +112,24 @@ const MESSAGES_INITIAL_STATE = {
   messages: []
 };
 
-const messages_reducer = (state=MESSAGES_INITIAL_STATE, action) => {
+const messages_reducer = (state = MESSAGES_INITIAL_STATE, action) => {
   switch (action.type) {
     case actions.SET_MESSAGES: {
       return {
         ...state,
         messages: action.payload
-      }
+      };
     }
     case actions.CLEAR_MESSAGES: {
       return {
         ...state,
         messages: []
-      }
+      };
     }
+    default:
+      return state;
   }
-}
+};
 
 const rootReducer = combineReducers({
   user: user_reducer,

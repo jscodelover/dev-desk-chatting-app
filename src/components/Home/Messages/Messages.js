@@ -5,7 +5,11 @@ import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
 import firebase from "../../../util/firebaseConfig";
 import Message from "./Message";
-import { setUsersInChannel, setShowChannelInfo } from "../../../store/action";
+import {
+  setUsersInChannel,
+  setShowChannelInfo,
+  setMessages
+} from "../../../store/action";
 
 class Messages extends React.Component {
   constructor(props) {
@@ -76,12 +80,12 @@ class Messages extends React.Component {
           loadedMessage.push({
             ...snapMsg.val()
           });
-          this.setState({ messages: loadedMessage });
+          this.props.setMessages(loadedMessage);
           if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
           else this.props.setUsersInChannel([]);
         });
       } else {
-        this.setState({ messages: [] });
+        this.props.setMessages([]);
         if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
         else this.props.setUsersInChannel([]);
       }
@@ -134,7 +138,7 @@ class Messages extends React.Component {
 
   //TODO: include search on complete message database --> (using channelIDs for this)
   searchMessage = searchInput => {
-    const { messages } = this.state;
+    const { messages } = this.props;
     let regxExp = new RegExp(searchInput, "gi");
     this.setState({ searchLoading: true });
     let searchMsg = messages.reduce((acc, msg) => {
@@ -171,7 +175,6 @@ class Messages extends React.Component {
   render() {
     const {
       messageRef,
-      messages,
       searchMsg,
       searchLoading,
       msgLoading,
@@ -184,42 +187,37 @@ class Messages extends React.Component {
       privateChannel,
       activeChannelID,
       setShowChannelInfo,
-      otherUsers
+      otherUsers,
+      messages
     } = this.props;
     return (
       <React.Fragment>
-        {msgLoading ? (
-          <p>Loading</p>
-        ) : (
-          <React.Fragment>
-            <MessageHeader
-              channelName={channel.channelName}
-              metaData={this.metaData()}
-              searchMessage={data => {
-                this.searchMessage(data);
-              }}
-              user={user}
-              activeChannelID={activeChannelID}
-              searchLoading={searchLoading}
-              privateChannel={privateChannel}
-              showChannelInfo={() => {
-                setShowChannelInfo(true);
-              }}
-            />
-            <Segment className="messages" loading={msgLoading}>
-              <Comment.Group size="large">
-                {searchMsg.length > 0
-                  ? this.displayMessages(searchMsg, user, otherUsers)
-                  : this.displayMessages(messages, user, otherUsers)}
-              </Comment.Group>
-              <div
-                ref={scroll => {
-                  this.scrollRef = scroll;
-                }}
-              />
-            </Segment>
-          </React.Fragment>
-        )}
+        <MessageHeader
+          channelName={channel.channelName}
+          metaData={this.metaData()}
+          searchMessage={data => {
+            this.searchMessage(data);
+          }}
+          user={user}
+          activeChannelID={activeChannelID}
+          searchLoading={searchLoading}
+          privateChannel={privateChannel}
+          showChannelInfo={() => {
+            setShowChannelInfo(true);
+          }}
+        />
+        <Segment className="messages">
+          <Comment.Group size="large">
+            {searchMsg.length > 0
+              ? this.displayMessages(searchMsg, user, otherUsers)
+              : this.displayMessages(messages, user, otherUsers)}
+          </Comment.Group>
+          <div
+            ref={scroll => {
+              this.scrollRef = scroll;
+            }}
+          />
+        </Segment>
         <MessageForm
           messageRef={messageRef}
           inputValue={inputValue}
@@ -232,7 +230,7 @@ class Messages extends React.Component {
   }
 }
 
-const mapStateToProps = ({ user, channel }) => {
+const mapStateToProps = ({ user, channel, messages }) => {
   return {
     user: user.currentUser,
     otherUsers: user.otherUsers,
@@ -240,14 +238,16 @@ const mapStateToProps = ({ user, channel }) => {
     activeChannelID: channel.activeChannelID,
     channelIDs: channel.channelIDs,
     privateChannel: channel.privateChannel,
-    usersInChannel: channel.usersInChannel
+    usersInChannel: channel.usersInChannel,
+    messages: messages.messages
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     setUsersInChannel: payload => dispatch(setUsersInChannel(payload)),
-    setShowChannelInfo: payload => dispatch(setShowChannelInfo(payload))
+    setShowChannelInfo: payload => dispatch(setShowChannelInfo(payload)),
+    setMessages: payload => dispatch(setMessages(payload))
   };
 };
 

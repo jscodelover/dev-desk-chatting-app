@@ -11,7 +11,7 @@ export const actions = {
   SET_USERS_IN_CHANNEL: "SET_USERS_IN_CHANNEL",
   SHOW_CHANNEL_INFO: "SHOW_CHANNEL_INFO",
 
-  SET_NOTIFICATION: "SET_NOTIFICATION"
+  SET_NOTIFICATION: "SET_NOTIFICATION",
 
   SET_MESSAGES: "SET_MESSAGES",
   CLEAR_MESSAGES: "CLEAR_MESSAGES"
@@ -85,7 +85,7 @@ export function setShowChannelInfo(payload) {
   return {
     type: actions.SHOW_CHANNEL_INFO,
     payload
-  }
+  };
 }
 
 /* Notification */
@@ -97,17 +97,16 @@ export function setNotification(payload) {
   };
 }
 
-
 /*Messages */
-export function setMessages(payload){
+export function setMessages(payload) {
   return {
     type: actions.SET_MESSAGES,
     payload
-  }
+  };
 }
 
-export function clearMessages(){
+export function clearMessages() {
   return {
-    type: actions.CLEAR_MESSAGES,
-  }
+    type: actions.CLEAR_MESSAGES
+  };
 }

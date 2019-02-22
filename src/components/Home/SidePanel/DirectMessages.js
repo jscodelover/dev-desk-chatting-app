@@ -8,7 +8,8 @@ import {
   setPrivateChannel,
   setActiveChannelID,
   setOtherUsers,
-  setNotification
+  setNotification,
+  clearMessages
 } from "../../../store/action";
 import Spinner from "../../Spinner";
 import * as notify from "../../../util/notification";
@@ -69,6 +70,7 @@ class DirectMessage extends React.Component {
       generateId(user, this.props.user.userID),
       this.props.user.userID
     );
+    this.props.clearMessages();
   };
 
   checkNotification = channelID => {
@@ -153,7 +155,8 @@ const mapDispatchToProps = dispatch => {
     setPrivateChannel: isPrivate => dispatch(setPrivateChannel(isPrivate)),
     setChannel: channelInfo => dispatch(setChannel(channelInfo)),
     setOtherUsers: users => dispatch(setOtherUsers(users)),
-    setNotification: notifications => dispatch(setNotification(notifications))
+    setNotification: notifications => dispatch(setNotification(notifications)),
+    clearMessages: () => dispatch(clearMessages())
   };
 };
 
