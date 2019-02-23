@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Segment, Comment } from "semantic-ui-react";
+import { Segment, Comment, Loader } from "semantic-ui-react";
 import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
 import firebase from "../../../util/firebaseConfig";
@@ -21,9 +21,9 @@ class Messages extends React.Component {
       typingUsers: [],
       messages: [],
       channelUsers: [],
+      reachedDBEnd: false,
       searchMsg: [],
       searchLoading: false,
-      msgLoading: true,
       userInHeader: {},
       connectionRef: firebase.database().ref(".info/connected")
     };
@@ -51,6 +51,7 @@ class Messages extends React.Component {
   componentDidUpdate(prevProps) {
     this.scrollToBottom();
     if (prevProps.channel.channelName !== this.props.channel.channelName) {
+      this.setState({ reachedDBEnd: false });
       clearTimeout(this.time);
       this.fetchMessage();
       this.findTypingUsers();
@@ -74,13 +75,11 @@ class Messages extends React.Component {
     const { channel, channelIDs } = this.props;
     let loadedMessage = [];
     messageRef.once("value", snap => {
-      this.setState({ msgLoading: true });
       if (snap.hasChild(channel.id)) {
         messageRef.child(channel.id).on("child_added", snapMsg => {
           loadedMessage.push({
             ...snapMsg.val()
           });
-          this.props.setMessages(loadedMessage);
           if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
           else this.props.setUsersInChannel([]);
         });
@@ -89,7 +88,8 @@ class Messages extends React.Component {
         if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
         else this.props.setUsersInChannel([]);
       }
-      this.setState({ msgLoading: false });
+      this.setState({ reachedDBEnd: true });
+      this.props.setMessages(loadedMessage);
     });
   };
 
@@ -177,9 +177,9 @@ class Messages extends React.Component {
       messageRef,
       searchMsg,
       searchLoading,
-      msgLoading,
       typingUsers,
-      inputValue
+      inputValue,
+      reachedDBEnd
     } = this.state;
     const {
       channel,
@@ -207,16 +207,22 @@ class Messages extends React.Component {
           }}
         />
         <Segment className="messages">
-          <Comment.Group size="large">
-            {searchMsg.length > 0
-              ? this.displayMessages(searchMsg, user, otherUsers)
-              : this.displayMessages(messages, user, otherUsers)}
-          </Comment.Group>
-          <div
-            ref={scroll => {
-              this.scrollRef = scroll;
-            }}
-          />
+          {messages.length || reachedDBEnd ? (
+            <React.Fragment>
+              <Comment.Group size="large">
+                {searchMsg.length > 0
+                  ? this.displayMessages(searchMsg, user, otherUsers)
+                  : this.displayMessages(messages, user, otherUsers)}
+              </Comment.Group>
+              <div
+                ref={scroll => {
+                  this.scrollRef = scroll;
+                }}
+              />
+            </React.Fragment>
+          ) : (
+            <Loader active>Loading Messages....</Loader>
+          )}
         </Segment>
         <MessageForm
           messageRef={messageRef}
