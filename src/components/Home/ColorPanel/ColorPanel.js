@@ -10,6 +10,7 @@ import {
   Segment
 } from "semantic-ui-react";
 import { SliderPicker } from "react-color";
+import { themes } from "../../../util/defaultThemeColor";
 import firebase from "../../../util/firebaseConfig";
 
 class ColorPanel extends React.Component {
@@ -18,13 +19,7 @@ class ColorPanel extends React.Component {
     this.state = {
       userRef: firebase.database().ref("users"),
       modal: false,
-      sidebar: "rgba(76,60,76,1)",
-      voilet: "rgba(76,60,76,1)",
-      orange: "rgba(242, 113, 28, 1)",
-      lightBlue: "rgba(69, 182, 174, 1)",
-      blue: "rgba(30, 34, 58, 1)",
-      yellow: "rgba(171, 129, 9, 1)",
-      red: "rgba(219, 40, 40, 1)"
+      sidebar: "rgba(76,60,76,1)"
     };
   }
 
@@ -60,7 +55,8 @@ class ColorPanel extends React.Component {
   };
 
   defaultTheme = (color1, color2, color3) => (
-    <React.Fragment>
+    <React.Fragment key={color1}>
+      {console.log(color1)}
       <Divider style={{ border: "none" }} />
       <div
         className="color-box"
@@ -75,16 +71,7 @@ class ColorPanel extends React.Component {
   );
 
   render() {
-    const {
-      modal,
-      sidebar,
-      voilet,
-      orange,
-      lightBlue,
-      blue,
-      yellow,
-      red
-    } = this.state;
+    const { modal, sidebar } = this.state;
     return (
       <Sidebar
         as={Menu}
@@ -100,8 +87,11 @@ class ColorPanel extends React.Component {
       >
         <Divider style={{ border: "none" }} />
         <Button icon="add" size="small" color="blue" onClick={this.openModal} />
-        {this.defaultTheme(voilet, orange, lightBlue)}
-        {this.defaultTheme(blue, yellow, red)}
+        {themes.map(theme => {
+          let { sidebar, btn1, btn2 } = theme.colors;
+          console.log(sidebar, btn1, btn2);
+          return this.defaultTheme(sidebar, btn1, btn2);
+        })}
         <Modal open={modal} basic size="small">
           <Header as="h2" content="Pick your theme" />
           <Modal.Content>
