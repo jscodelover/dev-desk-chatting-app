@@ -107,11 +107,13 @@ class Channel extends React.Component {
   };
 
   changeChannel = channel => {
-    this.props.setActiveChannelID(channel.id);
-    this.props.channelInStore({ ...channel });
-    this.props.setPrivateChannel(false);
-    notify.clearNotification(channel.id, this.state.userID);
-    this.props.clearMessages();
+    if (channel.id !== this.props.channel.id) {
+      this.props.setActiveChannelID(channel.id);
+      this.props.channelInStore({ ...channel });
+      this.props.setPrivateChannel(false);
+      notify.clearNotification(channel.id, this.state.userID);
+      this.props.clearMessages();
+    }
   };
 
   checkNotification = channelID => {

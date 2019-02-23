@@ -55,25 +55,29 @@ class Starred extends React.Component {
   };
 
   changeChannel = channel => {
-    this.props.setActiveChannelID(channel.id);
-    this.props.setChannel({ ...channel });
-    this.props.setPrivateChannel(false);
-    notify.clearNotification(channel.id, this.props.user.userID);
-    this.props.clearMessages();
+    if (channel.id !== this.props.channel.id) {
+      this.props.setActiveChannelID(channel.id);
+      this.props.setChannel({ ...channel });
+      this.props.setPrivateChannel(false);
+      notify.clearNotification(channel.id, this.props.user.userID);
+      this.props.clearMessages();
+    }
   };
 
   changeUser = user => {
-    this.props.setActiveChannelID(user.userID);
-    this.props.setChannel({
-      channelName: user.username,
-      id: generateId(user, this.props.user.userID)
-    });
-    this.props.setPrivateChannel(true);
-    notify.clearNotification(
-      generateId(user, this.props.user.userID),
-      this.props.user.userID
-    );
-    this.props.clearMessages();
+    if (generateId(user, this.props.user.userID) !== this.props.channel.id) {
+      this.props.setActiveChannelID(user.userID);
+      this.props.setChannel({
+        channelName: user.username,
+        id: generateId(user, this.props.user.userID)
+      });
+      this.props.setPrivateChannel(true);
+      notify.clearNotification(
+        generateId(user, this.props.user.userID),
+        this.props.user.userID
+      );
+      this.props.clearMessages();
+    }
   };
 
   checkNotificationChannel = channelID => {
@@ -162,6 +166,7 @@ const mapStateToProps = ({ user, channel, notification }) => {
     activeChannelID: channel.activeChannelID,
     starred: user.currentUser.starred.split(","),
     user: user.currentUser,
+    channel: channel.currentChannel,
     notification: notification.notification
   };
 };

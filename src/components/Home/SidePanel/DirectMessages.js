@@ -60,17 +60,19 @@ class DirectMessage extends React.Component {
   }
 
   changeChannel = user => {
-    this.props.setActiveChannelID(user.userID);
-    this.props.setChannel({
-      channelName: user.username,
-      id: generateId(user, this.props.user.userID)
-    });
-    this.props.setPrivateChannel(true);
-    notify.clearNotification(
-      generateId(user, this.props.user.userID),
-      this.props.user.userID
-    );
-    this.props.clearMessages();
+    if (generateId(user, this.props.user.userID) !== this.props.channel.id) {
+      this.props.setActiveChannelID(user.userID);
+      this.props.setChannel({
+        channelName: user.username,
+        id: generateId(user, this.props.user.userID)
+      });
+      this.props.setPrivateChannel(true);
+      notify.clearNotification(
+        generateId(user, this.props.user.userID),
+        this.props.user.userID
+      );
+      this.props.clearMessages();
+    }
   };
 
   checkNotification = channelID => {
