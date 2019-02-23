@@ -196,12 +196,8 @@ class MessageForm extends React.Component {
       uploadPercentage
     } = this.state;
     const { user, typingUsers } = this.props;
-    const btn1 = user.color.sidebar
-      ? "rgba(0, 0, 0, 0.8)"
-      : user.color.theme[1];
-    const btn2 = user.color.sidebar
-      ? "rgba(0, 0, 0, 0.8)"
-      : user.color.theme[2];
+    const btn1 = user.color.theme[1];
+    const btn2 = user.color.theme[2];
     return (
       <Segment
         className={

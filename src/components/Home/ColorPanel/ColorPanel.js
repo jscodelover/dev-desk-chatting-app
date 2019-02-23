@@ -19,7 +19,9 @@ class ColorPanel extends React.Component {
     this.state = {
       userRef: firebase.database().ref("users"),
       modal: false,
-      sidebar: "rgba(76,60,76,1)"
+      sidebar: "",
+      btn1: "",
+      btn2: ""
     };
   }
 
@@ -32,15 +34,19 @@ class ColorPanel extends React.Component {
   };
 
   sidebarColorHandler = ({ r, g, b, a }) => {
-    this.setState({ sidebar: `rgba(${r},${g},${b},${a})` });
+    this.setState({
+      sidebar: `rgba(${r},${g},${b},${a})`,
+      btn1: `rgba(${r - 11},${g - 6},${b - 5},${0.8})`,
+      btn2: `rgba(${r - 11},${g - 6},${b - 5},${0.9})`
+    });
   };
 
   saveColor = () => {
-    const { userRef, sidebar } = this.state;
+    const { userRef, sidebar, btn1, btn2 } = this.state;
     const { user } = this.props;
     userRef
       .child(`${user.userID}/color`)
-      .update({ sidebar, theme: null })
+      .update({ theme: [sidebar, btn1, btn2] })
       .then(() => {
         this.setState({ modal: false });
       });
@@ -49,9 +55,7 @@ class ColorPanel extends React.Component {
   saveTheme = (c1, c2, c3) => {
     const { userRef } = this.state;
     const { user } = this.props;
-    userRef
-      .child(`${user.userID}/color`)
-      .update({ theme: [c1, c2, c3], sidebar: null });
+    userRef.child(`${user.userID}/color`).update({ theme: [c1, c2, c3] });
   };
 
   defaultTheme = (color1, color2, color3) => (
@@ -99,7 +103,7 @@ class ColorPanel extends React.Component {
             <Segment inverted style={{ background: sidebar }}>
               <SliderPicker
                 styles={{ default: { wrap: {} } }}
-                color={sidebar}
+                color="rgba(0, 0, 0, 0)"
                 onChange={({ rgb }) => {
                   this.sidebarColorHandler(rgb);
                 }}

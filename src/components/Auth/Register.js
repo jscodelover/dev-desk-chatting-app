@@ -12,6 +12,7 @@ import {
 import "./Auth.css";
 import md5 from "md5";
 import firebase from "../../util/firebaseConfig";
+import { themes } from "../../util/defaultThemeColor";
 
 class Registers extends Component {
   constructor(props) {
@@ -67,7 +68,12 @@ class Registers extends Component {
       userID: data.user.uid,
       username: data.user.displayName,
       picture: data.user.photoURL,
-      createdOn: data.user.metadata.creationTime
+      createdOn: data.user.metadata.creationTime,
+      color: [
+        themes[0].colors.sidebar,
+        themes[0].colors.btn1,
+        themes[0].colors.btn2
+      ]
     });
   };
 

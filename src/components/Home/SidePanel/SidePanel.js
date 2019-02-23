@@ -10,7 +10,7 @@ class SidePanel extends Component {
   render() {
     const { user } = this.props;
     const style = {
-      background: user.color.sidebar ? user.color.sidebar : user.color.theme[0],
+      background: user.color.theme[0],
       width: "17rem",
       fontSize: "1.3rem"
     };
