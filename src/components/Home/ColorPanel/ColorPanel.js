@@ -9,7 +9,7 @@ import {
   Icon,
   Segment
 } from "semantic-ui-react";
-import { SliderPicker } from "react-color";
+import { ChromePicker } from "react-color";
 import { themes } from "../../../util/defaultThemeColor";
 import firebase from "../../../util/firebaseConfig";
 
@@ -19,9 +19,10 @@ class ColorPanel extends React.Component {
     this.state = {
       userRef: firebase.database().ref("users"),
       modal: false,
-      sidebar: "",
+      sidebar: "rgba(0, 0, 0, 1)",
       btn1: "",
-      btn2: ""
+      btn2: "",
+      text: "rgba(255,255,255,0.9)"
     };
   }
 
@@ -40,13 +41,18 @@ class ColorPanel extends React.Component {
       btn2: `rgba(${r - 11},${g - 6},${b - 5},${0.9})`
     });
   };
+  textColorHandler = ({ r, g, b, a }) => {
+    this.setState({
+      text: `rgba(${r},${g},${b},${a})`
+    });
+  };
 
   saveColor = () => {
-    const { userRef, sidebar, btn1, btn2 } = this.state;
+    const { userRef, sidebar, btn1, btn2, text } = this.state;
     const { user } = this.props;
     userRef
       .child(`${user.userID}/color`)
-      .update({ theme: [sidebar, btn1, btn2] })
+      .update({ theme: [sidebar, btn1, btn2], text })
       .then(() => {
         this.setState({ modal: false });
       });
@@ -55,12 +61,13 @@ class ColorPanel extends React.Component {
   saveTheme = (c1, c2, c3) => {
     const { userRef } = this.state;
     const { user } = this.props;
-    userRef.child(`${user.userID}/color`).update({ theme: [c1, c2, c3] });
+    userRef
+      .child(`${user.userID}/color`)
+      .update({ theme: [c1, c2, c3], text: "rgba(255,255,255,0.5)" });
   };
 
   defaultTheme = (color1, color2, color3) => (
     <React.Fragment key={color1}>
-      {console.log(color1)}
       <Divider style={{ border: "none" }} />
       <div
         className="color-box"
@@ -75,7 +82,7 @@ class ColorPanel extends React.Component {
   );
 
   render() {
-    const { modal, sidebar } = this.state;
+    const { modal, sidebar, text } = this.state;
     return (
       <Sidebar
         as={Menu}
@@ -93,19 +100,33 @@ class ColorPanel extends React.Component {
         <Button icon="add" size="small" color="blue" onClick={this.openModal} />
         {themes.map(theme => {
           let { sidebar, btn1, btn2 } = theme.colors;
-          console.log(sidebar, btn1, btn2);
           return this.defaultTheme(sidebar, btn1, btn2);
         })}
         <Modal open={modal} basic size="small">
           <Header as="h2" content="Pick your theme" />
           <Modal.Content>
-            <Header as="h4" content="SideBar" style={{ color: "white" }} />
+            <Header as="h4" content="Your Theme" style={{ color: "white" }} />
             <Segment inverted style={{ background: sidebar }}>
-              <SliderPicker
+              {/* <SliderPicker
                 styles={{ default: { wrap: {} } }}
-                color="rgba(0, 0, 0, 0)"
+                color={sidebar}
                 onChange={({ rgb }) => {
                   this.sidebarColorHandler(rgb);
+                }}
+              /> */}
+              <ChromePicker
+                color={sidebar}
+                onChange={({ rgb }) => {
+                  this.sidebarColorHandler(rgb);
+                }}
+              />
+            </Segment>
+            <Header as="h4" content="Text Color" style={{ color: "white" }} />
+            <Segment inverted style={{ background: text }}>
+              <ChromePicker
+                color={text}
+                onChange={({ rgb }) => {
+                  this.textColorHandler(rgb);
                 }}
               />
             </Segment>

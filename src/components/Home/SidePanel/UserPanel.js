@@ -123,6 +123,7 @@ class UserPanel extends Component {
 
   render() {
     const { modal, image, croppedImage, loading } = this.state;
+    const { color } = this.props.user;
     return (
       <React.Fragment>
         {loading ? (
@@ -131,13 +132,13 @@ class UserPanel extends Component {
           <Grid>
             <Grid.Column>
               <Grid.Row style={{ padding: "1.2em" }}>
-                <Header inverted as="h2">
+                <Header inverted as="h2" style={{ color: `${color.text}` }}>
                   <Icon name="code" />
                   <Header.Content>DevDesk</Header.Content>
                 </Header>
 
                 <Header
-                  style={{ padding: "0.25em" }}
+                  style={{ padding: "0.25em", color: `${color.text}` }}
                   as="h3"
                   inverted
                   textAlign="center"

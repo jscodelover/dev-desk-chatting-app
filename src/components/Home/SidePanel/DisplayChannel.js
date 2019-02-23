@@ -18,7 +18,8 @@ const DisplayChannel = props => {
     changeChannel,
     users,
     userID,
-    hideStarredID
+    hideStarredID,
+    textColor
   } = props;
   return (
     <React.Fragment>
@@ -36,7 +37,9 @@ const DisplayChannel = props => {
                     }}
                     active={channel.id === activeChannelID}
                   >
-                    <span># {channel.channelName}</span>
+                    <span style={{ color: textColor }}>
+                      # {channel.channelName}
+                    </span>
                     {getCount(channel.id, notification) ? (
                       <Label color="red">
                         {getCount(channel.id, notification)}
@@ -61,7 +64,7 @@ const DisplayChannel = props => {
                       changeChannel(user);
                     }}
                   >
-                    <span>
+                    <span style={{ color: textColor }}>
                       <Icon
                         name="circle"
                         color={user.status === "online" ? "green" : "red"}

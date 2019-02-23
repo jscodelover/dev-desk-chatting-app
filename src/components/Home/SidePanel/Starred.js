@@ -124,12 +124,13 @@ class Starred extends React.Component {
     return (
       <Menu.Menu style={{ marginBottom: "2rem" }}>
         <Menu.Item>
-          <span>
+          <span style={{ fontWeight: "bold", color: user.color.text }}>
             <Icon name="star" /> Starred
           </span>
         </Menu.Item>
         <DisplayChannel
           hideStarredID={hideStarredID_ForChannel}
+          textColor={user.color.text}
           channels={otherChannels}
           activeChannelID={activeChannelID}
           notification={notification}
@@ -139,6 +140,7 @@ class Starred extends React.Component {
         />
         <DisplayChannel
           hideStarredID={hideStarredID_ForUser}
+          textColor={user.color.text}
           users={otherUsers}
           activeChannelID={activeChannelID}
           notification={notification}

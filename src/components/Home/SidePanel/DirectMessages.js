@@ -113,10 +113,10 @@ class DirectMessage extends React.Component {
         ) : (
           <Menu.Menu style={{ marginTop: "2rem" }}>
             <Menu.Item>
-              <span>
-                <Icon name="envelope" />
+              <span style={{ fontWeight: "bold", color: user.color.text }}>
+                <Icon name="envelope" /> Direct Messages {` `} (
+                {totalUsers.length})
               </span>
-              {` `} Direct Messages {` `} ({totalUsers.length})
             </Menu.Item>
             {totalUsers.length ? (
               <DisplayChannel
@@ -125,6 +125,7 @@ class DirectMessage extends React.Component {
                 activeChannelID={activeChannelID}
                 notification={notification}
                 userID={user.userID}
+                textColor={user.color.text}
                 changeChannel={user => {
                   typeFn.typingRemove(channel, this.props.user);
                   this.changeChannel(user);

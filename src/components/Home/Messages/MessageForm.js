@@ -244,7 +244,7 @@ class MessageForm extends React.Component {
         />
         <Button.Group icon width="2" fluid>
           <Button
-            style={{ backgroundColor: btn1 }}
+            style={{ backgroundColor: btn1, color: user.color.text }}
             color="orange"
             content="Add Reply"
             disabled={loading}
@@ -253,7 +253,7 @@ class MessageForm extends React.Component {
             onClick={this.sendMessage}
           />
           <Button
-            style={{ backgroundColor: btn2 }}
+            style={{ backgroundColor: btn2, color: user.color.text }}
             color="teal"
             content="Add File"
             disabled={uploadStatus === "uploading"}
