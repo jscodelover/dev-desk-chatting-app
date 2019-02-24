@@ -15,6 +15,7 @@ import DisplayChannel from "./DisplayChannel";
 import Spinner from "../../Spinner";
 import * as notify from "../../../util/notification";
 import * as typeFn from "../../../util/typingfn";
+import { removeSessionData } from "../../../util/sessionData";
 
 class Channel extends React.Component {
   constructor(props) {
@@ -108,6 +109,7 @@ class Channel extends React.Component {
 
   changeChannel = channel => {
     if (channel.id !== this.props.channel.id) {
+      removeSessionData("time");
       this.props.setActiveChannelID(channel.id);
       this.props.channelInStore({ ...channel });
       this.props.setPrivateChannel(false);

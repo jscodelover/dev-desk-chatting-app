@@ -15,6 +15,7 @@ import Spinner from "../../Spinner";
 import * as notify from "../../../util/notification";
 import generateId from "../../../util/directmessage";
 import * as typeFn from "../../../util/typingfn";
+import { removeSessionData } from "../../../util/sessionData";
 
 class DirectMessage extends React.Component {
   constructor(props) {
@@ -61,6 +62,7 @@ class DirectMessage extends React.Component {
 
   changeChannel = user => {
     if (generateId(user, this.props.user.userID) !== this.props.channel.id) {
+      removeSessionData("time");
       this.props.setActiveChannelID(user.userID);
       this.props.setChannel({
         channelName: user.username,

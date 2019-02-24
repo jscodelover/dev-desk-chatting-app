@@ -12,6 +12,7 @@ import {
 import firebase from "../../../util/firebaseConfig";
 import * as notify from "../../../util/notification";
 import generateId from "../../../util/directmessage";
+import { removeSessionData } from "../../../util/sessionData";
 
 class Starred extends React.Component {
   constructor(props) {
@@ -56,6 +57,7 @@ class Starred extends React.Component {
 
   changeChannel = channel => {
     if (channel.id !== this.props.channel.id) {
+      removeSessionData("time");
       this.props.setActiveChannelID(channel.id);
       this.props.setChannel({ ...channel });
       this.props.setPrivateChannel(false);
@@ -66,6 +68,7 @@ class Starred extends React.Component {
 
   changeUser = user => {
     if (generateId(user, this.props.user.userID) !== this.props.channel.id) {
+      removeSessionData("time");
       this.props.setActiveChannelID(user.userID);
       this.props.setChannel({
         channelName: user.username,
