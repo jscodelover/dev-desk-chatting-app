@@ -15,7 +15,7 @@ const Message = ({ msg, user, allUsers }) => {
       >
         <Comment.Author as="a">{msgUser.username}</Comment.Author>
         <Comment.Metadata>
-          {moment(msg.timestamp).format(" Do-MM-YY, ddd, h:mm:ss a")}
+          {moment(msg.timestamp).format("h:mm a")}
         </Comment.Metadata>
         {isContent() ? (
           <Comment.Text>{msg.content}</Comment.Text>
