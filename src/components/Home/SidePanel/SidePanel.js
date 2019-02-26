@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Menu } from "semantic-ui-react";
+import { Menu, Sidebar } from "semantic-ui-react";
 import UserPanel from "./UserPanel";
 import Channel from "./Channel";
 import DirectMessage from "./DirectMessages";
@@ -15,12 +15,27 @@ class SidePanel extends Component {
       fontSize: "1.3rem"
     };
     return (
-      <Menu inverted fixed="right" vertical style={{ ...style }}>
+      <Sidebar
+        as={Menu}
+        direction="right"
+        animation="overlay"
+        icon="labeled"
+        inverted
+        vertical
+        visible
+        style={{ ...style }}
+      >
         <UserPanel user={user} />
         {user["starred"] ? <Starred /> : null}
         <Channel user={user} />
         <DirectMessage user={user} />
-      </Menu>
+      </Sidebar>
+      // <Menu inverted fixed="right" vertical style={{ ...style }}>
+      //   <UserPanel user={user} />
+      //   {user["starred"] ? <Starred /> : null}
+      //   <Channel user={user} />
+      //   <DirectMessage user={user} />
+      // </Menu>
     );
   }
 }
