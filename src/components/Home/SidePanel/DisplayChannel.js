@@ -30,6 +30,7 @@ const DisplayChannel = props => {
               channel =>
                 !hideStarredID.includes(channel.id) && (
                   <Menu.Item
+                    className="sidebar-heading"
                     key={channel.id}
                     name={channel.channelName}
                     onClick={() => {
@@ -58,6 +59,7 @@ const DisplayChannel = props => {
               user =>
                 !hideStarredID.includes(user.userID) && (
                   <Menu.Item
+                    className="sidebar-heading"
                     key={user.userID}
                     active={user.userID === activeChannelID}
                     onClick={() => {

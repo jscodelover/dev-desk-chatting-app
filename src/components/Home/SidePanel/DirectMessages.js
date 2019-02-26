@@ -116,7 +116,7 @@ class DirectMessage extends React.Component {
           <Spinner />
         ) : (
           <Menu.Menu style={{ marginTop: "2rem" }}>
-            <Menu.Item>
+            <Menu.Item className="sidebar-heading">
               <span style={{ fontWeight: "bold", color: user.color.text }}>
                 <Icon name="envelope" /> Direct Messages {` `} (
                 {totalUsers.length})

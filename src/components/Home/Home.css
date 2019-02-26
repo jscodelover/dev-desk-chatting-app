@@ -118,3 +118,7 @@
   align-items: center;
   flex-direction: row;
 }
+
+.sidebar-heading {
+  text-align: left !important;
+}

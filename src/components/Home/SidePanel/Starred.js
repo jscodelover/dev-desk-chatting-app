@@ -130,7 +130,7 @@ class Starred extends React.Component {
     } = this.props;
     return (
       <Menu.Menu style={{ marginBottom: "2rem" }}>
-        <Menu.Item>
+        <Menu.Item className="sidebar-heading">
           <span style={{ fontWeight: "bold", color: user.color.text }}>
             <Icon name="star" /> Starred
           </span>

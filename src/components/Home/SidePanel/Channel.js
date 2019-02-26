@@ -151,11 +151,15 @@ class Channel extends React.Component {
         ) : (
           <React.Fragment>
             <Menu.Menu>
-              <Menu.Item style={{ color: user.color.text }}>
-                <span style={{ fontWeight: "bold" }}>
+              <Menu.Item className="sidebar-heading">
+                <span style={{ fontWeight: "bold", color: user.color.text }}>
                   <Icon name="discussions" /> Channel ({channels.length})
+                  <Icon
+                    style={{ float: "right", cursor: "pointer" }}
+                    name="add"
+                    onClick={this.handleOpenModal}
+                  />
                 </span>
-                <Icon name="add" onClick={this.handleOpenModal} />
               </Menu.Item>
               <DisplayChannel
                 hideStarredID={user["starred"] ? user["starred"] : []}
