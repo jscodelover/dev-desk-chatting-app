@@ -1,6 +1,8 @@
 # Dev Desk
 
 - Chatting App
+- Build using Reactjs, Redux, firebase.
+- Used firebase function for FCM.
 
 ### Clone the project using
 
@@ -20,6 +22,7 @@ To install the packages for the firebase cloud messages
 
 ### `npm start`
 
+u
 Runs the app in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
