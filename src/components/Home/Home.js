@@ -13,10 +13,12 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isShow: window.innerWidth <= 678
+      isShow: false,
+      visible: window.innerWidth > 678
     };
   }
   componentDidMount() {
+    this.checkWidth();
     this.removeToken();
     firebase.messaging().onTokenRefresh(
       firebase
@@ -41,6 +43,12 @@ class Home extends React.Component {
         })
     );
   }
+
+  checkWidth = () => {
+    window.addEventListener("resize", () => {
+      this.setState({ visible: window.innerWidth > 678 });
+    });
+  };
 
   removeToken = () => {
     firebase
@@ -75,6 +83,8 @@ class Home extends React.Component {
       usersInChannel,
       showChannelInfo
     } = this.props;
+    const { visible, isShow } = this.state;
+    const visibleSideBar = visible ? visible : isShow;
     return (
       <Grid
         columns="equal"
@@ -106,7 +116,9 @@ class Home extends React.Component {
           {channel.id && <Messages />}
         </Grid.Column>
 
-        {user.userID && <SidePanel show={this.state.isShow} />}
+        {user.userID && (
+          <SidePanel visibleSideBar={visibleSideBar} user={user} />
+        )}
 
         <ColorPanel user={user} showSidebar={this.showSidebar} />
         {!privateChannel &&
