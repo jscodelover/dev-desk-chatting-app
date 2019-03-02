@@ -24,7 +24,7 @@ const Message = ({ msg, user, allUsers }) => {
           </span>
         </div>
       ) : null}
-      <Comment>
+      <Comment className="message-box">
         <Comment.Avatar src={msgUser.picture} />
         <Comment.Content
           className={user.userID === msgUser.userID ? "userMessage" : ""}

@@ -33,21 +33,32 @@
   padding-left: 6px;
 }
 
-/*Message */
+/* Message */
 
 .dateGroup {
   position: relative;
   padding: 12px 0px 5px 0px;
-  width: calc(100vw - (274px + 48px));
+  width: calc(100vw - (295px + 48px));
 }
 .date {
   position: absolute;
   top: 13px;
   background-color: #fff;
-  left: 50%;
+  left: 77px;
   transform: translateX(-50%);
   padding: 0px 12px;
   color: #7d7b7b;
+  text-align: center;
+}
+
+.dateLine {
+  border: none;
+  height: 2px;
+  background: #817f7b69;
+}
+
+.message-box {
+  margin-left: 2rem !important;
 }
 
 /* Typing */
