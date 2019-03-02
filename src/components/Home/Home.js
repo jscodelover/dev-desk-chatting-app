@@ -10,6 +10,12 @@ import { setShowChannelInfo } from "../../store/action";
 import "./Home.css";
 
 class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isShow: window.innerWidth <= 678
+    };
+  }
   componentDidMount() {
     this.removeToken();
     firebase.messaging().onTokenRefresh(
@@ -56,6 +62,10 @@ class Home extends React.Component {
       });
   };
 
+  showSidebar = () => {
+    this.setState(prevState => ({ isShow: !prevState.isShow }));
+  };
+
   render() {
     const {
       user,
@@ -92,26 +102,28 @@ class Home extends React.Component {
             />
           </Grid.Column>
         )} */}
-        <Grid.Column style={{ marginLeft: "58px", marginRight: "238px" }}>
+        <Grid.Column className="my-container">
           {channel.id && <Messages />}
         </Grid.Column>
 
-        {user.userID && <SidePanel />}
+        {user.userID && <SidePanel show={this.state.isShow} />}
 
-        <ColorPanel user={user} />
-        {!privateChannel && showChannelInfo && otherUsers.length && (
-          <div className="metapannel-box">
-            <MetaPanel
-              channel={channel}
-              otherUsers={otherUsers}
-              user={user}
-              usersInChannel={usersInChannel}
-              showChannelInfo={() => {
-                this.props.setShowChannelInfo(false);
-              }}
-            />
-          </div>
-        )}
+        <ColorPanel user={user} showSidebar={this.showSidebar} />
+        {!privateChannel &&
+          showChannelInfo &&
+          otherUsers.length && (
+            <div className="metapannel-box">
+              <MetaPanel
+                channel={channel}
+                otherUsers={otherUsers}
+                user={user}
+                usersInChannel={usersInChannel}
+                showChannelInfo={() => {
+                  this.props.setShowChannelInfo(false);
+                }}
+              />
+            </div>
+          )}
       </Grid>
     );
   }

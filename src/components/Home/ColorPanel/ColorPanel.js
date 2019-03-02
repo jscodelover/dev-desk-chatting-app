@@ -22,8 +22,15 @@ class ColorPanel extends React.Component {
       sidebar: "rgba(0, 0, 0, 1)",
       btn1: "",
       btn2: "",
-      text: "rgba(255,255,255,0.9)"
+      text: "rgba(255,255,255,0.9)",
+      screenWidth: window.innerWidth
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", () => {
+      this.setState({ screenWidth: window.innerWidth });
+    });
   }
 
   openModal = () => {
@@ -96,6 +103,14 @@ class ColorPanel extends React.Component {
           right: 0
         }}
       >
+        {this.state.screenWidth <= 678 ? (
+          <Button
+            icon="align justify"
+            size="small"
+            onClick={this.props.showSidebar}
+            style={{ marginTop: "5px" }}
+          />
+        ) : null}
         <Divider style={{ border: "none" }} />
         <Button icon="add" size="small" color="blue" onClick={this.openModal} />
         {themes.map(theme => {

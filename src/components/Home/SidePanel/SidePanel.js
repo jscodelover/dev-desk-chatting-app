@@ -10,7 +10,7 @@ class SidePanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: true
+      visible: window.innerWidth > 678
     };
   }
   toggleBtn = visible => {
@@ -19,38 +19,35 @@ class SidePanel extends Component {
 
   componentDidMount() {
     window.addEventListener("resize", () => {
-      console.log(window.innerWidth);
-      if (window.innerWidth <= 500) this.toggleBtn(false);
-      else this.toggleBtn(true);
+      this.setState({ visible: window.innerWidth > 678 });
     });
   }
 
   render() {
-    const { user } = this.props;
+    const { user, show } = this.props;
+    const { visible } = this.state;
     const style = {
       background: user.color.theme[0],
       width: "17rem",
       fontSize: "1.3rem"
     };
+    const visibleSideBar = visible ? visible : show;
     return (
-      <React.Fragment>
-        <Sidebar
-          as={Menu}
-          direction="right"
-          animation="overlay"
-          icon="labeled"
-          inverted
-          vertical
-          visible={this.state.visible}
-          style={{ ...style }}
-        >
-          <UserPanel user={user} />
-          {user["starred"] ? <Starred /> : null}
-          <Channel user={user} />
-          <DirectMessage user={user} />
-        </Sidebar>
-      </React.Fragment>
-
+      <Sidebar
+        as={Menu}
+        direction="right"
+        animation="overlay"
+        icon="labeled"
+        inverted
+        vertical
+        visible={visibleSideBar}
+        style={{ ...style }}
+      >
+        <UserPanel user={user} />
+        {user["starred"] ? <Starred /> : null}
+        <Channel user={user} />
+        <DirectMessage user={user} />
+      </Sidebar>
       // <Menu inverted fixed="right" vertical style={{ ...style }}>
       //   <UserPanel user={user} />
       //   {user["starred"] ? <Starred /> : null}
