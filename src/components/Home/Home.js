@@ -68,7 +68,7 @@ class Home extends React.Component {
     return (
       <Grid
         columns="equal"
-        style={{ background: "#eee", marginTop: "0px", height: "100vh" }}
+        style={{ background: "#fff", marginTop: "0px", height: "100vh" }}
       >
         {/* <ColorPanel user={user} />
         {user.userID && <SidePanel />}
