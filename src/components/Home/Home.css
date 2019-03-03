@@ -1,7 +1,7 @@
 .my-container {
   margin-left: 58px !important;
   margin-right: 238px !important;
-  padding: 1rem 0px 0px 1.8rem !important;
+  padding: 1rem 0px 1rem 0rem !important;
 }
 
 /* Messages */
@@ -12,7 +12,7 @@
 }
 
 .messages {
-  height: calc(100% - (110px + 48px));
+  height: calc(100vh - (110px + 57px));
   min-width: 360px;
   overflow-y: scroll;
   margin-top: -15px !important;
@@ -145,5 +145,8 @@
   }
   .messageForm {
     margin-right: 0px !important;
+  }
+  .messages {
+    height: calc(100vh - (110px + 35px));
   }
 }
