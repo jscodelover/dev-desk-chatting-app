@@ -28,15 +28,15 @@ class UserPanel extends Component {
     };
   }
   dropdownOptions = () => [
-    {
-      key: "user",
-      text: (
-        <span>
-          Signed in as <strong>{this.props.user.username}</strong>
-        </span>
-      ),
-      disabled: true
-    },
+    // {
+    //   key: "user",
+    //   text: (
+    //     <span>
+    //       Signed in as <strong>{this.props.user.username}</strong>
+    //     </span>
+    //   ),
+    //   disabled: true
+    // },
     {
       key: "avatar",
       text: <span onClick={this.modal}>Change Avatar</span>
