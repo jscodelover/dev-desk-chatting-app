@@ -42,23 +42,25 @@
 
 .dateGroup {
   position: relative;
+  margin-left: 82px;
   padding: 12px 0px 5px 0px;
-  width: calc(100vw - (295px + 48px));
+  width: calc(100vw - (295px + 108px));
 }
 .date {
   position: absolute;
-  top: 13px;
+  top: 10px;
   background-color: #fff;
-  left: 77px;
+  left: 0px;
   transform: translateX(-50%);
   padding: 0px 12px;
   color: #7d7b7b;
   text-align: center;
+  font-style: italic;
 }
 
 .dateLine {
   border: none;
-  height: 2px;
+  height: 1.8px;
   background: #817f7b69;
 }
 
@@ -148,5 +150,12 @@
   }
   .messages {
     height: calc(100vh - (110px + 35px));
+  }
+  .dateGroup {
+    margin-left: 67px;
+    width: 72vw;
+  }
+  .message-box {
+    margin-left: 1rem !important;
   }
 }
