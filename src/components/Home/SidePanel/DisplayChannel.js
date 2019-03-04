@@ -19,7 +19,8 @@ const DisplayChannel = props => {
     users,
     userID,
     hideStarredID,
-    textColor
+    textColor,
+    closedSidebar
   } = props;
   return (
     <React.Fragment>
@@ -35,6 +36,7 @@ const DisplayChannel = props => {
                     name={channel.channelName}
                     onClick={() => {
                       changeChannel(channel);
+                      closedSidebar();
                     }}
                     active={channel.id === activeChannelID}
                   >
@@ -64,6 +66,7 @@ const DisplayChannel = props => {
                     active={user.userID === activeChannelID}
                     onClick={() => {
                       changeChannel(user);
+                      closedSidebar();
                     }}
                   >
                     <span style={{ color: textColor }}>

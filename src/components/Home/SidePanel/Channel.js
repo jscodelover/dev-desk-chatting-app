@@ -143,7 +143,13 @@ class Channel extends React.Component {
 
   render() {
     const { modal, channelName, channelDetail, loading } = this.state;
-    const { channels, activeChannelID, user, notification } = this.props;
+    const {
+      channels,
+      activeChannelID,
+      user,
+      notification,
+      closedSidebar
+    } = this.props;
     return (
       <React.Fragment>
         {loading ? (
@@ -171,6 +177,7 @@ class Channel extends React.Component {
                   typeFn.typingRemove(this.props.channel, user);
                   this.changeChannel(channel);
                 }}
+                closedSidebar={closedSidebar}
               />
             </Menu.Menu>
             <Modal open={modal} basic onClose={this.handleCloseModal}>

@@ -126,7 +126,8 @@ class Starred extends React.Component {
       otherUsers,
       activeChannelID,
       user,
-      notification
+      notification,
+      closedSidebar
     } = this.props;
     return (
       <Menu.Menu style={{ marginBottom: "2rem" }}>
@@ -144,6 +145,7 @@ class Starred extends React.Component {
           changeChannel={channel => {
             this.changeChannel(channel);
           }}
+          closedSidebar={closedSidebar}
         />
         <DisplayChannel
           hideStarredID={hideStarredID_ForUser}
@@ -155,6 +157,7 @@ class Starred extends React.Component {
           changeChannel={user => {
             this.changeUser(user);
           }}
+          closedSidebar={closedSidebar}
         />
       </Menu.Menu>
     );

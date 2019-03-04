@@ -108,7 +108,8 @@ class DirectMessage extends React.Component {
       user,
       totalUsers,
       notification,
-      channel
+      channel,
+      closedSidebar
     } = this.props;
     return (
       <React.Fragment>
@@ -134,6 +135,7 @@ class DirectMessage extends React.Component {
                   typeFn.typingRemove(channel, this.props.user);
                   this.changeChannel(user);
                 }}
+                closedSidebar={closedSidebar}
               />
             ) : (
               ""

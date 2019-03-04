@@ -122,7 +122,11 @@ class Home extends React.Component {
         </Grid.Column>
 
         {user.userID && (
-          <SidePanel visibleSideBar={visibleSideBar} user={user} />
+          <SidePanel
+            visibleSideBar={visibleSideBar}
+            user={user}
+            showSidebar={this.showSidebar}
+          />
         )}
 
         <ColorPanel user={user} showSidebar={this.showSidebar} />
