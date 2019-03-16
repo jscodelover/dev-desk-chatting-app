@@ -19,7 +19,6 @@ class Messages extends React.Component {
       userRef: firebase.database().ref("users"),
       typingRef: firebase.database().ref("typing"),
       typingUsers: [],
-      messages: [],
       channelUsers: [],
       reachedDBEnd: false,
       searchMsg: [],
@@ -139,11 +138,18 @@ class Messages extends React.Component {
 
   //TODO: include search on complete message database --> (using channelIDs for this)
   searchMessage = searchInput => {
-    const { messages } = this.props;
+    const { messages, user, otherUsers } = this.props;
+    const allUsers = [user, ...otherUsers];
     let regxExp = new RegExp(searchInput, "gi");
+    const userSearched = allUsers.find(u => Boolean(u.username.match(regxExp)));
+    console.log(userSearched);
     this.setState({ searchLoading: true });
+
     let searchMsg = messages.reduce((acc, msg) => {
-      if (msg.hasOwnProperty("content") && msg["content"].match(regxExp)) {
+      if (
+        (msg.hasOwnProperty("content") && msg["content"].match(regxExp)) ||
+        (userSearched && msg.userID === userSearched.userID)
+      ) {
         acc.push(msg);
       }
       return acc;
@@ -171,6 +177,10 @@ class Messages extends React.Component {
       let index = otherUsers.findIndex(user => user.userID === id);
       return { ...otherUsers[index] };
     }
+  };
+
+  clearSearchData = () => {
+    this.setState({ hasSearchData: false, searchMsg: [] });
   };
 
   render() {
@@ -203,10 +213,12 @@ class Messages extends React.Component {
           user={user}
           activeChannelID={activeChannelID}
           searchLoading={searchLoading}
+          hasSearchData={hasSearchData}
           privateChannel={privateChannel}
           showChannelInfo={() => {
             setShowChannelInfo(true);
           }}
+          clearSearchData={this.clearSearchData}
         />
         <Segment className="messages">
           {messages.length || reachedDBEnd ? (

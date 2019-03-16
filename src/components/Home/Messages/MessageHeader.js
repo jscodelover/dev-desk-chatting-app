@@ -8,7 +8,8 @@ import {
   Input,
   Modal,
   Form,
-  Button
+  Button,
+  Label
 } from "semantic-ui-react";
 
 class MessageHeader extends React.Component {
@@ -59,7 +60,9 @@ class MessageHeader extends React.Component {
       privateChannel,
       activeChannelID,
       user,
-      showChannelInfo
+      showChannelInfo,
+      hasSearchData,
+      clearSearchData
     } = this.props;
     const { screenWidth, modal } = this.state;
     return (
@@ -109,6 +112,19 @@ class MessageHeader extends React.Component {
               loading={searchLoading}
               placeholder="Search..."
             />
+          ) : hasSearchData ? (
+            <Label
+              color="red"
+              style={{
+                cursor: "pointer",
+                position: "absolute",
+                right: "52px",
+                top: "21px"
+              }}
+              onClick={clearSearchData}
+            >
+              <Icon name="search" /> Clear
+            </Label>
           ) : (
             <Icon
               name="search"
