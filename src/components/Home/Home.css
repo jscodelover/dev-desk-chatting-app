@@ -43,16 +43,14 @@
 
 .dateGroup {
   position: relative;
-  margin-left: 82px;
   padding: 12px 0px 5px 0px;
-  width: calc(100vw - (295px + 135px));
+  width: calc(100vw - (295px + 57px));
 }
 .date {
   position: absolute;
   top: 10px;
   background-color: #fff;
   left: 0px;
-  transform: translateX(-50%);
   padding: 0px 12px;
   color: #7d7b7b;
   text-align: center;
@@ -153,8 +151,7 @@
     height: calc(100vh - (110px + 35px));
   }
   .dateGroup {
-    margin-left: 67px;
-    width: 80%;
+    width: 99%;
   }
   .message-box {
     margin-left: 1rem !important;

@@ -20,7 +20,9 @@ const Message = ({ msg, user, allUsers }) => {
         <div className="dateGroup">
           <hr className="dateLine" />
           <span className="date">
-            {todayMsg ? "Today" : moment(msg.timestamp).format("MMMM Do YYYY")}
+            {todayMsg
+              ? `${moment(msg.timestamp).format("MMMM Do YYYY")}, Today`
+              : moment(msg.timestamp).format("MMMM Do YYYY")}
           </span>
         </div>
       ) : null}
