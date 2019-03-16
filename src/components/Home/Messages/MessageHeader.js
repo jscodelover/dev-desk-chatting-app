@@ -1,14 +1,30 @@
 import React from "react";
 import moment from "moment";
 import firebase from "../../../util/firebaseConfig";
-import { Segment, Header, Icon, Input } from "semantic-ui-react";
+import {
+  Segment,
+  Header,
+  Icon,
+  Input,
+  Modal,
+  Form,
+  Button
+} from "semantic-ui-react";
 
 class MessageHeader extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userRef: firebase.database().ref("users")
+      userRef: firebase.database().ref("users"),
+      screenWidth: window.innerWidth,
+      modal: false
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", () => {
+      this.setState({ screenWidth: window.innerWidth });
+    });
   }
 
   starredChannel = () => {
@@ -28,6 +44,13 @@ class MessageHeader extends React.Component {
     this.props.searchMessage(event.target.value);
   };
 
+  handleOpenModal = () => {
+    this.setState({ modal: true });
+  };
+  handleCloseModal = () => {
+    this.setState({ modal: false });
+  };
+
   render() {
     const {
       channelName,
@@ -38,6 +61,7 @@ class MessageHeader extends React.Component {
       user,
       showChannelInfo
     } = this.props;
+    const { screenWidth, modal } = this.state;
     return (
       <Segment clearing className="messageHeader">
         <Header as="h2" floated="left" fluid="true" style={{ marginBottom: 0 }}>
@@ -76,14 +100,23 @@ class MessageHeader extends React.Component {
           </Header.Subheader>
         </Header>
         <Header floated="right">
-          <Input
-            size="mini"
-            icon="search"
-            name="searchTerm"
-            onChange={this.handleChange}
-            loading={searchLoading}
-            placeholder="Search..."
-          />
+          {screenWidth > 678 ? (
+            <Input
+              size="mini"
+              icon="search"
+              name="searchTerm"
+              onChange={this.handleChange}
+              loading={searchLoading}
+              placeholder="Search..."
+            />
+          ) : (
+            <Icon
+              name="search"
+              color="grey"
+              style={{ cursor: "pointer" }}
+              onClick={this.handleOpenModal}
+            />
+          )}
           {!privateChannel && (
             <Icon
               name="info"
@@ -93,6 +126,25 @@ class MessageHeader extends React.Component {
             />
           )}
         </Header>
+        <Modal open={modal} basic onClose={this.handleCloseModal}>
+          <Modal.Content>
+            <Form onSubmit={this.handleSubmit}>
+              <Form.Field>
+                <Input
+                  fluid
+                  name="searchItem"
+                  onChange={this.handleChange}
+                  placeholder="Search..."
+                />
+              </Form.Field>
+            </Form>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button color="green" inverted onClick={this.handleCloseModal}>
+              <Icon name="checkmark" /> Done
+            </Button>
+          </Modal.Actions>
+        </Modal>
       </Segment>
     );
   }
