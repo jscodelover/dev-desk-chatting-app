@@ -19,6 +19,7 @@
 }
 
 .messageForm {
+  min-width: 360px;
   position: fixed !important;
   bottom: 0rem;
   right: 0rem;
@@ -44,7 +45,7 @@
   position: relative;
   margin-left: 82px;
   padding: 12px 0px 5px 0px;
-  width: calc(100vw - (295px + 108px));
+  width: calc(100vw - (295px + 135px));
 }
 .date {
   position: absolute;
@@ -153,7 +154,7 @@
   }
   .dateGroup {
     margin-left: 67px;
-    width: 72vw;
+    width: 80%;
   }
   .message-box {
     margin-left: 1rem !important;
