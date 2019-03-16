@@ -25,6 +25,7 @@ class Messages extends React.Component {
       searchMsg: [],
       searchLoading: false,
       userInHeader: {},
+      hasSearchData: false,
       connectionRef: firebase.database().ref(".info/connected")
     };
   }
@@ -147,7 +148,7 @@ class Messages extends React.Component {
       }
       return acc;
     }, []);
-    this.setState({ searchMsg });
+    this.setState({ searchMsg, hasSearchData: !!searchInput });
     setTimeout(() => {
       this.setState({ searchLoading: false });
     }, 1000);
@@ -179,7 +180,8 @@ class Messages extends React.Component {
       searchLoading,
       typingUsers,
       inputValue,
-      reachedDBEnd
+      reachedDBEnd,
+      hasSearchData
     } = this.state;
     const {
       channel,
@@ -210,7 +212,7 @@ class Messages extends React.Component {
           {messages.length || reachedDBEnd ? (
             <React.Fragment>
               <Comment.Group size="large">
-                {searchMsg.length > 0
+                {hasSearchData
                   ? this.displayMessages(searchMsg, user, otherUsers)
                   : this.displayMessages(messages, user, otherUsers)}
               </Comment.Group>
