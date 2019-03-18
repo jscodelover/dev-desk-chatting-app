@@ -1,6 +1,14 @@
 import * as React from "react";
 import uuidv4 from "uuid/v4";
-import { Segment, Button, Input, Progress } from "semantic-ui-react";
+import TextareaAutosize from "react-textarea-autosize";
+import {
+  Segment,
+  Button,
+  Input,
+  TextArea,
+  Progress,
+  Form
+} from "semantic-ui-react";
 import firebase from "../../../util/firebaseConfig";
 import FileModal from "./FileModal";
 import Typing from "./Typing";
@@ -46,7 +54,8 @@ class MessageForm extends React.Component {
     if (event.target.value)
       session.addSessionData(this.props.channel.id, event.target.value);
     else session.removeSessionData(this.props.channel.id);
-
+    console.log(event.target.selectionStart, event.target.selectionEnd);
+    console.log(window.getSelection());
     this.setState({ cursorPos: event.target.selectionStart });
   };
 
@@ -222,27 +231,51 @@ class MessageForm extends React.Component {
         ) : (
           ""
         )}
-        <Input
+        <Form>
+          <TextArea
+            ref={ref => (this.input = ref)}
+            placeholder="Write your message..."
+            onClick={this.getMessage}
+            onKeyDown={this.handleCommand}
+            name="message"
+            value={message}
+            onChange={this.getMessage}
+            style={{
+              height: "41px",
+              position: "fixed",
+              bottom: "46px",
+              left: "76px",
+              width: "calc(100vw - 327px)"
+            }}
+            className={
+              error.some(err => err.includes("message")) ? "error" : ""
+            }
+          />
+        </Form>
+
+        {/* <Input
+            fluid
+            style={{ marginBottom: "0.7rem" }}
+            label={
+              <Emoji
+                onSelect={emoji => {
+                  this.addEmoji(emoji);
+                }}
+              />
+            }
+            value={message}
+            onChange={this.getMessage}
+            loading={loading}
+            labelPosition="left"
+            placeholder="Write your message..."
+            className={error.some(err => err.includes("message")) ? "error" : ""}
+          /> */}
+        <Button.Group
+          icon
+          width="2"
           fluid
-          style={{ marginBottom: "0.7rem" }}
-          label={
-            <Emoji
-              onSelect={emoji => {
-                this.addEmoji(emoji);
-              }}
-            />
-          }
-          onClick={this.getMessage}
-          onKeyDown={this.handleCommand}
-          name="message"
-          value={message}
-          onChange={this.getMessage}
-          loading={loading}
-          labelPosition="left"
-          placeholder="Write your message..."
-          className={error.some(err => err.includes("message")) ? "error" : ""}
-        />
-        <Button.Group icon width="2" fluid>
+          style={{ position: "absolute", width: "95%", bottom: "3px" }}
+        >
           <Button
             style={{ backgroundColor: btn1, color: user.color.text }}
             color="orange"
