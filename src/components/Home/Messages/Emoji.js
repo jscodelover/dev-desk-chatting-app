@@ -1,6 +1,6 @@
 import React from "react";
 import { Picker } from "emoji-mart";
-import { Button, Icon } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 import "emoji-mart/css/emoji-mart.css";
 
 class Emoji extends React.Component {
@@ -33,10 +33,22 @@ class Emoji extends React.Component {
   render() {
     const { openPicker } = this.state;
     return (
-      <div>
-        <Button icon onClick={this.openEmojiPicker}>
-          <Icon name="smile outline" />
-        </Button>
+      <div
+        onClick={this.openEmojiPicker}
+        style={{
+          padding: "0px 3px 0px 5px",
+          border: "1px solid #e2b605",
+          display: "flex",
+          marginRight: "1px",
+          alignItems: "center",
+          borderRadius: "4px",
+          cursor: "pointer"
+        }}
+      >
+        <Icon
+          name="smile outline"
+          style={{ fontSize: "20px", color: "#e2b605" }}
+        />
         {openPicker && (
           <Picker
             set="google"

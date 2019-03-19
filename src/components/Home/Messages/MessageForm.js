@@ -1,14 +1,7 @@
 import * as React from "react";
 import uuidv4 from "uuid/v4";
 import TextareaAutosize from "react-textarea-autosize";
-import {
-  Segment,
-  Button,
-  Input,
-  TextArea,
-  Progress,
-  Form
-} from "semantic-ui-react";
+import { Segment, Button, Progress, Form } from "semantic-ui-react";
 import firebase from "../../../util/firebaseConfig";
 import FileModal from "./FileModal";
 import Typing from "./Typing";
@@ -266,7 +259,12 @@ class MessageForm extends React.Component {
             placeholder="Write your message..."
             className={error.some(err => err.includes("message")) ? "error" : ""}
           /> */}
-        <Button.Group icon width="2" fluid className="ctlBtn">
+        <Button.Group icon width="3" fluid className="ctlBtn">
+          <Emoji
+            onSelect={emoji => {
+              this.addEmoji(emoji);
+            }}
+          />
           <Button
             style={{ backgroundColor: btn1, color: user.color.text }}
             color="orange"
