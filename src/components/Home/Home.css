@@ -30,6 +30,19 @@
   height: 110px;
 }
 
+.editor {
+  position: fixed;
+  bottom: 46px;
+  left: 76px;
+  width: calc(100vw - 327px);
+}
+
+.ctlBtn {
+  position: absolute;
+  width: calc(100% - 26px) !important;
+  bottom: 3px;
+}
+
 .typingSpace {
   padding: 1.6em 1em 0em 1em !important;
 }
@@ -158,5 +171,11 @@
   }
   .metapannel-box {
     right: 0px;
+  }
+  .editor {
+    width: calc(100% - 97px);
+  }
+  .ctlBtn {
+    width: calc(100% - 31px) !important;
   }
 }

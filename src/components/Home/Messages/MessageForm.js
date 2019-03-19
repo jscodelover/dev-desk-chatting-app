@@ -232,25 +232,21 @@ class MessageForm extends React.Component {
           ""
         )}
         <Form>
-          <TextArea
-            ref={ref => (this.input = ref)}
-            placeholder="Write your message..."
-            onClick={this.getMessage}
-            onKeyDown={this.handleCommand}
-            name="message"
-            value={message}
-            onChange={this.getMessage}
-            style={{
-              height: "41px",
-              position: "fixed",
-              bottom: "46px",
-              left: "76px",
-              width: "calc(100vw - 327px)"
-            }}
-            className={
-              error.some(err => err.includes("message")) ? "error" : ""
-            }
-          />
+          <div className="editor">
+            <TextareaAutosize
+              ref={ref => (this.input = ref)}
+              placeholder="Write your message..."
+              onClick={this.getMessage}
+              onKeyDown={this.handleCommand}
+              name="message"
+              value={message}
+              onChange={this.getMessage}
+              style={{
+                maxHeight: "175px",
+                minHeight: "41px"
+              }}
+            />
+          </div>
         </Form>
 
         {/* <Input
@@ -270,12 +266,7 @@ class MessageForm extends React.Component {
             placeholder="Write your message..."
             className={error.some(err => err.includes("message")) ? "error" : ""}
           /> */}
-        <Button.Group
-          icon
-          width="2"
-          fluid
-          style={{ position: "absolute", width: "95%", bottom: "3px" }}
-        >
+        <Button.Group icon width="2" fluid className="ctlBtn">
           <Button
             style={{ backgroundColor: btn1, color: user.color.text }}
             color="orange"
