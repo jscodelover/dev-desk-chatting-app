@@ -52,6 +52,43 @@ class MessageForm extends React.Component {
     this.setState({ cursorPos: event.target.selectionStart });
   };
 
+  formatting = (message, text, replaceText, trim) => {
+    console.log(replaceText);
+    if (replaceText) {
+      for (let t of replaceText) {
+        let htmlData =
+          text === "blockquote"
+            ? t.slice(trim, t.length)
+            : t.slice(trim, t.length - trim);
+        message = message.replace(t, `<${text}>${htmlData}</${text}>`);
+        console.log(t, message);
+      }
+    }
+    return message;
+  };
+
+  formattedMessage = message => {
+    const quote = message.match(/(<br>|^)>>>[^\n.]+\n/g);
+    message = this.formatting(message, "blockquote", quote, 3);
+
+    const boldDetector = message.match(/\*[^\n\*.]+\*/g);
+    message = this.formatting(message, "b", boldDetector, 1);
+
+    const italicDetector = message.match(/_(.+)_\b/g);
+    message = this.formatting(message, "i", italicDetector, 1);
+
+    const strikeThrough = message.match(/~[^\n~.]+~/g);
+    message = this.formatting(message, "strike", strikeThrough, 1);
+
+    const blockCode = message.match(/```[^\n(```)(`).]+```/g);
+    message = this.formatting(message, "pre", blockCode, 3);
+
+    const inlineCode = message.match(/`[^\n`.]+`/g);
+    message = this.formatting(message, "code", inlineCode, 1);
+
+    return message.replace(/\r?\n/g, "<br>");
+  };
+
   createMessage = user => {
     const { file, message } = this.state;
     const messageObj = {
@@ -70,28 +107,29 @@ class MessageForm extends React.Component {
     const { messageRef, channel, user } = this.props;
     const { message, error } = this.state;
 
-    if (message) {
-      this.setState({ loading: true });
-      messageRef
-        .child(channel.id)
-        .push()
-        .set(this.createMessage(user))
-        .then(() => {
-          this.setState({ loading: false, message: "", error: [] });
-          typeFn.typingRemove(channel, user);
-          session.removeSessionData(channel.id);
-        })
-        .catch(() => {
-          this.setState({
-            loading: false,
-            error: error.concat("message can't be send. Try Again !!")
-          });
-        });
-    } else {
-      this.setState({
-        loading: false,
-        error: error.concat("write the message")
-      });
+    if (message.trim()) {
+      console.log(this.formattedMessage(message));
+      //   this.setState({ loading: true });
+      //   messageRef
+      //     .child(channel.id)
+      //     .push()
+      //     .set(this.createMessage(user))
+      //     .then(() => {
+      //       this.setState({ loading: false, message: "", error: [] });
+      //       typeFn.typingRemove(channel, user);
+      //       session.removeSessionData(channel.id);
+      //     })
+      //     .catch(() => {
+      //       this.setState({
+      //         loading: false,
+      //         error: error.concat("message can't be send. Try Again !!")
+      //       });
+      //     });
+      // } else {
+      //   this.setState({
+      //     loading: false,
+      //     error: error.concat("write the message")
+      //   });
     }
   };
 
@@ -191,7 +229,6 @@ class MessageForm extends React.Component {
   render() {
     const {
       message,
-      error,
       loading,
       modal,
       uploadStatus,
