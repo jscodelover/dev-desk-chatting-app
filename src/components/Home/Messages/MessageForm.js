@@ -68,22 +68,22 @@ class MessageForm extends React.Component {
   };
 
   formattedMessage = message => {
-    const quote = message.match(/(<br>|^)>>>[^\n.]+\n/g);
+    const quote = message.match(/(\\n>>>|^>>>).+/g);
     message = this.formatting(message, "blockquote", quote, 3);
 
-    const boldDetector = message.match(/\*[^\n\*.]+\*/g);
+    const boldDetector = message.match(/\*[^\\n\*.]+\*/g);
     message = this.formatting(message, "b", boldDetector, 1);
 
     const italicDetector = message.match(/_(.+)_\b/g);
     message = this.formatting(message, "i", italicDetector, 1);
 
-    const strikeThrough = message.match(/~[^\n~.]+~/g);
+    const strikeThrough = message.match(/~[^\\n~.]+~/g);
     message = this.formatting(message, "strike", strikeThrough, 1);
 
-    const blockCode = message.match(/```[^\n(```)(`).]+```/g);
+    const blockCode = message.match(/```[^\n(```).]+```/g);
     message = this.formatting(message, "pre", blockCode, 3);
 
-    const inlineCode = message.match(/`[^\n`.]+`/g);
+    const inlineCode = message.match(/`[^\\n`.]+`/g);
     message = this.formatting(message, "code", inlineCode, 1);
 
     return message.replace(/\r?\n/g, "<br>");
