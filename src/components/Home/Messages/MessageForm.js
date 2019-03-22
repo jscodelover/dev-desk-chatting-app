@@ -68,8 +68,16 @@ class MessageForm extends React.Component {
   };
 
   formattedMessage = message => {
-    const quote = message.match(/(\\n>>>|^>>>).+/g);
-    message = this.formatting(message, "blockquote", quote, 3);
+    console.log(message);
+    const findQuote = message.match(/(\s+?>>>|^>>>)/g).length;
+    console.log(findQuote);
+    if (findQuote) {
+      for (let i = 0; i < findQuote; i++) {
+        const quote = message.match(/(\s+?>>>|^>>>).+/g);
+        console.log(quote);
+        message = this.formatting(message, "blockquote", quote, 3);
+      }
+    }
 
     const boldDetector = message.match(/\*[^\\n\*.]+\*/g);
     message = this.formatting(message, "b", boldDetector, 1);
@@ -80,7 +88,7 @@ class MessageForm extends React.Component {
     const strikeThrough = message.match(/~[^\\n~.]+~/g);
     message = this.formatting(message, "strike", strikeThrough, 1);
 
-    const blockCode = message.match(/```[^\n(```).]+```/g);
+    const blockCode = message.match(/```.+?```/g);
     message = this.formatting(message, "pre", blockCode, 3);
 
     const inlineCode = message.match(/`[^\\n`.]+`/g);
