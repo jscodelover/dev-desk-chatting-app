@@ -53,7 +53,6 @@ class MessageForm extends React.Component {
   };
 
   formatting = (message, text, replaceText, trim) => {
-    console.log(replaceText);
     if (replaceText) {
       for (let t of replaceText) {
         let htmlData =
@@ -68,31 +67,38 @@ class MessageForm extends React.Component {
   };
 
   formattedMessage = message => {
-    console.log(message);
-    const findQuote = message.match(/(\s+?>>>|^>>>)/g).length;
-    console.log(findQuote);
+    message = message.replace(/\r?\n/g, "<br>");
+    const findQuote = message.match(/(<br>+>>>|^>>>)/g);
     if (findQuote) {
-      for (let i = 0; i < findQuote; i++) {
-        const quote = message.match(/(\s+?>>>|^>>>).+/g);
-        console.log(quote);
+      for (let i = 0; i < findQuote.length; i++) {
+        let quote = message.match(/(<br>+>>>|^>>>).+/g);
+        quote[0] = quote[0].replace(/^(?:<br>)+/g, "");
         message = this.formatting(message, "blockquote", quote, 3);
       }
     }
 
-    const boldDetector = message.match(/\*[^\\n\*.]+\*/g);
+    const boldDetector = message.match(/(?<=\s|^|<br>)(\*[^\(<br>\)\*.]+\*)(?=\s|<br>)/g);
     message = this.formatting(message, "b", boldDetector, 1);
 
-    const italicDetector = message.match(/_(.+)_\b/g);
+    const italicDetector = message.match(/(?<=\s|^|<br>)(_[^\(<br>\)_.]+_)(?=\s|<br>)/g);
     message = this.formatting(message, "i", italicDetector, 1);
 
-    const strikeThrough = message.match(/~[^\\n~.]+~/g);
+    const strikeThrough = message.match(/(?<=\s|^|<br>)(~[^\(<br>\)~.]+~)/g);
     message = this.formatting(message, "strike", strikeThrough, 1);
 
     const blockCode = message.match(/```.+?```/g);
-    message = this.formatting(message, "pre", blockCode, 3);
-
-    const inlineCode = message.match(/`[^\\n`.]+`/g);
-    message = this.formatting(message, "code", inlineCode, 1);
+    if (blockCode) {
+      let messageForInlineCode;
+      for (let m of blockCode) {
+        messageForInlineCode = message.replace(m, "");
+      }
+      message = this.formatting(message, "pre", blockCode, 3);
+      const inlineCode = messageForInlineCode.match(/(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g);
+      message = this.formatting(message, "code", inlineCode, 1);
+    } else {
+      const inlineCode = message.match(/(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g);
+      message = this.formatting(message, "code", inlineCode, 1);
+    }
 
     return message.replace(/\r?\n/g, "<br>");
   };
