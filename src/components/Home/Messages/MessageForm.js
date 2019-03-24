@@ -59,7 +59,7 @@ class MessageForm extends React.Component {
           text === "blockquote"
             ? t.slice(trim, t.length)
             : t.slice(trim, t.length - trim);
-        message = message.replace(t, `<${text}>${htmlData}</${text}>`);
+        message = message.replace(t, `<${text}>${htmlData} </${text}>`);
         console.log(t, message);
       }
     }
@@ -68,13 +68,17 @@ class MessageForm extends React.Component {
 
   formattedMessage = message => {
     message = message.replace(/\r?\n/g, "<br>");
-    const findQuote = message.match(/(<br>+>>>|^>>>)/g);
-    if (findQuote) {
-      for (let i = 0; i < findQuote.length; i++) {
-        let quote = message.match(/(<br>+>>>|^>>>).+\w\S/g);
-        if (quote) quote[0] = quote[0].replace(/^(?:<br>)+/g, "");
-        message = this.formatting(message, "blockquote", quote, 3);
-      }
+
+    const blockQuote = message.match(/(<br>+>>>|^>>>).+\w\S/g);
+    message = this.formatting(message, "blockquote", blockQuote, 3);
+
+    let oneLineQuote = message.match(/(<br>>+|^>+)[^\(<br>\)]+(?!=\(<br>\))/g);
+    for (let quote of oneLineQuote) {
+      quote = quote.replace(/^(?:<br>)+/g, "");
+      message = message.replace(
+        quote,
+        `<blockquote>${quote.slice(1, quote.length)} </blockquote>`
+      );
     }
 
     const boldDetector = message.match(
@@ -105,7 +109,7 @@ class MessageForm extends React.Component {
       const inlineCode = message.match(/(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g);
       message = this.formatting(message, "code", inlineCode, 1);
     }
-
+    // return message.replace(/\s/g, "&nbsp;");
     return message.replace(/\r?\n/g, "<br>");
   };
 
