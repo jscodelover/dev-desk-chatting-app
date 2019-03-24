@@ -71,16 +71,20 @@ class MessageForm extends React.Component {
     const findQuote = message.match(/(<br>+>>>|^>>>)/g);
     if (findQuote) {
       for (let i = 0; i < findQuote.length; i++) {
-        let quote = message.match(/(<br>+>>>|^>>>).+/g);
-        quote[0] = quote[0].replace(/^(?:<br>)+/g, "");
+        let quote = message.match(/(<br>+>>>|^>>>).+\w\S/g);
+        if (quote) quote[0] = quote[0].replace(/^(?:<br>)+/g, "");
         message = this.formatting(message, "blockquote", quote, 3);
       }
     }
 
-    const boldDetector = message.match(/(?<=\s|^|<br>)(\*[^\(<br>\)\*.]+\*)(?=\s|<br>)/g);
+    const boldDetector = message.match(
+      /(?<=\s|^|<br>)(\*[^\(<br>\)\*.]+\*)(?=\s|<br>)/g
+    );
     message = this.formatting(message, "b", boldDetector, 1);
 
-    const italicDetector = message.match(/(?<=\s|^|<br>)(_[^\(<br>\)_.]+_)(?=\s|<br>)/g);
+    const italicDetector = message.match(
+      /(?<=\s|^|<br>)(_[^\(<br>\)_.]+_)(?=\s|<br>)/g
+    );
     message = this.formatting(message, "i", italicDetector, 1);
 
     const strikeThrough = message.match(/(?<=\s|^|<br>)(~[^\(<br>\)~.]+~)/g);
@@ -93,7 +97,9 @@ class MessageForm extends React.Component {
         messageForInlineCode = message.replace(m, "");
       }
       message = this.formatting(message, "pre", blockCode, 3);
-      const inlineCode = messageForInlineCode.match(/(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g);
+      const inlineCode = messageForInlineCode.match(
+        /(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g
+      );
       message = this.formatting(message, "code", inlineCode, 1);
     } else {
       const inlineCode = message.match(/(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g);
