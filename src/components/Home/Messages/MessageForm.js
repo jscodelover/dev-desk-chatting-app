@@ -22,7 +22,12 @@ class MessageForm extends React.Component {
       uploadTask: null,
       uploadStatus: "",
       uploadPercentage: 0,
-      cursorPos: 0
+      cursorPos: 0,
+      selectedText: "",
+      selectedPosition: {
+        start: null,
+        end: null
+      }
     };
   }
 
@@ -47,9 +52,14 @@ class MessageForm extends React.Component {
     if (event.target.value)
       session.addSessionData(this.props.channel.id, event.target.value);
     else session.removeSessionData(this.props.channel.id);
-    console.log(event.target.selectionStart, event.target.selectionEnd);
-    console.log(window.getSelection());
-    this.setState({ cursorPos: event.target.selectionStart });
+    this.setState({
+      cursorPos: event.target.selectionStart,
+      selectedText: window.getSelection().toString(),
+      selectedPosition: {
+        start: event.target.selectionStart,
+        end: event.target.selectionEnd
+      }
+    });
   };
 
   formatting = (message, text, replaceText, trim) => {
@@ -73,12 +83,14 @@ class MessageForm extends React.Component {
     message = this.formatting(message, "blockquote", blockQuote, 3);
 
     let oneLineQuote = message.match(/(<br>>+|^>+)[^\(<br>\)]+(?!=\(<br>\))/g);
-    for (let quote of oneLineQuote) {
-      quote = quote.replace(/^(?:<br>)+/g, "");
-      message = message.replace(
-        quote,
-        `<blockquote>${quote.slice(1, quote.length)} </blockquote>`
-      );
+    if (oneLineQuote) {
+      for (let quote of oneLineQuote) {
+        quote = quote.replace(/^(?:<br>)+/g, "");
+        message = message.replace(
+          quote,
+          `<blockquote>${quote.slice(1, quote.length)} </blockquote>`
+        );
+      }
     }
 
     const boldDetector = message.match(
@@ -247,7 +259,29 @@ class MessageForm extends React.Component {
   };
 
   handleCommand = event => {
+    event.stopPropagation();
     if (event.ctrlKey && event.key === "Enter") this.sendMessage();
+    else if (event.ctrlKey && (event.key === "B" || event.key === "b"))
+      this.formatTextAreaMessage("*");
+    else if (event.ctrlKey && (event.key === "I" || event.key === "i"))
+      this.formatTextAreaMessage("_");
+    else if (event.ctrlKey && (event.key === "J" || event.key === "j"))
+      this.formatTextAreaMessage("```");
+  };
+
+  formatTextAreaMessage = tag => {
+    const { message, selectedPosition, selectedText } = this.state;
+    let textBeforeSelection = message.substring(0, selectedPosition.start);
+    let textAfterSelection = message.substring(
+      selectedPosition.end,
+      message.length
+    );
+    console.log(
+      `${textBeforeSelection} ${tag}${selectedText}${tag} ${textAfterSelection}`
+    );
+    this.setState({
+      message: `${textBeforeSelection} ${tag}${selectedText}${tag} ${textAfterSelection}`
+    });
   };
 
   render() {
