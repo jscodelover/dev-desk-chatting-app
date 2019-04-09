@@ -1,11 +1,15 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Segment, Comment } from "semantic-ui-react";
+import { Segment, Comment, Loader } from "semantic-ui-react";
 import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
-import firebase from "../../../firebaseConfig";
+import firebase from "../../../util/firebaseConfig";
 import Message from "./Message";
-import "./Messages.css";
+import {
+  setUsersInChannel,
+  setShowChannelInfo,
+  setMessages
+} from "../../../store/action";
 
 class Messages extends React.Component {
   constructor(props) {
@@ -13,106 +17,191 @@ class Messages extends React.Component {
     this.state = {
       messageRef: firebase.database().ref("messages"),
       userRef: firebase.database().ref("users"),
-      messages: [],
-      usersInChannel: [],
+      typingRef: firebase.database().ref("typing"),
+      typingUsers: [],
+      channelUsers: [],
+      reachedDBEnd: false,
       searchMsg: [],
-      searchLoading: false
+      searchLoading: false,
+      userInHeader: {},
+      hasSearchData: false,
+      connectionRef: firebase.database().ref(".info/connected")
     };
   }
 
   componentDidMount() {
+    this.scrollToBottom();
     this.fetchMessage();
+    this.findTypingUsers();
+    this.state.connectionRef.on("value", snap => {
+      if (snap.val() === true) {
+        this.state.typingRef
+          .child(this.props.channel.id)
+          .child(this.props.user.userID)
+          .onDisconnect()
+          .remove(err => {
+            if (err !== null) {
+              console.error(err);
+            }
+          });
+      }
+    });
   }
 
-  //TODO: when we include personal user chat -> Edit userCount.
   componentDidUpdate(prevProps) {
+    this.scrollToBottom();
     if (prevProps.channel.channelName !== this.props.channel.channelName) {
+      this.setState({ reachedDBEnd: false });
+      clearTimeout(this.time);
       this.fetchMessage();
+      this.findTypingUsers();
     }
   }
 
-  fetchMessage = () => {
-    const { messageRef, userRef } = this.state;
+  scrollToBottom = () => {
+    if (this.scrollRef) this.scrollRef.scrollIntoView({ behavior: "smooth" });
+  };
+
+  componentWillUnmount() {
+    const { typingRef, connectionRef, messageRef } = this.state;
     const { channel } = this.props;
+    typingRef.child(channel.id).off();
+    connectionRef.off();
+    messageRef.child(channel.id).off();
+  }
+
+  fetchMessage = () => {
+    const { messageRef } = this.state;
+    const { channel, channelIDs } = this.props;
     let loadedMessage = [];
     messageRef.once("value", snap => {
       if (snap.hasChild(channel.id)) {
         messageRef.child(channel.id).on("child_added", snapMsg => {
-          userRef.child(snapMsg.val().userID).once("value", snapUser => {
-            loadedMessage.push({
-              ...snapMsg.val(),
-              user: { ...snapUser.val() }
-            });
-            this.setState({ messages: loadedMessage });
-            this.userCount(loadedMessage);
+          loadedMessage.push({
+            ...snapMsg.val()
           });
+          if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
+          else this.props.setUsersInChannel([]);
         });
       } else {
-        this.setState({ messages: [] });
-        this.userCount(loadedMessage);
+        this.props.setMessages([]);
+        if (channelIDs.includes(channel.id)) this.userCount(loadedMessage);
+        else this.props.setUsersInChannel([]);
       }
+      this.setState({ reachedDBEnd: true });
+      this.props.setMessages(loadedMessage);
     });
   };
 
   userCount = messages => {
+    const allUser = [...this.props.otherUsers, this.props.user];
     if (messages.length) {
       let users = messages.reduce((userArray, msg) => {
-        if (!userArray.includes(msg.user.username))
-          return userArray.concat(msg.user.username);
+        let msgUser = allUser.find(u => u.userID === msg.userID);
+        if (userArray.findIndex(obj => obj.name === msgUser.username) < 0)
+          return userArray.concat({
+            name: msgUser.username,
+            image: msgUser.picture
+          });
         return userArray;
       }, []);
-      this.setState({ usersInChannel: users });
+      this.props.setUsersInChannel(users);
     } else {
-      this.setState({ usersInChannel: "" });
+      this.props.setUsersInChannel([]);
     }
   };
 
-  displayMessages = (messages, user) =>
+  findTypingUsers = () => {
+    const { typingRef } = this.state;
+    const { channel, user } = this.props;
+    typingRef.child(channel.id).on("value", snap => {
+      let typerArray = [];
+      for (let u in snap.val()) {
+        if (user.userID !== u) typerArray.push(snap.val()[u]);
+      }
+      this.setState({ typingUsers: typerArray });
+    });
+  };
+
+  displayMessages = (messages, user, otherUsers) =>
     messages.length > 0 &&
     messages.map(msg => {
-      return <Message msg={msg} key={msg.timestamp} user={user} />;
+      return (
+        <Message
+          msg={msg}
+          key={msg.timestamp}
+          user={user}
+          allUsers={[...otherUsers, user]}
+        />
+      );
     });
 
   //TODO: include search on complete message database --> (using channelIDs for this)
   searchMessage = searchInput => {
-    const { messages } = this.state;
+    const { messages, user, otherUsers } = this.props;
+    const allUsers = [user, ...otherUsers];
     let regxExp = new RegExp(searchInput, "gi");
+    const userSearched = allUsers.find(u => Boolean(u.username.match(regxExp)));
+    console.log(userSearched);
     this.setState({ searchLoading: true });
+
     let searchMsg = messages.reduce((acc, msg) => {
       if (
         (msg.hasOwnProperty("content") && msg["content"].match(regxExp)) ||
-        msg.user.username.match(regxExp)
+        (userSearched && msg.userID === userSearched.userID)
       ) {
         acc.push(msg);
       }
       return acc;
     }, []);
-    this.setState({ searchMsg });
+    this.setState({ searchMsg, hasSearchData: !!searchInput });
     setTimeout(() => {
       this.setState({ searchLoading: false });
     }, 1000);
   };
 
   metaData = () => {
-    const { channelIDs, channel } = this.props;
-    const { usersInChannel, userRef } = this.state;
+    const {
+      channelIDs,
+      channel,
+      user,
+      otherUsers,
+      usersInChannel
+    } = this.props;
     if (channelIDs.includes(channel.id)) {
       return usersInChannel;
     } else {
-      let userID = channel["id"].match(new RegExp(/[a-z A-Z 0-9]+,/, "g"));
-      let id = userID[0].match(new RegExp(/[a-z A-Z 0-9]+/, "g"));
-      let user = {};
-      console.log(id[0]);
-      userRef.child(id[0]).once("value", snap => {
-        user = snap.val();
-      });
-      return user;
+      const { userID } = user;
+      const regxExp = new RegExp(userID, "gi");
+      let id = channel["id"].replace(regxExp, "");
+      let index = otherUsers.findIndex(user => user.userID === id);
+      return { ...otherUsers[index] };
     }
   };
 
+  clearSearchData = () => {
+    this.setState({ hasSearchData: false, searchMsg: [] });
+  };
+
   render() {
-    const { messageRef, messages, searchMsg, searchLoading } = this.state;
-    const { channel, user, privateChannel } = this.props;
+    const {
+      messageRef,
+      searchMsg,
+      searchLoading,
+      typingUsers,
+      inputValue,
+      reachedDBEnd,
+      hasSearchData
+    } = this.state;
+    const {
+      channel,
+      user,
+      privateChannel,
+      activeChannelID,
+      setShowChannelInfo,
+      otherUsers,
+      messages
+    } = this.props;
     return (
       <React.Fragment>
         <MessageHeader
@@ -121,29 +210,68 @@ class Messages extends React.Component {
           searchMessage={data => {
             this.searchMessage(data);
           }}
+          user={user}
+          activeChannelID={activeChannelID}
           searchLoading={searchLoading}
+          hasSearchData={hasSearchData}
           privateChannel={privateChannel}
+          showChannelInfo={() => {
+            setShowChannelInfo(true);
+          }}
+          clearSearchData={this.clearSearchData}
         />
         <Segment className="messages">
-          <Comment.Group size="large">
-            {searchMsg.length > 0
-              ? this.displayMessages(searchMsg, user)
-              : this.displayMessages(messages, user)}
-          </Comment.Group>
+          {messages.length || reachedDBEnd ? (
+            <React.Fragment>
+              <Comment.Group size="large">
+                {hasSearchData
+                  ? this.displayMessages(searchMsg, user, otherUsers)
+                  : this.displayMessages(messages, user, otherUsers)}
+              </Comment.Group>
+              <div
+                ref={scroll => {
+                  this.scrollRef = scroll;
+                }}
+              />
+            </React.Fragment>
+          ) : (
+            <Loader active>Loading Messages....</Loader>
+          )}
         </Segment>
-        <MessageForm messageRef={messageRef} channel={channel} user={user} />
+        <MessageForm
+          messageRef={messageRef}
+          inputValue={inputValue}
+          channel={channel}
+          user={user}
+          typingUsers={typingUsers}
+        />
       </React.Fragment>
     );
   }
 }
 
-const mapStateToProps = ({ user, channel }) => {
+const mapStateToProps = ({ user, channel, messages }) => {
   return {
     user: user.currentUser,
+    otherUsers: user.otherUsers,
     channel: channel.currentChannel,
+    activeChannelID: channel.activeChannelID,
     channelIDs: channel.channelIDs,
-    privateChannel: channel.privateChannel
+    privateChannel: channel.privateChannel,
+    usersInChannel: channel.usersInChannel,
+    messages: messages.messages
   };
 };
 
-export default connect(mapStateToProps)(Messages);
+const mapDispatchToProps = dispatch => {
+  return {
+    setUsersInChannel: payload => dispatch(setUsersInChannel(payload)),
+    setShowChannelInfo: payload => dispatch(setShowChannelInfo(payload)),
+    setMessages: payload => dispatch(setMessages(payload))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Messages);

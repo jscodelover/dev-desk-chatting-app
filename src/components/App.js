@@ -19,42 +19,46 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 );
 
 class App extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={
+    this.state = {
       connectionRef: firebase.database().ref(".info/connected"),
-      persence: firebase.database().ref("presence"),
-    }
+      persence: firebase.database().ref("presence")
+    };
   }
 
-  setStatus = (user) => {
+  setStatus = user => {
     const { connectionRef, persence } = this.state;
     connectionRef.on("value", snap => {
-      if(snap.val()){
+      if (snap.val()) {
         let status = persence.child(user.userID);
         status.set(true);
         status.onDisconnect().remove();
         firebase
-        .database()
-        .ref(`users/${user.userID}`)
-        .onDisconnect()
-        .set({ ...user, lastSeen: firebase.database.ServerValue.TIMESTAMP, status: 'offline' });
+          .database()
+          .ref(`users/${user.userID}`)
+          .onDisconnect()
+          .set({
+            ...user,
+            lastSeen: firebase.database.ServerValue.TIMESTAMP,
+            status: "offline"
+          });
       }
     });
 
     persence.on("child_added", snap => {
-      if(user.userID === snap.key){
+      if (user.userID === snap.key) {
         this.addStatus(user);
       }
     });
-  }
+  };
 
-  addStatus = (user, connected=true) =>{
-        firebase
-        .database()
-        .ref(`users/${user.userID}`)
-        .set({ ...user, status: 'online', lastSeen: '' });
-  }
+  addStatus = (user, connected = true) => {
+    firebase
+      .database()
+      .ref(`users/${user.userID}`)
+      .set({ ...user, status: "online", lastSeen: "" });
+  };
 
   componentDidMount() {
     console.log("checkAUth");
@@ -63,8 +67,7 @@ class App extends Component {
         firebase
           .database()
           .ref(`users/${user.uid}`)
-          .once("value")
-          .then(snapshot => {
+          .on("value", snapshot => {
             if (snapshot.val()) {
               this.setStatus(snapshot.val());
               this.props.setuser(snapshot.val());
@@ -80,7 +83,7 @@ class App extends Component {
     });
   }
   render() {
-    return  this.props.loading ? (
+    return this.props.loading ? (
       <Spinner />
     ) : (
       <Switch>

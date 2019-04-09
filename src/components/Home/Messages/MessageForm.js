@@ -1,8 +1,13 @@
 import * as React from "react";
 import uuidv4 from "uuid/v4";
-import { Segment, Button, Input, Icon, Progress } from "semantic-ui-react";
-import firebase from "../../../firebaseConfig";
+import TextareaAutosize from "react-textarea-autosize";
+import { Segment, Button, Progress, Form } from "semantic-ui-react";
+import firebase from "../../../util/firebaseConfig";
 import FileModal from "./FileModal";
+import Typing from "./Typing";
+import * as typeFn from "../../../util/typingfn";
+import * as session from "../../../util/sessionData";
+import Emoji from "./Emoji";
 
 class MessageForm extends React.Component {
   constructor(props) {
@@ -16,12 +21,108 @@ class MessageForm extends React.Component {
       modal: false,
       uploadTask: null,
       uploadStatus: "",
-      uploadPercentage: 0
+      uploadPercentage: 0,
+      cursorPos: 0,
+      selectedText: "",
+      selectedPosition: {
+        start: null,
+        end: null
+      }
     };
+  }
+
+  componentDidMount() {
+    this.getStoragedData();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.channel.channelName !== this.props.channel.channelName)
+      this.getStoragedData();
+  }
+
+  getStoragedData() {
+    if (session.getSessionData(this.props.channel.id))
+      this.setState({ message: session.getSessionData(this.props.channel.id) });
+    else this.setState({ message: "" });
   }
 
   getMessage = event => {
     this.setState({ [event.target.name]: event.target.value });
+    typeFn.typingAdd(event.target.value, this.props.channel, this.props.user);
+    if (event.target.value)
+      session.addSessionData(this.props.channel.id, event.target.value);
+    else session.removeSessionData(this.props.channel.id);
+    this.setState({
+      cursorPos: event.target.selectionStart,
+      selectedText: window.getSelection().toString(),
+      selectedPosition: {
+        start: event.target.selectionStart,
+        end: event.target.selectionEnd
+      }
+    });
+  };
+
+  formatting = (message, text, replaceText, trim) => {
+    if (replaceText) {
+      for (let t of replaceText) {
+        let htmlData =
+          text === "blockquote"
+            ? t.slice(trim, t.length)
+            : t.slice(trim, t.length - trim);
+        message = message.replace(t, `<${text}>${htmlData} </${text}>`);
+        console.log(t, message);
+      }
+    }
+    return message;
+  };
+
+  formattedMessage = message => {
+    message = message.replace(/\r?\n/g, "<br>");
+
+    const blockQuote = message.match(/(<br>+>>>|^>>>).+\w\S/g);
+    message = this.formatting(message, "blockquote", blockQuote, 3);
+
+    let oneLineQuote = message.match(/(<br>>+|^>+)[^\(<br>\)]+(?!=\(<br>\))/g);
+    if (oneLineQuote) {
+      for (let quote of oneLineQuote) {
+        quote = quote.replace(/^(?:<br>)+/g, "");
+        message = message.replace(
+          quote,
+          `<blockquote>${quote.slice(1, quote.length)} </blockquote>`
+        );
+      }
+    }
+
+    const boldDetector = message.match(
+      /(?<=\s|^|<br>)(\*[^\(<br>\)\*.]+\*)(?=\s|<br>)/g
+    );
+    message = this.formatting(message, "b", boldDetector, 1);
+
+    const italicDetector = message.match(
+      /(?<=\s|^|<br>)(_[^\(<br>\)_.]+_)(?=\s|<br>)/g
+    );
+    message = this.formatting(message, "i", italicDetector, 1);
+
+    const strikeThrough = message.match(/(?<=\s|^|<br>)(~[^\(<br>\)~.]+~)/g);
+    message = this.formatting(message, "strike", strikeThrough, 1);
+
+    const blockCode = message.match(/```.+?```/g);
+    if (blockCode) {
+      let messageForInlineCode;
+      for (let m of blockCode) {
+        messageForInlineCode = message.replace(m, "");
+      }
+      message = this.formatting(message, "pre", blockCode, 3);
+      const inlineCode = messageForInlineCode.match(
+        /(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g
+      );
+      message = this.formatting(message, "code", inlineCode, 1);
+    } else {
+      const inlineCode = message.match(/(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g);
+      message = this.formatting(message, "code", inlineCode, 1);
+    }
+    // return message.replace(/\s/g, "&nbsp;");
+    return message.replace(/\r?\n/g, "<br>");
   };
 
   createMessage = user => {
@@ -42,27 +143,29 @@ class MessageForm extends React.Component {
     const { messageRef, channel, user } = this.props;
     const { message, error } = this.state;
 
-    if (message) {
-      console.log(this.createMessage(user));
-      this.setState({ loading: true });
-      messageRef
-        .child(channel.id)
-        .push()
-        .set(this.createMessage(user))
-        .then(() => {
-          this.setState({ loading: false, message: "", error: [] });
-        })
-        .catch(() => {
-          this.setState({
-            loading: false,
-            error: error.concat("message can't be send. Try Again !!")
-          });
-        });
-    } else {
-      this.setState({
-        loading: false,
-        error: error.concat("write the message")
-      });
+    if (message.trim()) {
+      console.log(this.formattedMessage(message));
+      //   this.setState({ loading: true });
+      //   messageRef
+      //     .child(channel.id)
+      //     .push()
+      //     .set(this.createMessage(user))
+      //     .then(() => {
+      //       this.setState({ loading: false, message: "", error: [] });
+      //       typeFn.typingRemove(channel, user);
+      //       session.removeSessionData(channel.id);
+      //     })
+      //     .catch(() => {
+      //       this.setState({
+      //         loading: false,
+      //         error: error.concat("message can't be send. Try Again !!")
+      //       });
+      //     });
+      // } else {
+      //   this.setState({
+      //     loading: false,
+      //     error: error.concat("write the message")
+      //   });
     }
   };
 
@@ -148,17 +251,58 @@ class MessageForm extends React.Component {
     );
   };
 
+  addEmoji = emoji => {
+    const { message, cursorPos } = this.state;
+    const part1 = message.slice(0, cursorPos);
+    const part2 = message.slice(cursorPos);
+    this.setState({ message: `${part1}${emoji}${part2}` });
+  };
+
+  handleCommand = event => {
+    event.stopPropagation();
+    if (event.ctrlKey && event.key === "Enter") this.sendMessage();
+    else if (event.ctrlKey && (event.key === "B" || event.key === "b"))
+      this.formatTextAreaMessage("*");
+    else if (event.ctrlKey && (event.key === "I" || event.key === "i"))
+      this.formatTextAreaMessage("_");
+    else if (event.ctrlKey && (event.key === "J" || event.key === "j"))
+      this.formatTextAreaMessage("```");
+  };
+
+  formatTextAreaMessage = tag => {
+    const { message, selectedPosition, selectedText } = this.state;
+    let textBeforeSelection = message.substring(0, selectedPosition.start);
+    let textAfterSelection = message.substring(
+      selectedPosition.end,
+      message.length
+    );
+    console.log(
+      `${textBeforeSelection} ${tag}${selectedText}${tag} ${textAfterSelection}`
+    );
+    this.setState({
+      message: `${textBeforeSelection} ${tag}${selectedText}${tag} ${textAfterSelection}`
+    });
+  };
+
   render() {
     const {
       message,
-      error,
       loading,
       modal,
       uploadStatus,
       uploadPercentage
     } = this.state;
+    const { user, typingUsers } = this.props;
+    const btn1 = user.color.theme[1];
+    const btn2 = user.color.theme[2];
     return (
-      <Segment className="messageForm">
+      <Segment
+        className={
+          typingUsers.length ? "messageForm typingSpace" : "messageForm"
+        }
+        fluid={true.toString()}
+      >
+        {typingUsers.length ? <Typing typingUsers={typingUsers} /> : null}
         {uploadStatus === "uploading" ? (
           <Progress
             style={{
@@ -175,24 +319,49 @@ class MessageForm extends React.Component {
         ) : (
           ""
         )}
-        <Input
-          fluid
-          style={{ marginBottom: "0.7rem" }}
-          label={
-            <Button icon>
-              <Icon name="add" />
-            </Button>
-          }
-          name="message"
-          value={message}
-          onChange={this.getMessage}
-          loading={loading}
-          labelPosition="left"
-          placeholder="Write your message..."
-          className={error.some(err => err.includes("message")) ? "error" : ""}
-        />
-        <Button.Group icon width="2" fluid>
+        <Form>
+          <div className="editor">
+            <TextareaAutosize
+              ref={ref => (this.input = ref)}
+              placeholder="Write your message..."
+              onClick={this.getMessage}
+              onKeyDown={this.handleCommand}
+              name="message"
+              value={message}
+              onChange={this.getMessage}
+              style={{
+                maxHeight: "175px",
+                minHeight: "41px"
+              }}
+            />
+          </div>
+        </Form>
+
+        {/* <Input
+            fluid
+            style={{ marginBottom: "0.7rem" }}
+            label={
+              <Emoji
+                onSelect={emoji => {
+                  this.addEmoji(emoji);
+                }}
+              />
+            }
+            value={message}
+            onChange={this.getMessage}
+            loading={loading}
+            labelPosition="left"
+            placeholder="Write your message..."
+            className={error.some(err => err.includes("message")) ? "error" : ""}
+          /> */}
+        <Button.Group icon width="3" fluid className="ctlBtn">
+          <Emoji
+            onSelect={emoji => {
+              this.addEmoji(emoji);
+            }}
+          />
           <Button
+            style={{ backgroundColor: btn1, color: user.color.text }}
             color="orange"
             content="Add Reply"
             disabled={loading}
@@ -201,6 +370,7 @@ class MessageForm extends React.Component {
             onClick={this.sendMessage}
           />
           <Button
+            style={{ backgroundColor: btn2, color: user.color.text }}
             color="teal"
             content="Add File"
             disabled={uploadStatus === "uploading"}

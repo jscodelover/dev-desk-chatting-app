@@ -10,7 +10,7 @@ import {
   Message
 } from "semantic-ui-react";
 import "./Auth.css";
-import firebase from "../../firebaseConfig";
+import firebase from "../../util/firebaseConfig";
 
 class Login extends Component {
   constructor(props) {
