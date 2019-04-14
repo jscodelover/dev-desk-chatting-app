@@ -2,6 +2,7 @@
   "name": "react-slack",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://jscodelover.github.io/dev-desk-chatting-app",
   "dependencies": {
     "emoji-mart": "^2.9.2",
     "firebase": "^5.5.6",
@@ -39,6 +40,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "gh-pages": "^2.0.1",
     "redux-devtools-extension": "^2.13.5"
   }
 }
