@@ -66,7 +66,6 @@ class MessageForm extends React.Component {
             ? t.slice(trim, t.length)
             : t.slice(trim, t.length - trim);
         message = message.replace(t, `<${text}>${htmlData} </${text}>`);
-        console.log(t, message);
       }
     }
     return message;
@@ -96,8 +95,6 @@ class MessageForm extends React.Component {
     );
 
     message = this.formatting(message, "b", boldDetector, 1);
-    console.log(message);
-
     const italicDetector = message.match(
       /(?<=\s|^|%|\*|~|`|>)(_[^%_.]+_)(?=\s|%|\*|~|`|<|$)/g
     );
@@ -122,11 +119,13 @@ class MessageForm extends React.Component {
       message = this.formatting(message, "code", inlineCode, 1);
     }
     // return message.replace(/\s/g, "&nbsp;");
-    return message.replace(/%/g, "<br>");
+    message = message.replace(/%/g, "<br>");
+    this.setState({ message });
+    return message;
   };
 
-  createMessage = user => {
-    const { file, message } = this.state;
+  createMessage = (user, message) => {
+    const { file } = this.state;
     const messageObj = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       userID: user.userID
@@ -144,28 +143,27 @@ class MessageForm extends React.Component {
     const { message, error } = this.state;
 
     if (message.trim()) {
-      console.log(this.formattedMessage(message));
-      //   this.setState({ loading: true });
-      //   messageRef
-      //     .child(channel.id)
-      //     .push()
-      //     .set(this.createMessage(user))
-      //     .then(() => {
-      //       this.setState({ loading: false, message: "", error: [] });
-      //       typeFn.typingRemove(channel, user);
-      //       session.removeSessionData(channel.id);
-      //     })
-      //     .catch(() => {
-      //       this.setState({
-      //         loading: false,
-      //         error: error.concat("message can't be send. Try Again !!")
-      //       });
-      //     });
-      // } else {
-      //   this.setState({
-      //     loading: false,
-      //     error: error.concat("write the message")
-      //   });
+      this.setState({ loading: true });
+      messageRef
+        .child(channel.id)
+        .push()
+        .set(this.createMessage(user, this.formattedMessage(message)))
+        .then(() => {
+          this.setState({ loading: false, message: "", error: [] });
+          typeFn.typingRemove(channel, user);
+          session.removeSessionData(channel.id);
+        })
+        .catch(() => {
+          this.setState({
+            loading: false,
+            error: error.concat("message can't be send. Try Again !!")
+          });
+        });
+    } else {
+      this.setState({
+        loading: false,
+        error: error.concat("write the message")
+      });
     }
   };
 
