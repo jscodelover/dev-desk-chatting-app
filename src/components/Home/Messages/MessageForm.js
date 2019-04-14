@@ -318,7 +318,7 @@ class MessageForm extends React.Component {
               left: "66px",
               right: sideBarVisible ? "260px" : "14px"
             }}
-            percent={100}
+            percent={uploadPercentage}
             inverted
             progress
             color="green"
