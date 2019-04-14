@@ -200,7 +200,8 @@ class Messages extends React.Component {
       activeChannelID,
       setShowChannelInfo,
       otherUsers,
-      messages
+      messages,
+      sideBar
     } = this.props;
     return (
       <React.Fragment>
@@ -244,6 +245,7 @@ class Messages extends React.Component {
           channel={channel}
           user={user}
           typingUsers={typingUsers}
+          sideBarVisible={sideBar}
         />
       </React.Fragment>
     );

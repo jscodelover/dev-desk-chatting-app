@@ -299,7 +299,7 @@ class MessageForm extends React.Component {
       uploadStatus,
       uploadPercentage
     } = this.state;
-    const { user, typingUsers } = this.props;
+    const { user, typingUsers, sideBarVisible } = this.props;
     const btn1 = user.color.theme[1];
     const btn2 = user.color.theme[2];
     return (
@@ -315,10 +315,10 @@ class MessageForm extends React.Component {
             style={{
               position: "fixed",
               top: "12%",
-              left: "305px",
-              right: "1rem"
+              left: "66px",
+              right: sideBarVisible ? "260px" : "14px"
             }}
-            percent={uploadPercentage}
+            percent={100}
             inverted
             progress
             color="green"

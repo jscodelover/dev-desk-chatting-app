@@ -38,7 +38,7 @@ const Message = ({ msg, user, allUsers }) => {
           {isContent() ? (
             <Comment.Text dangerouslySetInnerHTML={{ __html: msg.content }} />
           ) : (
-            <a href={msg.image} target="_blank" downloadable>
+            <a href={msg.image} target="_blank" downloadable={true}>
               <Image src={msg.image} size="medium" rounded />
             </a>
           )}

@@ -118,7 +118,7 @@ class Home extends React.Component {
           </Grid.Column>
         )} */}
         <Grid.Column className="my-container">
-          {channel.id && <Messages />}
+          {channel.id && <Messages sideBar={visible} />}
         </Grid.Column>
 
         {user.userID && (
