@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import * as React from "react";
 import uuidv4 from "uuid/v4";
 import TextareaAutosize from "react-textarea-autosize";
@@ -53,12 +54,7 @@ class MessageForm extends React.Component {
       session.addSessionData(this.props.channel.id, event.target.value);
     else session.removeSessionData(this.props.channel.id);
     this.setState({
-      cursorPos: event.target.selectionStart,
-      selectedText: window.getSelection().toString(),
-      selectedPosition: {
-        start: event.target.selectionStart,
-        end: event.target.selectionEnd
-      }
+      cursorPos: event.target.selectionStart
     });
   };
 
@@ -70,7 +66,6 @@ class MessageForm extends React.Component {
             ? t.slice(trim, t.length)
             : t.slice(trim, t.length - trim);
         message = message.replace(t, `<${text}>${htmlData} </${text}>`);
-        console.log(t, message);
       }
     }
     return message;
@@ -82,10 +77,12 @@ class MessageForm extends React.Component {
     const blockQuote = message.match(/(<br>+>>>|^>>>).+\w\S/g);
     message = this.formatting(message, "blockquote", blockQuote, 3);
 
-    let oneLineQuote = message.match(/(<br>>+|^>+)[^\(<br>\)]+(?!=\(<br>\))/g);
+    message = message.replace(/<br>/g, "%");
+
+    let oneLineQuote = message.match(/(%>+|^>+)[^%]+(?!=%)/g);
     if (oneLineQuote) {
       for (let quote of oneLineQuote) {
-        quote = quote.replace(/^(?:<br>)+/g, "");
+        quote = quote.replace(/^(?:%)+/g, "");
         message = message.replace(
           quote,
           `<blockquote>${quote.slice(1, quote.length)} </blockquote>`
@@ -94,16 +91,18 @@ class MessageForm extends React.Component {
     }
 
     const boldDetector = message.match(
-      /(?<=\s|^|<br>)(\*[^\(<br>\)\*.]+\*)(?=\s|<br>)/g
+      /(?<=\s|^|%|_|~|`|>)(\*[^%\*.]+\*)(?=\s|%|_|~|`|<|$)/g
     );
-    message = this.formatting(message, "b", boldDetector, 1);
 
+    message = this.formatting(message, "b", boldDetector, 1);
     const italicDetector = message.match(
-      /(?<=\s|^|<br>)(_[^\(<br>\)_.]+_)(?=\s|<br>)/g
+      /(?<=\s|^|%|\*|~|`|>)(_[^%_.]+_)(?=\s|%|\*|~|`|<|$)/g
     );
     message = this.formatting(message, "i", italicDetector, 1);
 
-    const strikeThrough = message.match(/(?<=\s|^|<br>)(~[^\(<br>\)~.]+~)/g);
+    const strikeThrough = message.match(
+      /(?<=\s|^|%|_|\*|`|>)(~[^%~.]+~)(?=\s|%|\*|_|`|<|$)/g
+    );
     message = this.formatting(message, "strike", strikeThrough, 1);
 
     const blockCode = message.match(/```.+?```/g);
@@ -113,20 +112,20 @@ class MessageForm extends React.Component {
         messageForInlineCode = message.replace(m, "");
       }
       message = this.formatting(message, "pre", blockCode, 3);
-      const inlineCode = messageForInlineCode.match(
-        /(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g
-      );
+      const inlineCode = messageForInlineCode.match(/(?<=\s|^|%)(`[^%`.]+`)/g);
       message = this.formatting(message, "code", inlineCode, 1);
     } else {
-      const inlineCode = message.match(/(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g);
+      const inlineCode = message.match(/(?<=\s|^|%)(`[^%`.]+`)/g);
       message = this.formatting(message, "code", inlineCode, 1);
     }
     // return message.replace(/\s/g, "&nbsp;");
-    return message.replace(/\r?\n/g, "<br>");
+    message = message.replace(/%/g, "<br>");
+    this.setState({ message });
+    return message;
   };
 
-  createMessage = user => {
-    const { file, message } = this.state;
+  createMessage = (user, message) => {
+    const { file } = this.state;
     const messageObj = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       userID: user.userID
@@ -144,28 +143,27 @@ class MessageForm extends React.Component {
     const { message, error } = this.state;
 
     if (message.trim()) {
-      console.log(this.formattedMessage(message));
-      //   this.setState({ loading: true });
-      //   messageRef
-      //     .child(channel.id)
-      //     .push()
-      //     .set(this.createMessage(user))
-      //     .then(() => {
-      //       this.setState({ loading: false, message: "", error: [] });
-      //       typeFn.typingRemove(channel, user);
-      //       session.removeSessionData(channel.id);
-      //     })
-      //     .catch(() => {
-      //       this.setState({
-      //         loading: false,
-      //         error: error.concat("message can't be send. Try Again !!")
-      //       });
-      //     });
-      // } else {
-      //   this.setState({
-      //     loading: false,
-      //     error: error.concat("write the message")
-      //   });
+      this.setState({ loading: true });
+      messageRef
+        .child(channel.id)
+        .push()
+        .set(this.createMessage(user, this.formattedMessage(message)))
+        .then(() => {
+          this.setState({ loading: false, message: "", error: [] });
+          typeFn.typingRemove(channel, user);
+          session.removeSessionData(channel.id);
+        })
+        .catch(() => {
+          this.setState({
+            loading: false,
+            error: error.concat("message can't be send. Try Again !!")
+          });
+        });
+    } else {
+      this.setState({
+        loading: false,
+        error: error.concat("write the message")
+      });
     }
   };
 
@@ -193,6 +191,16 @@ class MessageForm extends React.Component {
           )
         });
       });
+  };
+
+  getSelectionPosition = event => {
+    this.setState({
+      selectedText: window.getSelection().toString(),
+      selectedPosition: {
+        start: event.target.selectionStart,
+        end: event.target.selectionEnd
+      }
+    });
   };
 
   openModal = () => {
@@ -259,26 +267,25 @@ class MessageForm extends React.Component {
   };
 
   handleCommand = event => {
-    event.stopPropagation();
+    if (event.key.toLowerCase() === "j") event.preventDefault();
     if (event.ctrlKey && event.key === "Enter") this.sendMessage();
-    else if (event.ctrlKey && (event.key === "B" || event.key === "b"))
+    else if (event.ctrlKey && event.key.toLowerCase() === "b")
       this.formatTextAreaMessage("*");
-    else if (event.ctrlKey && (event.key === "I" || event.key === "i"))
+    else if (event.ctrlKey && event.key.toLowerCase() === "i")
       this.formatTextAreaMessage("_");
-    else if (event.ctrlKey && (event.key === "J" || event.key === "j"))
+    else if (event.ctrlKey && event.key.toLowerCase() === "j")
       this.formatTextAreaMessage("```");
   };
 
   formatTextAreaMessage = tag => {
     const { message, selectedPosition, selectedText } = this.state;
+
     let textBeforeSelection = message.substring(0, selectedPosition.start);
     let textAfterSelection = message.substring(
       selectedPosition.end,
       message.length
     );
-    console.log(
-      `${textBeforeSelection} ${tag}${selectedText}${tag} ${textAfterSelection}`
-    );
+
     this.setState({
       message: `${textBeforeSelection} ${tag}${selectedText}${tag} ${textAfterSelection}`
     });
@@ -292,7 +299,7 @@ class MessageForm extends React.Component {
       uploadStatus,
       uploadPercentage
     } = this.state;
-    const { user, typingUsers } = this.props;
+    const { user, typingUsers, sideBarVisible } = this.props;
     const btn1 = user.color.theme[1];
     const btn2 = user.color.theme[2];
     return (
@@ -308,8 +315,8 @@ class MessageForm extends React.Component {
             style={{
               position: "fixed",
               top: "12%",
-              left: "305px",
-              right: "1rem"
+              left: "66px",
+              right: sideBarVisible ? "260px" : "14px"
             }}
             percent={uploadPercentage}
             inverted
@@ -329,6 +336,7 @@ class MessageForm extends React.Component {
               name="message"
               value={message}
               onChange={this.getMessage}
+              onSelect={this.getSelectionPosition}
               style={{
                 maxHeight: "175px",
                 minHeight: "41px"
