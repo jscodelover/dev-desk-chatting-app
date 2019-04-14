@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import * as React from "react";
 import uuidv4 from "uuid/v4";
 import TextareaAutosize from "react-textarea-autosize";
@@ -53,12 +54,7 @@ class MessageForm extends React.Component {
       session.addSessionData(this.props.channel.id, event.target.value);
     else session.removeSessionData(this.props.channel.id);
     this.setState({
-      cursorPos: event.target.selectionStart,
-      selectedText: window.getSelection().toString(),
-      selectedPosition: {
-        start: event.target.selectionStart,
-        end: event.target.selectionEnd
-      }
+      cursorPos: event.target.selectionStart
     });
   };
 
@@ -82,10 +78,12 @@ class MessageForm extends React.Component {
     const blockQuote = message.match(/(<br>+>>>|^>>>).+\w\S/g);
     message = this.formatting(message, "blockquote", blockQuote, 3);
 
-    let oneLineQuote = message.match(/(<br>>+|^>+)[^\(<br>\)]+(?!=\(<br>\))/g);
+    message = message.replace(/<br>/g, "%");
+
+    let oneLineQuote = message.match(/(%>+|^>+)[^%]+(?!=%)/g);
     if (oneLineQuote) {
       for (let quote of oneLineQuote) {
-        quote = quote.replace(/^(?:<br>)+/g, "");
+        quote = quote.replace(/^(?:%)+/g, "");
         message = message.replace(
           quote,
           `<blockquote>${quote.slice(1, quote.length)} </blockquote>`
@@ -94,16 +92,20 @@ class MessageForm extends React.Component {
     }
 
     const boldDetector = message.match(
-      /(?<=\s|^|<br>)(\*[^\(<br>\)\*.]+\*)(?=\s|<br>)/g
+      /(?<=\s|^|%|_|~|`|>)(\*[^%\*.]+\*)(?=\s|%|_|~|`|<|$)/g
     );
+
     message = this.formatting(message, "b", boldDetector, 1);
+    console.log(message);
 
     const italicDetector = message.match(
-      /(?<=\s|^|<br>)(_[^\(<br>\)_.]+_)(?=\s|<br>)/g
+      /(?<=\s|^|%|\*|~|`|>)(_[^%_.]+_)(?=\s|%|\*|~|`|<|$)/g
     );
     message = this.formatting(message, "i", italicDetector, 1);
 
-    const strikeThrough = message.match(/(?<=\s|^|<br>)(~[^\(<br>\)~.]+~)/g);
+    const strikeThrough = message.match(
+      /(?<=\s|^|%|_|\*|`|>)(~[^%~.]+~)(?=\s|%|\*|_|`|<|$)/g
+    );
     message = this.formatting(message, "strike", strikeThrough, 1);
 
     const blockCode = message.match(/```.+?```/g);
@@ -113,16 +115,14 @@ class MessageForm extends React.Component {
         messageForInlineCode = message.replace(m, "");
       }
       message = this.formatting(message, "pre", blockCode, 3);
-      const inlineCode = messageForInlineCode.match(
-        /(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g
-      );
+      const inlineCode = messageForInlineCode.match(/(?<=\s|^|%)(`[^%`.]+`)/g);
       message = this.formatting(message, "code", inlineCode, 1);
     } else {
-      const inlineCode = message.match(/(?<=\s|^|<br>)(`[^\(<br>\)`.]+`)/g);
+      const inlineCode = message.match(/(?<=\s|^|%)(`[^%`.]+`)/g);
       message = this.formatting(message, "code", inlineCode, 1);
     }
     // return message.replace(/\s/g, "&nbsp;");
-    return message.replace(/\r?\n/g, "<br>");
+    return message.replace(/%/g, "<br>");
   };
 
   createMessage = user => {
@@ -195,6 +195,16 @@ class MessageForm extends React.Component {
       });
   };
 
+  getSelectionPosition = event => {
+    this.setState({
+      selectedText: window.getSelection().toString(),
+      selectedPosition: {
+        start: event.target.selectionStart,
+        end: event.target.selectionEnd
+      }
+    });
+  };
+
   openModal = () => {
     this.setState({ modal: true });
   };
@@ -259,26 +269,25 @@ class MessageForm extends React.Component {
   };
 
   handleCommand = event => {
-    event.stopPropagation();
+    if (event.key.toLowerCase() === "j") event.preventDefault();
     if (event.ctrlKey && event.key === "Enter") this.sendMessage();
-    else if (event.ctrlKey && (event.key === "B" || event.key === "b"))
+    else if (event.ctrlKey && event.key.toLowerCase() === "b")
       this.formatTextAreaMessage("*");
-    else if (event.ctrlKey && (event.key === "I" || event.key === "i"))
+    else if (event.ctrlKey && event.key.toLowerCase() === "i")
       this.formatTextAreaMessage("_");
-    else if (event.ctrlKey && (event.key === "J" || event.key === "j"))
+    else if (event.ctrlKey && event.key.toLowerCase() === "j")
       this.formatTextAreaMessage("```");
   };
 
   formatTextAreaMessage = tag => {
     const { message, selectedPosition, selectedText } = this.state;
+
     let textBeforeSelection = message.substring(0, selectedPosition.start);
     let textAfterSelection = message.substring(
       selectedPosition.end,
       message.length
     );
-    console.log(
-      `${textBeforeSelection} ${tag}${selectedText}${tag} ${textAfterSelection}`
-    );
+
     this.setState({
       message: `${textBeforeSelection} ${tag}${selectedText}${tag} ${textAfterSelection}`
     });
@@ -329,6 +338,7 @@ class MessageForm extends React.Component {
               name="message"
               value={message}
               onChange={this.getMessage}
+              onSelect={this.getSelectionPosition}
               style={{
                 maxHeight: "175px",
                 minHeight: "41px"
