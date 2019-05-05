@@ -14,7 +14,7 @@ const store = createStore(reducer, composeWithDevTools());
 
 const Root = (
   <Provider store={store}>
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <App />
     </BrowserRouter>
   </Provider>
